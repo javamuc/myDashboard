@@ -1,0 +1,104 @@
+.weather-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.location {
+  margin-bottom: 1rem;
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #2c3e50;
+  }
+}
+
+.current-weather {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+
+  .weather-icon {
+    font-size: 4rem;
+    margin-right: 2rem;
+    color: #3498db;
+  }
+
+  .weather-info {
+    flex: 1;
+
+    .temperature {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .condition {
+      font-size: 1.2rem;
+      color: #7f8c8d;
+      margin-bottom: 0.5rem;
+    }
+
+    .details {
+      display: flex;
+      gap: 1.5rem;
+      color: #7f8c8d;
+
+      i {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
+
+.forecast {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+
+  .forecast-day {
+    flex: 1;
+    padding: 0.5rem;
+
+    .day {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #2c3e50;
+    }
+
+    .icon {
+      font-size: 1.5rem;
+      margin: 0.5rem 0;
+      color: #3498db;
+    }
+
+    .temp {
+      font-weight: bold;
+      color: #2c3e50;
+    }
+
+    .precip {
+      font-size: 0.875rem;
+      color: #7f8c8d;
+      margin-top: 0.5rem;
+
+      i {
+        margin-right: 0.25rem;
+      }
+    }
+  }
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #7f8c8d;
+
+  i {
+    margin-right: 0.5rem;
+  }
+}

@@ -1,0 +1,49 @@
+<div class="weather-container">
+  <div class="location">
+    <h2>München, Deutschland</h2>
+  </div>
+
+  @if (currentWeather()) {
+    <div class="current-weather">
+      <div class="weather-icon">
+        <i [class]="currentWeather()!.icon"></i>
+      </div>
+      <div class="weather-info">
+        <div class="temperature">{{ currentWeather()!.temperature }}°C</div>
+        <div class="condition">{{ currentWeather()!.condition }}</div>
+        <div class="details">
+          <span class="wind">
+            <i class="fas fa-wind"></i>
+            {{ currentWeather()!.windSpeed }} km/h
+            {{ getWindDirection(currentWeather()!.windDirection) }}
+          </span>
+          <span class="precipitation">
+            <i class="fas fa-tint"></i>
+            {{ currentWeather()!.precipitation }}%
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="forecast">
+      @for (day of forecast(); track day.timestamp) {
+        <div class="forecast-day">
+          <div class="day">{{ day.timestamp | date: 'EEE' }}</div>
+          <div class="icon">
+            <i [class]="day.icon"></i>
+          </div>
+          <div class="temp">{{ day.temperature }}°C</div>
+          <div class="precip">
+            <i class="fas fa-tint"></i>
+            {{ day.precipitation }}%
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="loading">
+      <i class="fas fa-spinner fa-spin"></i>
+      Loading weather data...
+    </div>
+  }
+</div>

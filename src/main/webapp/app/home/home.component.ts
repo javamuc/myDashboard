@@ -8,12 +8,13 @@ import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import { ClockComponent } from '../shared/clock/clock.component';
 import { NotesComponent } from '../notes/notes.component';
+import { WeatherComponent } from 'app/shared/weather/weather.component';
 
 @Component({
   selector: 'jhi-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [SharedModule, RouterModule, ClockComponent, NotesComponent],
+  imports: [SharedModule, RouterModule, ClockComponent, NotesComponent, WeatherComponent],
 })
 export default class HomeComponent implements OnInit, OnDestroy {
   account = signal<Account | null>(null);
