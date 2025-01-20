@@ -1,0 +1,47 @@
+.editor-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5rem;
+}
+
+.editor-header {
+  margin-bottom: 1.5rem;
+
+  .title-input {
+    font-size: 1.5rem;
+    font-weight: 600;
+    border: none;
+    padding: 0;
+    margin-bottom: 0.5rem;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+
+  .last-modified {
+    font-size: 0.75rem;
+    color: #6c757d;
+  }
+}
+
+.editor-content {
+  flex-grow: 1;
+  display: flex;
+
+  .content-input {
+    flex-grow: 1;
+    border: none;
+    resize: none;
+    font-size: 1rem;
+    line-height: 1.6;
+    padding: 0;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+}

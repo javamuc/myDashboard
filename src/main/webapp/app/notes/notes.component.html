@@ -1,0 +1,23 @@
+<div class="notes-container">
+  <div class="notes-sidebar">
+    <div class="notes-header">
+      <button class="btn btn-primary new-note-btn" (click)="createNewNote()">
+        <span class="fas fa-plus"></span>
+      </button>
+      <div class="search-container">
+        <input
+          type="text"
+          class="form-control search-input"
+          placeholder="Search notes..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+        />
+        <span class="fas fa-search search-icon"></span>
+      </div>
+    </div>
+    <jhi-note-list [notes]="filteredNotes()" [selectedNoteId]="selectedNote()?.id" (noteSelected)="onNoteSelected($event)"></jhi-note-list>
+  </div>
+  <div class="notes-editor">
+    <jhi-note-editor *ngIf="selectedNote()" [note]="selectedNote()!" (noteUpdated)="onNoteUpdated($event)"></jhi-note-editor>
+  </div>
+</div>

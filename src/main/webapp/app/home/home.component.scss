@@ -3,11 +3,37 @@ Main page styles
 ========================================================================== */
 
 .hipster {
-  display: inline-block;
-  width: 347px;
-  height: 497px;
-  background: url('../../content/images/jhipster_family_member_0.svg') no-repeat center top;
-  background-size: contain;
+  display: block;
+  margin-top: 20px;
+  width: 100%;
+  height: auto;
+}
+
+.row {
+  min-height: calc(100vh - 100px);
+}
+
+.col-md-3,
+.col-md-6 {
+  padding: 15px;
+}
+
+/* responsive CSS */
+@media screen and (min-width: 768px) {
+  .hipster {
+    margin-top: 30px;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .col-md-3,
+  .col-md-6 {
+    width: 100%;
+  }
 }
 
 /* wait autoprefixer update to allow simple generation of high pixel density media query */
