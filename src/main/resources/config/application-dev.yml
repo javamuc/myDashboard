@@ -37,8 +37,8 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:h2:file:./target/h2db/db/myDashbaord;DB_CLOSE_DELAY=-1
-    username: myDashbaord
+    url: jdbc:h2:file:./target/h2db/db/myDashboard;DB_CLOSE_DELAY=-1
+    username: myDashboard
     password:
     hikari:
       poolName: Hikari

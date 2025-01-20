@@ -11,8 +11,8 @@
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:h2:file:./target/h2db/testdb/mydashbaord;DB_CLOSE_DELAY=-1
-    username: myDashbaord
+    url: jdbc:h2:file:./target/h2db/testdb/mydashboard;DB_CLOSE_DELAY=-1
+    username: myDashboard
     password:
     hikari:
       auto-commit: false

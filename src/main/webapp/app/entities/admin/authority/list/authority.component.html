@@ -1,11 +1,11 @@
 <div>
   <h2 id="page-heading" data-cy="AuthorityHeading">
-    <span jhiTranslate="myDashbaordApp.adminAuthority.home.title">Authorities</span>
+    <span jhiTranslate="myDashboardApp.adminAuthority.home.title">Authorities</span>
 
     <div class="d-flex justify-content-end">
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
-        <span jhiTranslate="myDashbaordApp.adminAuthority.home.refreshListLabel">Refresh list</span>
+        <span jhiTranslate="myDashboardApp.adminAuthority.home.refreshListLabel">Refresh list</span>
       </button>
 
       <button
@@ -15,7 +15,7 @@
         [routerLink]="['/authority/new']"
       >
         <fa-icon icon="plus"></fa-icon>
-        <span jhiTranslate="myDashbaordApp.adminAuthority.home.createLabel">Create a new Authority</span>
+        <span jhiTranslate="myDashboardApp.adminAuthority.home.createLabel">Create a new Authority</span>
       </button>
     </div>
   </h2>
@@ -26,7 +26,7 @@
 
   @if (authorities().length === 0) {
     <div class="alert alert-warning" id="no-result">
-      <span jhiTranslate="myDashbaordApp.adminAuthority.home.notFound">No Authorities found</span>
+      <span jhiTranslate="myDashboardApp.adminAuthority.home.notFound">No Authorities found</span>
     </div>
   } @else {
     <div class="table-responsive table-entities" id="entities">
@@ -35,7 +35,7 @@
           <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
             <th scope="col" jhiSortBy="name">
               <div class="d-flex">
-                <span jhiTranslate="myDashbaordApp.adminAuthority.name">Name</span>
+                <span jhiTranslate="myDashboardApp.adminAuthority.name">Name</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>

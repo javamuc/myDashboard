@@ -2,7 +2,7 @@
   "generator-jhipster": {
     "applicationType": "monolith",
     "authenticationType": "jwt",
-    "baseName": "myDashbaord",
+    "baseName": "myDashboard",
     "buildTool": "maven",
     "cacheProvider": "ehcache",
     "clientFramework": "angular",

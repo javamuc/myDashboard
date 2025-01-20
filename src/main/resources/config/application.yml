@@ -92,7 +92,7 @@ management:
 
 spring:
   application:
-    name: myDashbaord
+    name: myDashboard
   docker:
     compose:
       enabled: true
@@ -152,13 +152,13 @@ spring:
           authorities-claim-name: auth
   task:
     execution:
-      thread-name-prefix: my-dashbaord-task-
+      thread-name-prefix: my-dashboard-task-
       pool:
         core-size: 2
         max-size: 50
         queue-capacity: 10000
     scheduling:
-      thread-name-prefix: my-dashbaord-scheduling-
+      thread-name-prefix: my-dashboard-scheduling-
       pool:
         size: 2
   thymeleaf:
@@ -189,7 +189,7 @@ info:
 
 jhipster:
   clientApp:
-    name: 'myDashbaordApp'
+    name: 'myDashboardApp'
   # By default CORS is disabled. Uncomment to enable.
   # cors:
   #   allowed-origins: "http://localhost:8100,http://localhost:9000"
@@ -199,12 +199,12 @@ jhipster:
   #   allow-credentials: true
   #   max-age: 1800
   mail:
-    from: myDashbaord@localhost
+    from: myDashboard@localhost
   api-docs:
     default-include-pattern: /api/**
     management-include-pattern: /management/**
-    title: My Dashbaord API
-    description: My Dashbaord API documentation
+    title: My Dashboard API
+    description: My Dashboard API documentation
     version: 0.0.1
     terms-of-service-url:
     contact-name:

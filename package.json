@@ -1,8 +1,8 @@
 {
-  "name": "my-dashbaord",
+  "name": "my-dashboard",
   "version": "0.0.1-SNAPSHOT",
   "private": true,
-  "description": "Description for My Dashbaord",
+  "description": "Description for My Dashboard",
   "license": "UNLICENSED",
   "scripts": {
     "app:start": "./mvnw -ntp --batch-mode",

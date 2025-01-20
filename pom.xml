@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.dshbd</groupId>
-    <artifactId>my-dashbaord</artifactId>
+    <artifactId>my-dashboard</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>My Dashbaord</name>
-    <description>Description for My Dashbaord</description>
+    <name>My Dashboard</name>
+    <description>Description for My Dashboard</description>
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -31,7 +31,7 @@
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <start-class>com.dshbd.MyDashbaordApp</start-class>
+        <start-class>com.dshbd.MyDashboardApp</start-class>
         <argLine>-Djava.security.egd=file:/dev/./urandom -Xmx1G</argLine>
         <m2e.apt.activation>jdt_apt</m2e.apt.activation>
         <run.addResources>false</run.addResources>
@@ -667,7 +667,7 @@
                             </platforms>
                         </from>
                         <to>
-                            <image>mydashbaord:latest</image>
+                            <image>myDashboard:latest</image>
                         </to>
                         <container>
                             <entrypoint>
@@ -876,8 +876,8 @@
                 <liquibase-plugin.driver>org.h2.Driver</liquibase-plugin.driver>
                 <liquibase-plugin.hibernate-dialect>org.hibernate.dialect.H2Dialect</liquibase-plugin.hibernate-dialect>
                 <liquibase-plugin.password/>
-                <liquibase-plugin.url>jdbc:h2:file:${project.build.directory}/h2db/db/myDashbaord</liquibase-plugin.url>
-                <liquibase-plugin.username>myDashbaord</liquibase-plugin.username>
+                <liquibase-plugin.url>jdbc:h2:file:${project.build.directory}/h2db/db/myDashboard</liquibase-plugin.url>
+                <liquibase-plugin.username>myDashboard</liquibase-plugin.username>
                 <profile.test>test,testdev</profile.test>
                 <spring.profiles.active>dev${profile.tls}${profile.no-liquibase}</spring.profiles.active>
             </properties>
@@ -1016,8 +1016,8 @@
                 <liquibase-plugin.driver>org.postgresql.Driver</liquibase-plugin.driver>
                 <liquibase-plugin.hibernate-dialect>org.hibernate.dialect.PostgreSQLDialect</liquibase-plugin.hibernate-dialect>
                 <liquibase-plugin.password/>
-                <liquibase-plugin.url>jdbc:postgresql://localhost:5432/myDashbaord</liquibase-plugin.url>
-                <liquibase-plugin.username>myDashbaord</liquibase-plugin.username>
+                <liquibase-plugin.url>jdbc:postgresql://localhost:5432/myDashboard</liquibase-plugin.url>
+                <liquibase-plugin.username>myDashboard</liquibase-plugin.username>
                 <profile.test>test,testprod</profile.test>
                 <spring.profiles.active>prod${profile.api-docs}${profile.tls}${profile.e2e}${profile.no-liquibase}</spring.profiles.active>
             </properties>

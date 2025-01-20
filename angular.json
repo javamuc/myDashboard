@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "my-dashbaord": {
+    "my-dashboard": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -82,15 +82,15 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "buildTarget": "my-dashbaord:build:development",
+            "buildTarget": "my-dashboard:build:development",
             "port": 4200
           },
           "configurations": {
             "production": {
-              "buildTarget": "my-dashbaord:build:production"
+              "buildTarget": "my-dashboard:build:production"
             },
             "development": {
-              "buildTarget": "my-dashbaord:build:development"
+              "buildTarget": "my-dashboard:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -111,6 +111,7 @@
       "path": "./target/angular/",
       "environment": "all"
     },
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": false
   }
 }

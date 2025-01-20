@@ -1,6 +1,6 @@
 {
-  "name": "MyDashbaord",
-  "short_name": "MyDashbaord",
+  "name": "MyDashboard",
+  "short_name": "MyDashboard",
   "icons": [
     {
       "src": "./content/images/jhipster_family_member_0_head-192.png",
