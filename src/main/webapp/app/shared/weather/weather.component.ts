@@ -26,9 +26,6 @@ export class WeatherComponent implements OnInit, OnDestroy {
     this.subscription = timer(0, 300000)
       .pipe(switchMap(() => this.weatherService.getCurrentWeather()))
       .subscribe(data => this.currentWeather.set(data));
-
-    // Load forecast data
-    this.weatherService.getForecast().subscribe(data => this.forecast.set(data));
   }
 
   ngOnDestroy(): void {
