@@ -10,8 +10,8 @@
       </div>
       <div class="weather-info">
         <div class="temperature">{{ currentWeather()!.temperature }}°C</div>
-        <div class="condition">{{ currentWeather()!.condition }}</div>
         <div class="details">
+          <span class="condition">{{ currentWeather()!.condition }}</span>
           <span class="wind">
             <i class="fas fa-wind"></i>
             {{ currentWeather()!.windSpeed }} km/h
@@ -22,20 +22,33 @@
             {{ currentWeather()!.precipitation }}%
           </span>
         </div>
+        <div>
+          <span class="timestamp">
+            <i class="fas fa-clock"></i>
+            {{ currentWeather()!.timestamp | date: 'medium' }}
+          </span>
+        </div>
       </div>
     </div>
+  } @else {
+    <div class="loading">
+      <i class="fas fa-spinner fa-spin"></i>
+      Loading weather data...
+    </div>
+  }
 
+  @if (forecast().length > 0) {
     <div class="forecast">
-      @for (day of forecast(); track day.timestamp) {
-        <div class="forecast-day">
-          <div class="day">{{ day.timestamp | date: 'EEE' }}</div>
+      @for (hour of forecast(); track hour.timestamp) {
+        <div class="forecast-hour">
+          <div class="time">{{ hour.timestamp | date: 'HH:mm' }}</div>
           <div class="icon">
-            <i [class]="day.icon"></i>
+            <i [class]="hour.icon"></i>
           </div>
-          <div class="temp">{{ day.temperature }}°C</div>
+          <div class="temp">{{ hour.temperature | number: '1.0-0' }}°C</div>
           <div class="precip">
             <i class="fas fa-tint"></i>
-            {{ day.precipitation }}%
+            {{ hour.precipitation | number: '1.0-1' }} mm
           </div>
         </div>
       }
@@ -43,7 +56,7 @@
   } @else {
     <div class="loading">
       <i class="fas fa-spinner fa-spin"></i>
-      Loading weather data...
+      Loading forecast data...
     </div>
   }
 </div>

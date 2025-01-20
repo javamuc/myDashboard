@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { WeatherService, WeatherData } from './weather.service';
-import { Subject, interval } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { CommonModule } from '@angular/common';
+import { Subscription, timer } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'jhi-weather',
@@ -12,23 +12,29 @@ import { takeUntil } from 'rxjs/operators';
   imports: [CommonModule],
 })
 export class WeatherComponent implements OnInit, OnDestroy {
-  currentWeather = signal<WeatherData | null>(null);
+  currentWeather = signal<WeatherData | undefined>(undefined);
   forecast = signal<WeatherData[]>([]);
-  private destroy$ = new Subject<void>();
+  private subscription?: Subscription;
 
   constructor(private weatherService: WeatherService) {}
 
   ngOnInit(): void {
+    // Initial load
     this.loadWeatherData();
-    // Update weather data every 30 minutes
-    interval(30 * 60 * 1000)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.loadWeatherData());
+
+    // Set up auto-refresh every 5 minutes
+    this.subscription = timer(0, 300000)
+      .pipe(switchMap(() => this.weatherService.getCurrentWeather()))
+      .subscribe(data => this.currentWeather.set(data));
+
+    // Load forecast data
+    this.weatherService.getForecast().subscribe(data => this.forecast.set(data));
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   getWindDirection(degrees: number): string {
@@ -38,14 +44,13 @@ export class WeatherComponent implements OnInit, OnDestroy {
   }
 
   private loadWeatherData(): void {
-    this.weatherService
-      .getCurrentWeather()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(weather => this.currentWeather.set(weather));
-
-    this.weatherService
-      .getForecast()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(forecast => this.forecast.set(forecast));
+    this.weatherService.getCurrentWeather().subscribe(data => {
+      console.warn('currentWeather', data);
+      return this.currentWeather.set(data);
+    });
+    this.weatherService.getForecast().subscribe(data => {
+      console.warn('forecast', data);
+      return this.forecast.set(data);
+    });
   }
 }
