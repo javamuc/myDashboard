@@ -208,3 +208,11 @@ angular-cli removes postcss-rtl processed inline css, processed rules must be ad
   }
 }
 /* jhipster-needle-scss-add-main JHipster will add new css style */
+
+/* Main content styles */
+main {
+  padding-bottom: 4rem; /* Adjust this value based on your footer height */
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
