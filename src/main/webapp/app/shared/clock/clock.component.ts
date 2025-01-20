@@ -16,7 +16,7 @@ export class ClockComponent implements OnInit, OnDestroy {
     // Update time immediately
     this.updateTime();
     // Set up timer to update every minute
-    this.timer = setInterval(() => this.updateTime(), 60000);
+    this.timer = setInterval(() => this.updateTime(), 6000);
   }
 
   ngOnDestroy(): void {
