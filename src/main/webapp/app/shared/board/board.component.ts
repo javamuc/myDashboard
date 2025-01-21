@@ -1,10 +1,12 @@
-import { Component, Input, OnInit, computed, signal } from '@angular/core';
+import { Component, Input, OnInit, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Board, BoardFilter, BoardSort, BoardView } from './board.model';
 import { Task, TaskStatus } from '../task/task.model';
 import { TaskComponent } from '../task/task.component';
 import SharedModule from 'app/shared/shared.module';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
 type TaskProperty = keyof Task;
 
 @Component({
@@ -12,7 +14,7 @@ type TaskProperty = keyof Task;
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, TaskComponent, SharedModule],
+  imports: [CommonModule, FormsModule, TaskComponent, SharedModule, FontAwesomeModule],
 })
 export class BoardComponent {
   @Input() board!: Board;
@@ -72,6 +74,8 @@ export class BoardComponent {
     return grouped;
   });
 
+  private readonly sidebarService = inject(SidebarService);
+
   addFilter(property: TaskProperty, value: any): void {
     const filters = [...this.boardView().filters];
     filters.push({ property, value });
@@ -107,7 +111,8 @@ export class BoardComponent {
   }
 
   createNewTask(): void {
-    // TODO: Implement task creation
+    this.sidebarService.setActiveComponent('task');
+    this.sidebarService.setIsOpen(true);
   }
 
   getTaskCount(status: TaskStatus): number {

@@ -10,6 +10,7 @@ import { ClockComponent } from '../shared/clock/clock.component';
 import { NotesComponent } from '../notes/notes.component';
 import { WeatherComponent } from 'app/shared/weather/weather.component';
 import { BoardComponent } from 'app/shared/board/board.component';
+import { Board } from 'app/shared/board/board.model';
 
 @Component({
   selector: 'jhi-home',
@@ -19,6 +20,13 @@ import { BoardComponent } from 'app/shared/board/board.component';
 })
 export default class HomeComponent implements OnInit, OnDestroy {
   account = signal<Account | null>(null);
+  board = signal<Board>({
+    id: 1,
+    title: 'My Board',
+    tasks: [],
+    createdDate: new Date().toISOString(),
+    lastModifiedDate: new Date().toISOString(),
+  });
 
   private readonly destroy$ = new Subject<void>();
 
