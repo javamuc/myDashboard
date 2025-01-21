@@ -1,0 +1,65 @@
+<div class="task-container">
+  <div class="task-title">
+    <input type="text" [formControl]="title" placeholder="Task title" class="title-input" />
+  </div>
+
+  <div class="task-properties">
+    <div class="property">
+      <div class="property-label">
+        <i class="fas fa-circle-notch"></i>
+        Status
+      </div>
+      <div class="property-value">
+        <select [formControl]="status" class="status-select">
+          @for (status of statuses; track status) {
+            <option [value]="status">{{ status | titlecase }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="property">
+      <div class="property-label">
+        <i class="fas fa-user"></i>
+        Assign
+      </div>
+      <div class="property-value">
+        <input type="text" [formControl]="assignee" placeholder="Empty" class="assignee-input" />
+      </div>
+    </div>
+
+    <div class="property">
+      <div class="property-label">
+        <i class="fas fa-clock"></i>
+        Created time
+      </div>
+      <div class="property-value">{{ createdDate | date: 'medium' }}</div>
+    </div>
+
+    <div class="property">
+      <div class="property-label">
+        <i class="fas fa-pencil-alt"></i>
+        Last edited time
+      </div>
+      <div class="property-value">{{ lastModifiedDate | date: 'medium' }}</div>
+    </div>
+
+    <div class="property">
+      <div class="property-label">
+        <i class="fas fa-calendar"></i>
+        Date
+      </div>
+      <div class="property-value">
+        <input type="date" [formControl]="dueDate" class="date-input" />
+      </div>
+    </div>
+  </div>
+
+  <div class="task-comments">
+    <h3>Comments</h3>
+    <div class="comment-input">
+      <div class="user-avatar">S</div>
+      <input type="text" placeholder="Add a comment..." class="comment-text-input" />
+    </div>
+  </div>
+</div>
