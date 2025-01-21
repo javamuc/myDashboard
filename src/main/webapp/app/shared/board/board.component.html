@@ -4,98 +4,79 @@
       <h1>{{ board.title }}</h1>
 
       <div class="board-controls">
-        <!-- Filter button -->
-        <div class="control-item">
-          <button class="icon-button" [class.active]="boardView().filters.length > 0" (click)="filterMenuOpen.set(!filterMenuOpen())">
-            <fa-icon icon="filter"></fa-icon>
-          </button>
-          @if (filterMenuOpen()) {
-            <div class="dropdown-menu">
-              @for (prop of taskProperties; track prop) {
-                <button class="dropdown-item" (click)="addFilter(prop, '')">
-                  {{ prop | titlecase }}
-                </button>
-              }
-            </div>
-          }
+        <div class="search-box">
+          <input type="text" placeholder="Search tasks..." (input)="onSearchInput($event)" />
         </div>
 
-        <!-- Sort button -->
-        <div class="control-item">
-          <button
-            class="icon-button"
-            [class.active]="boardView().sort?.property !== 'lastModifiedDate'"
-            (click)="sortMenuOpen.set(!sortMenuOpen())"
-          >
-            <fa-icon icon="sort"></fa-icon>
-          </button>
-          @if (sortMenuOpen()) {
-            <div class="dropdown-menu">
-              @for (prop of taskProperties; track prop) {
-                <button class="dropdown-item" (click)="setSort(prop)">
-                  {{ prop | titlecase }}
-                  @if (boardView().sort?.property === prop) {
-                    <i class="fas fa-{{ boardView().sort?.direction === 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>
+        <div class="filter-sort">
+          <div class="dropdown">
+            <button (click)="filterMenuOpen.set(!filterMenuOpen())" [class.active]="filterMenuOpen()">
+              <fa-icon [icon]="['fas', 'filter']"></fa-icon>
+              Filter
+            </button>
+            @if (filterMenuOpen()) {
+              <div class="dropdown-menu">
+                <div class="dropdown-item" *ngFor="let property of taskProperties" (click)="addFilter(property, '')">
+                  {{ property }}
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="dropdown">
+            <button (click)="sortMenuOpen.set(!sortMenuOpen())" [class.active]="sortMenuOpen()">
+              <fa-icon [icon]="['fas', 'sort']"></fa-icon>
+              Sort
+            </button>
+            @if (sortMenuOpen()) {
+              <div class="dropdown-menu">
+                <div class="dropdown-item" *ngFor="let property of taskProperties" (click)="setSort(property)">
+                  {{ property }}
+                  @if (boardView().sort?.property === property) {
+                    <fa-icon [icon]="['fas', boardView().sort?.direction === 'asc' ? 'arrow-up' : 'arrow-down']"></fa-icon>
                   }
-                </button>
-              }
-            </div>
-          }
+                </div>
+              </div>
+            }
+          </div>
         </div>
 
-        <!-- Search input -->
-        <div class="search-container">
-          <i class="fas fa-search"></i>
-          <input
-            type="text"
-            [ngModel]="boardView().searchTerm"
-            (ngModelChange)="setSearchTerm($event)"
-            placeholder="Type to search..."
-            class="search-input"
-          />
-        </div>
-
-        <!-- New task button -->
-        <button class="new-button" (click)="createNewTask($event)">
-          <span>New</span>
-          <i class="fas fa-chevron-down"></i>
+        <button class="new-task-btn" (click)="createNewTask($event)">
+          <fa-icon [icon]="['fas', 'plus']"></fa-icon>
+          New
         </button>
       </div>
+
+      @if (boardView().filters.length > 0) {
+        <div class="active-filters">
+          <div class="filter-tag" *ngFor="let filter of boardView().filters; let i = index">
+            {{ filter.property }}: {{ filter.value }}
+            <fa-icon [icon]="['fas', 'times']" (click)="removeFilter(i)"></fa-icon>
+          </div>
+        </div>
+      }
     </div>
 
-    <!-- Active filters and sorts -->
-    @if (boardView().filters.length > 0 || boardView().sort?.property !== 'lastModifiedDate') {
-      <div class="active-filters">
-        @for (filter of boardView().filters; track filter; let i = $index) {
-          <div class="filter-tag">
-            <span>{{ filter.property | titlecase }}: {{ filter.value }}</span>
-            <button class="remove-filter" (click)="removeFilter(i)">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-        }
-        @if (boardView().sort?.property !== 'lastModifiedDate') {
-          <div class="sort-tag">
-            <span>Sort: {{ boardView().sort?.property | titlecase }} ({{ boardView().sort?.direction | uppercase }})</span>
-          </div>
-        }
-      </div>
-    }
-
-    <!-- Kanban board columns -->
-    <div class="board-columns">
+    <!-- Board Content -->
+    <div class="board-content">
       @for (status of statuses; track status) {
-        <div class="board-column">
+        <div class="column">
           <div class="column-header">
-            <span class="status-label">
-              <i class="fas fa-circle status-{{ status }}"></i>
-              {{ status | titlecase }}
-            </span>
+            <h2>{{ status }}</h2>
             <span class="task-count">{{ getTaskCount(status) }}</span>
           </div>
-          <div class="column-content">
-            @for (task of tasksByStatus().get(status); track task.id) {
-              <jhi-task-card [task]="task"></jhi-task-card>
+          <div
+            class="column-content"
+            cdkDropList
+            [id]="status + '-list'"
+            [cdkDropListData]="tasksByStatus().get(status) ?? []"
+            [cdkDropListConnectedTo]="getConnectedLists(status)"
+            (cdkDropListDropped)="onDrop($event, status)"
+          >
+            @for (task of tasksByStatus().get(status) ?? []; track task.id) {
+              <div cdkDrag [cdkDragData]="task">
+                <jhi-task-card [task]="task"></jhi-task-card>
+              </div>
             }
           </div>
         </div>
