@@ -177,8 +177,6 @@ export class BoardComponent implements OnInit {
       status: 'to-do',
       priority: 1,
       boardId: board.id,
-      createdDate: new Date().toISOString(),
-      lastModifiedDate: new Date().toISOString(),
     };
 
     this.taskService.create(newTask).subscribe(createdTask => {

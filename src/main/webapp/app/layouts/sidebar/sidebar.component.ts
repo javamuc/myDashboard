@@ -22,7 +22,7 @@ export class SidebarComponent {
   @HostListener('document:click', ['$event'])
   clickOutside(event: Event): void {
     if (this.isOpen && !this.elementRef.nativeElement.contains(event.target)) {
-      this.isOpenChange.emit();
+      this.isOpenChange.emit(false);
     }
   }
 }

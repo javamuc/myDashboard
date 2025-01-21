@@ -1,4 +1,4 @@
-<div class="task-card" (click)="openTask()">
+<div class="task-card" (click)="openTask($event)">
   <div class="task-header">
     <h3>{{ task.title }}</h3>
     <div class="task-priority priority-{{ task.priority }}">P{{ task.priority }}</div>

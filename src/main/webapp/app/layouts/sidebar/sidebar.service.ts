@@ -13,6 +13,7 @@ export class SidebarService {
   }
 
   setIsOpen(isOpen: boolean): void {
+    console.warn('setIsOpen', isOpen);
     this.isOpenSubject.next(isOpen);
   }
 

@@ -16,7 +16,8 @@ export class TaskCardComponent {
 
   constructor(private sidebarService: SidebarService) {}
 
-  openTask(): void {
+  openTask(event: Event): void {
+    event.stopPropagation();
     this.sidebarService.setTaskData(this.task);
     this.sidebarService.setActiveComponent('task');
     this.sidebarService.setIsOpen(true);

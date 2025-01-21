@@ -8,10 +8,12 @@
   <div class="card jh-card">
     <router-outlet></router-outlet>
   </div>
+
+  <!-- <jhi-footer></jhi-footer> -->
 </div>
 
 <jhi-sidebar
   [isOpen]="(isOpen() | async) ?? false"
-  [activeComponent]="activeComponent() | async"
+  [activeComponent]="(activeComponent() | async) ?? null"
   (isOpenChange)="onSidebarClose()"
 ></jhi-sidebar>
