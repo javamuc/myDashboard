@@ -117,7 +117,6 @@ export class WeatherService {
   getForecast(): Observable<WeatherData[]> {
     // 2023-08-07T08:00+02:00
     const today = format(new Date(), "yyyy-MM-dd'T'HH:'00'xxx");
-    console.warn('today', today);
     const tomorrow = format(addDays(new Date(), 2), 'yyyy-MM-dd');
     const in6Hours = format(addHours(new Date(), 6), "yyyy-MM-dd'T'HH:'00'xxx");
     const currentHour = new Date().getHours();

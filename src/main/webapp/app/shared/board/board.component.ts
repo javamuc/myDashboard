@@ -110,7 +110,8 @@ export class BoardComponent {
     this.boardView.update(view => ({ ...view, searchTerm: term }));
   }
 
-  createNewTask(): void {
+  createNewTask(event: Event): void {
+    event.stopPropagation();
     this.sidebarService.setActiveComponent('task');
     this.sidebarService.setIsOpen(true);
   }

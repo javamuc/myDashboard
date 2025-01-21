@@ -40,11 +40,9 @@ export class WeatherComponent implements OnInit, OnDestroy {
 
   private loadWeatherData(): void {
     this.weatherService.getCurrentWeather().subscribe(data => {
-      console.warn('currentWeather', data);
       return this.currentWeather.set(data);
     });
     this.weatherService.getForecast().subscribe(data => {
-      console.warn('forecast', data);
       return this.forecast.set(data);
     });
   }

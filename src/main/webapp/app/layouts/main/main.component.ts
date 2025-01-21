@@ -1,4 +1,4 @@
-import { Component, OnInit, Renderer2, RendererFactory2, inject } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, Renderer2, RendererFactory2, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
@@ -29,7 +29,7 @@ export default class MainComponent implements OnInit {
   private readonly rootRenderer = inject(RendererFactory2);
   private readonly sidebarService = inject(SidebarService);
 
-  constructor() {
+  constructor(private elementRef: ElementRef) {
     this.renderer = this.rootRenderer.createRenderer(document.querySelector('html'), null);
   }
 
@@ -50,5 +50,10 @@ export default class MainComponent implements OnInit {
 
   protected activeComponent(): Observable<'task' | 'note' | null> {
     return this.sidebarService.getActiveComponent();
+  }
+
+  protected onSidebarClose(): void {
+    this.sidebarService.setIsOpen(false);
+    this.sidebarService.setActiveComponent(null);
   }
 }

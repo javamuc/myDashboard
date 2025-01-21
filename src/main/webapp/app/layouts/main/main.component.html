@@ -10,4 +10,8 @@
   </div>
 </div>
 
-<jhi-sidebar [isOpen]="(isOpen() | async) ?? false" [activeComponent]="activeComponent() | async"></jhi-sidebar>
+<jhi-sidebar
+  [isOpen]="(isOpen() | async) ?? false"
+  [activeComponent]="activeComponent() | async"
+  (isOpenChange)="onSidebarClose()"
+></jhi-sidebar>
