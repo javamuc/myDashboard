@@ -4,10 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Board, BoardFilter, BoardSort, BoardView } from './board.model';
 import { Task, TaskStatus } from '../task/task.model';
 import { TaskComponent } from '../task/task.component';
+import { TaskCardComponent } from '../task-card/task-card.component';
 import SharedModule from 'app/shared/shared.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
 import { BoardService } from './board.service';
+import { TaskService } from '../task/task.service';
 
 type TaskProperty = keyof Task;
 
@@ -16,7 +18,7 @@ type TaskProperty = keyof Task;
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, TaskComponent, SharedModule, FontAwesomeModule],
+  imports: [CommonModule, FormsModule, TaskComponent, TaskCardComponent, SharedModule, FontAwesomeModule],
 })
 export class BoardComponent implements OnInit {
   readonly statuses: TaskStatus[] = ['to-do', 'in-progress', 'done'];
@@ -82,6 +84,7 @@ export class BoardComponent implements OnInit {
 
   private readonly sidebarService = inject(SidebarService);
   private readonly boardService = inject(BoardService);
+  private readonly taskService = inject(TaskService);
 
   ngOnInit(): void {
     this.loadBoards();
@@ -131,27 +134,30 @@ export class BoardComponent implements OnInit {
     const newTask: Task = {
       title: '',
       description: '',
-      dueDate: new Date().toISOString(),
+      dueDate: undefined,
       status: 'to-do',
       priority: 1,
-      board: { id: board.id },
+      boardId: board.id,
       createdDate: new Date().toISOString(),
       lastModifiedDate: new Date().toISOString(),
     };
 
-    // Add the task to the current board
-    this.activeBoard.update(currentBoard => {
-      if (!currentBoard) return currentBoard;
-      return {
-        ...currentBoard,
-        tasks: [...currentBoard.tasks, newTask],
-      };
-    });
+    // Create task in backend
+    this.taskService.create(newTask).subscribe(createdTask => {
+      // Add the task to the current board
+      this.activeBoard.update(currentBoard => {
+        if (!currentBoard) return currentBoard;
+        return {
+          ...currentBoard,
+          tasks: [...currentBoard.tasks, createdTask],
+        };
+      });
 
-    // Open the task editor in the sidebar
-    this.sidebarService.setTaskData(newTask);
-    this.sidebarService.setActiveComponent('task');
-    this.sidebarService.setIsOpen(true);
+      // Open the task editor in the sidebar
+      this.sidebarService.setTaskData(createdTask);
+      this.sidebarService.setActiveComponent('task');
+      this.sidebarService.setIsOpen(true);
+    });
   }
 
   getTaskCount(status: TaskStatus): number {
@@ -162,7 +168,14 @@ export class BoardComponent implements OnInit {
     this.boardService.query().subscribe(boards => {
       this.boards.set(boards);
       if (boards.length > 0) {
-        this.activeBoard.set(boards[0]);
+        const firstBoard = boards[0];
+        // Load tasks for the first board
+        this.taskService.getBoardTasks(firstBoard.id!).subscribe(tasks => {
+          this.activeBoard.set({
+            ...firstBoard,
+            tasks,
+          });
+        });
       }
     });
   }

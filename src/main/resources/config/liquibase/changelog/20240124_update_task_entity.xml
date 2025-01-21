@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="20240124000002" author="jhipster">
+        <!-- Add new columns -->
+        <addColumn tableName="task">
+            <column name="priority" type="integer" defaultValue="1">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(20)" defaultValue="to-do">
+                <constraints nullable="false"/>
+            </column>
+            <column name="assignee" type="varchar(100)"/>
+        </addColumn>
+
+        <!-- Drop completed column -->
+        <dropColumn tableName="task" columnName="completed"/>
+    </changeSet>
+
+</databaseChangeLog>

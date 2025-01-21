@@ -15,7 +15,16 @@ public class TaskDTO implements Serializable {
 
     private Instant dueDate;
 
-    private boolean completed;
+    private int priority = 1;
+
+    @NotNull
+    private String status = "to-do";
+
+    private String assignee;
+
+    private Instant createdDate;
+
+    private Instant lastModifiedDate;
 
     @NotNull
     private Long boardId;
@@ -53,12 +62,44 @@ public class TaskDTO implements Serializable {
         this.dueDate = dueDate;
     }
 
-    public boolean isCompleted() {
-        return completed;
+    public int getPriority() {
+        return priority;
     }
 
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getAssignee() {
+        return assignee;
+    }
+
+    public void setAssignee(String assignee) {
+        this.assignee = assignee;
+    }
+
+    public Instant getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Instant getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(Instant lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
     }
 
     public Long getBoardId() {

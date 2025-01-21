@@ -19,6 +19,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     description: '',
     dueDate: new Date().toISOString(),
     status: 'to-do',
+    boardId: undefined,
     priority: 1,
     assignee: '',
   };

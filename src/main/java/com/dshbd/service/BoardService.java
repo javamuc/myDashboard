@@ -33,7 +33,7 @@ public class BoardService {
         return userService
             .getUserWithAuthorities()
             .map(user -> {
-                board.setOwner(user);
+                board.setOwnerId(user.getId());
                 log.debug("Created Information for Board: {}", board);
                 return boardRepository.save(board);
             })
@@ -42,17 +42,18 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public List<Board> getCurrentUserBoards() {
-        List<Board> boards = SecurityUtils.getCurrentUserLogin()
-            .map(boardRepository::findByOwnerLogin)
-            .orElseThrow(() -> new IllegalStateException("User could not be found"));
+        Long userId = userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId();
+        List<Board> boards = boardRepository.findByOwnerId(userId);
 
         if (boards.isEmpty()) {
+            log.debug("No boards found for user {}, creating default board", userId);
             Board board = new Board();
-
             board.setTitle("Life Board");
             board.setDescription("Default Board");
-            board.setOwner(userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")));
+            board.setOwnerId(userId);
             boards.add(boardRepository.save(board));
+            boardRepository.flush();
+            log.info("Default board created for user {} with id {}", userId, board.getId());
         }
         return boards;
     }

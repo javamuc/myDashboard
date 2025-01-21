@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByBoardId(Long boardId);
-    List<Task> findByBoardIdAndCompleted(Long boardId, boolean completed);
+
+    List<Task> findByBoardIdAndStatus(Long boardId, String status);
 }

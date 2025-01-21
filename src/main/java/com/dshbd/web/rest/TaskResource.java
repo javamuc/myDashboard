@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
 @RestController
@@ -56,9 +55,9 @@ public class TaskResource {
     }
 
     @GetMapping("/boards/{boardId}/tasks/status")
-    public List<Task> getBoardTasksByStatus(@PathVariable Long boardId, @RequestParam boolean completed) {
+    public List<Task> getBoardTasksByStatus(@PathVariable Long boardId, @RequestParam String status) {
         log.debug("REST request to get Tasks by status for Board : {}", boardId);
-        return taskService.getBoardTasksByStatus(boardId, completed);
+        return taskService.getBoardTasksByStatus(boardId, status);
     }
 
     @GetMapping("/tasks/{id}")

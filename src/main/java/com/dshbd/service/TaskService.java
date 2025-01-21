@@ -30,12 +30,14 @@ public class TaskService {
         task.setTitle(taskDTO.getTitle());
         task.setDescription(taskDTO.getDescription());
         task.setDueDate(taskDTO.getDueDate());
-        task.setCompleted(taskDTO.isCompleted());
-
+        task.setStatus(taskDTO.getStatus());
+        task.setPriority(taskDTO.getPriority());
+        task.setAssignee(taskDTO.getAssignee());
+        task.setBoardId(taskDTO.getBoardId());
         return boardRepository
             .findById(taskDTO.getBoardId())
             .map(board -> {
-                task.setBoard(board);
+                task.setBoardId(board.getId());
                 log.debug("Created Information for Task: {}", task);
                 return taskRepository.save(task);
             })
@@ -48,8 +50,8 @@ public class TaskService {
     }
 
     @Transactional(readOnly = true)
-    public List<Task> getBoardTasksByStatus(Long boardId, boolean completed) {
-        return taskRepository.findByBoardIdAndCompleted(boardId, completed);
+    public List<Task> getBoardTasksByStatus(Long boardId, String status) {
+        return taskRepository.findByBoardIdAndStatus(boardId, status);
     }
 
     @Transactional(readOnly = true)
@@ -68,7 +70,9 @@ public class TaskService {
                 task.setTitle(taskDTO.getTitle());
                 task.setDescription(taskDTO.getDescription());
                 task.setDueDate(taskDTO.getDueDate());
-                task.setCompleted(taskDTO.isCompleted());
+                task.setStatus(taskDTO.getStatus());
+                task.setPriority(taskDTO.getPriority());
+                task.setAssignee(taskDTO.getAssignee());
                 return taskRepository.save(task);
             })
             .orElseThrow(() -> new IllegalStateException("Task could not be found"));

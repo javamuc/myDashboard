@@ -95,21 +95,7 @@
           </div>
           <div class="column-content">
             @for (task of tasksByStatus().get(status); track task.id) {
-              <div class="task-card">
-                <h3>{{ task.title }}</h3>
-                @if (task.assignee) {
-                  <div class="task-assignee">
-                    <i class="fas fa-user"></i>
-                    {{ task.assignee }}
-                  </div>
-                }
-                @if (task.dueDate) {
-                  <div class="task-due-date">
-                    <i class="fas fa-calendar"></i>
-                    {{ task.dueDate | date }}
-                  </div>
-                }
-              </div>
+              <jhi-task-card [task]="task"></jhi-task-card>
             }
           </div>
         </div>

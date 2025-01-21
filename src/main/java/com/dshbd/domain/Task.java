@@ -1,10 +1,11 @@
 package com.dshbd.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "task")
@@ -25,16 +26,27 @@ public class Task implements Serializable {
     @Column(name = "due_date")
     private Instant dueDate;
 
-    @Column(name = "completed")
-    private boolean completed = false;
+    @Column(name = "priority")
+    private int priority = 1;
 
-    @Column(name = "created_date")
-    private Instant createdDate = Instant.now();
-
-    @ManyToOne(optional = false)
     @NotNull
-    @JsonIgnoreProperties(value = { "tasks", "owner" }, allowSetters = true)
-    private Board board;
+    @Column(name = "status", nullable = false)
+    private String status = "to-do";
+
+    @Column(name = "assignee")
+    private String assignee;
+
+    @CreationTimestamp
+    @Column(name = "created_date", nullable = false, updatable = false)
+    private Instant createdDate;
+
+    @UpdateTimestamp
+    @Column(name = "last_modified_date", nullable = false)
+    private Instant lastModifiedDate;
+
+    @NotNull
+    @Column(name = "board_id", nullable = false)
+    private Long boardId;
 
     // Getters and Setters
     public Long getId() {
@@ -69,12 +81,28 @@ public class Task implements Serializable {
         this.dueDate = dueDate;
     }
 
-    public boolean isCompleted() {
-        return completed;
+    public int getPriority() {
+        return priority;
     }
 
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getAssignee() {
+        return assignee;
+    }
+
+    public void setAssignee(String assignee) {
+        this.assignee = assignee;
     }
 
     public Instant getCreatedDate() {
@@ -85,11 +113,19 @@ public class Task implements Serializable {
         this.createdDate = createdDate;
     }
 
-    public Board getBoard() {
-        return board;
+    public Instant getLastModifiedDate() {
+        return lastModifiedDate;
     }
 
-    public void setBoard(Board board) {
-        this.board = board;
+    public void setLastModifiedDate(Instant lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getBoardId() {
+        return boardId;
+    }
+
+    public void setBoardId(Long boardId) {
+        this.boardId = boardId;
     }
 }

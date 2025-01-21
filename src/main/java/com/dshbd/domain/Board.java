@@ -1,12 +1,9 @@
 package com.dshbd.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "board")
@@ -27,12 +24,7 @@ public class Board implements Serializable {
     @Column(name = "created_date")
     private Instant createdDate = Instant.now();
 
-    @ManyToOne
-    private User owner;
-
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties(value = { "board" }, allowSetters = true)
-    private Set<Task> tasks = new HashSet<>();
+    private Long ownerId;
 
     // Getters and Setters
     public Long getId() {
@@ -67,19 +59,11 @@ public class Board implements Serializable {
         this.createdDate = createdDate;
     }
 
-    public User getOwner() {
-        return owner;
+    public Long getOwnerId() {
+        return ownerId;
     }
 
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
-
-    public Set<Task> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(Set<Task> tasks) {
-        this.tasks = tasks;
+    public void setOwnerId(Long ownerId) {
+        this.ownerId = ownerId;
     }
 }
