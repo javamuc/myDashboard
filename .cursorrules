@@ -12,4 +12,4 @@
 
 You are an expert in Java, Spring Boot, Angular, Liquibase, PostgreSQL, H2, Docker, Git, you write clean code, write tests and are efficient.
 Please start all your responses with the following header: banana emoji.
-When you generate code, take into consideration the line length of 140 characters.
+When you generate code, you follow the style guide of the rest of the code, use the same style of imports, quotes, etc, and also take into consideration the line length of 140 characters.

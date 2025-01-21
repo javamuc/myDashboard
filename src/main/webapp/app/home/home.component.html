@@ -1,25 +1,13 @@
 <div class="row">
   <div class="col-md-3">
-    <jhi-clock></jhi-clock>
-    <jhi-weather></jhi-weather>
-  </div>
-
-  <div class="col-md-6">
-    <jhi-notes></jhi-notes>
-  </div>
-
-  <div class="col-md-3">
-    <h1 class="display-4"><span jhiTranslate="home.title">Welcome</span></h1>
-
     <div>
       @if (account() !== null) {
-        <div class="alert alert-success">
-          @if (account(); as accountRef) {
-            <span id="home-logged-message" jhiTranslate="home.logged.message" [translateValues]="{ username: accountRef.login }">
-              You are logged in as user "{{ accountRef.login }}".
-            </span>
-          }
-        </div>
+        @if (account(); as accountRef) {
+          <h1 class="display-8"><span jhiTranslate="home.title">Welcome</span> {{ accountRef.login }}</h1>
+          <span id="home-logged-message" jhiTranslate="home.logged.message" [translateValues]="{ username: accountRef.login }">
+            You are logged in as user "{{ accountRef.login }}".
+          </span>
+        }
       } @else {
         <div class="alert alert-warning">
           <span jhiTranslate="global.messages.info.authenticated.prefix">If you want to </span>
@@ -27,5 +15,11 @@
         </div>
       }
     </div>
+    <jhi-clock></jhi-clock>
+    <jhi-weather></jhi-weather>
+  </div>
+
+  <div class="col-md-9">
+    <jhi-board></jhi-board>
   </div>
 </div>
