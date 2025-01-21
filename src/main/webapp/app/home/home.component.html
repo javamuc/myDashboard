@@ -3,8 +3,7 @@
     <div>
       @if (account() !== null) {
         @if (account(); as accountRef) {
-          <h1 class="display-8"><span jhiTranslate="home.title">Welcome</span> {{ accountRef.login }}</h1>
-          <span id="home-logged-message" jhiTranslate="home.logged.message" [translateValues]="{ username: accountRef.login }">
+          <span id="home-logged-message" jhiTranslate="home.title" [translateValues]="{ username: accountRef.login }">
             You are logged in as user "{{ accountRef.login }}".
           </span>
         }
