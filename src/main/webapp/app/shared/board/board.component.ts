@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Board, BoardFilter, BoardSort, BoardView } from './board.model';
 import { Task, TaskStatus } from '../task/task.model';
-import { TaskComponent } from '../task/task.component';
 import { TaskCardComponent } from '../task-card/task-card.component';
 import SharedModule from 'app/shared/shared.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -19,7 +18,7 @@ type TaskProperty = keyof Task;
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, TaskComponent, TaskCardComponent, SharedModule, FontAwesomeModule, DragDropModule],
+  imports: [CommonModule, FormsModule, TaskCardComponent, SharedModule, FontAwesomeModule, DragDropModule],
 })
 export class BoardComponent implements OnInit {
   readonly statuses: TaskStatus[] = ['to-do', 'in-progress', 'done'];

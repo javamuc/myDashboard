@@ -22,20 +22,6 @@
 
     <div class="property">
       <div class="property-label">
-        <i class="fas fa-tasks"></i>
-        Status
-      </div>
-      <div class="property-value">
-        <select [(ngModel)]="task.status" (ngModelChange)="onTaskChange()">
-          @for (status of statuses; track status) {
-            <option [value]="status">{{ status | titlecase }}</option>
-          }
-        </select>
-      </div>
-    </div>
-
-    <div class="property">
-      <div class="property-label">
         <i class="fas fa-user"></i>
         Assignee
       </div>
