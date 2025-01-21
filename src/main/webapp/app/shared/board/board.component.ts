@@ -123,6 +123,33 @@ export class BoardComponent implements OnInit {
 
   createNewTask(event: Event): void {
     event.stopPropagation();
+
+    const board = this.activeBoard();
+    if (!board) return;
+
+    // Create a new task with default values
+    const newTask: Task = {
+      title: '',
+      description: '',
+      dueDate: new Date().toISOString(),
+      status: 'to-do',
+      priority: 1,
+      board: { id: board.id },
+      createdDate: new Date().toISOString(),
+      lastModifiedDate: new Date().toISOString(),
+    };
+
+    // Add the task to the current board
+    this.activeBoard.update(currentBoard => {
+      if (!currentBoard) return currentBoard;
+      return {
+        ...currentBoard,
+        tasks: [...currentBoard.tasks, newTask],
+      };
+    });
+
+    // Open the task editor in the sidebar
+    this.sidebarService.setTaskData(newTask);
     this.sidebarService.setActiveComponent('task');
     this.sidebarService.setIsOpen(true);
   }

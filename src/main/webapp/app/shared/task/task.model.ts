@@ -10,4 +10,5 @@ export interface Task {
   assignee?: string;
   createdDate?: string;
   lastModifiedDate?: string;
+  board?: { id?: number };
 }
