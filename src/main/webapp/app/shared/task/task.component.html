@@ -1,16 +1,32 @@
 <div class="task-container">
   <div class="task-title">
-    <input type="text" [formControl]="title" placeholder="Task title" class="title-input" />
+    <input type="text" [(ngModel)]="task.title" (ngModelChange)="onTaskChange()" placeholder="Task title" class="title-input" />
+  </div>
+
+  <div class="property">
+    <div class="property-value">
+      <textarea [(ngModel)]="task.description" (ngModelChange)="onTaskChange()" placeholder="Add a description..." rows="3"></textarea>
+    </div>
   </div>
 
   <div class="task-properties">
     <div class="property">
       <div class="property-label">
-        <i class="fas fa-circle-notch"></i>
+        <i class="fas fa-calendar"></i>
+        Due Date
+      </div>
+      <div class="property-value">
+        <input type="date" [(ngModel)]="task.dueDate" (ngModelChange)="onTaskChange()" />
+      </div>
+    </div>
+
+    <div class="property">
+      <div class="property-label">
+        <i class="fas fa-tasks"></i>
         Status
       </div>
       <div class="property-value">
-        <select [formControl]="status" class="status-select">
+        <select [(ngModel)]="task.status" (ngModelChange)="onTaskChange()">
           @for (status of statuses; track status) {
             <option [value]="status">{{ status | titlecase }}</option>
           }
@@ -21,36 +37,24 @@
     <div class="property">
       <div class="property-label">
         <i class="fas fa-user"></i>
-        Assign
+        Assignee
       </div>
       <div class="property-value">
-        <input type="text" [formControl]="assignee" placeholder="Empty" class="assignee-input" />
+        <input type="text" [(ngModel)]="task.assignee" (ngModelChange)="onTaskChange()" placeholder="Assign to someone..." />
       </div>
     </div>
 
     <div class="property">
       <div class="property-label">
-        <i class="fas fa-clock"></i>
-        Created time
-      </div>
-      <div class="property-value">{{ createdDate | date: 'medium' }}</div>
-    </div>
-
-    <div class="property">
-      <div class="property-label">
-        <i class="fas fa-pencil-alt"></i>
-        Last edited time
-      </div>
-      <div class="property-value">{{ lastModifiedDate | date: 'medium' }}</div>
-    </div>
-
-    <div class="property">
-      <div class="property-label">
-        <i class="fas fa-calendar"></i>
-        Date
+        <i class="fas fa-flag"></i>
+        Priority
       </div>
       <div class="property-value">
-        <input type="date" [formControl]="dueDate" class="date-input" />
+        <select [(ngModel)]="task.priority" (ngModelChange)="onTaskChange()">
+          <option [value]="1">Low</option>
+          <option [value]="2">Medium</option>
+          <option [value]="3">High</option>
+        </select>
       </div>
     </div>
   </div>
