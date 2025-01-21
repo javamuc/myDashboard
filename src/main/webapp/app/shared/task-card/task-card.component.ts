@@ -1,30 +1,24 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Task } from '../task/task.model';
+import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
 
 @Component({
   selector: 'jhi-task-card',
-  template: `
-    <div class="task-card">
-      <h3>{{ task.title }}</h3>
-      @if (task.assignee) {
-        <div class="task-assignee">
-          <i class="fas fa-user"></i>
-          {{ task.assignee }}
-        </div>
-      }
-      @if (task.dueDate) {
-        <div class="task-due-date">
-          <i class="fas fa-calendar"></i>
-          {{ task.dueDate | date }}
-        </div>
-      }
-    </div>
-  `,
+  templateUrl: './task-card.component.html',
   styleUrls: ['./task-card.component.scss'],
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FontAwesomeModule],
 })
 export class TaskCardComponent {
-  @Input({ required: true }) task!: Task;
+  @Input() task!: Task;
+
+  constructor(private sidebarService: SidebarService) {}
+
+  openTask(): void {
+    this.sidebarService.setTaskData(this.task);
+    this.sidebarService.setActiveComponent('task');
+    this.sidebarService.setIsOpen(true);
+  }
 }

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Task, TaskStatus } from './task.model';
 import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { TaskService } from './task.service';
 
 @Component({
   selector: 'jhi-task',
@@ -26,6 +27,7 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
   private readonly sidebarService = inject(SidebarService);
+  private readonly taskService = inject(TaskService);
 
   ngOnInit(): void {
     // Subscribe to task data from sidebar service
@@ -42,9 +44,14 @@ export class TaskComponent implements OnInit, OnDestroy {
   onTaskChange(): void {
     const updatedTask: Task = {
       ...this.task,
-      lastModifiedDate: new Date().toISOString(),
     };
-    // this.sidebarService.setTaskData(updatedTask);
+    // Persist the task in the database
+    this.taskService.update(updatedTask).subscribe(savedTask => {
+      this.task.id = savedTask.id;
+      this.task.lastModifiedDate = savedTask.lastModifiedDate;
+      this.task.createdDate = savedTask.createdDate;
+      // this.sidebarService.setTaskData(savedTask);
+    });
   }
 
   ngOnDestroy(): void {

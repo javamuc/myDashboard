@@ -1,0 +1,21 @@
+<div class="task-card" (click)="openTask()">
+  <div class="task-header">
+    <h3>{{ task.title }}</h3>
+    <div class="task-priority priority-{{ task.priority }}">P{{ task.priority }}</div>
+  </div>
+
+  <div class="task-details">
+    @if (task.assignee) {
+      <div class="task-assignee">
+        <fa-icon [icon]="['fas', 'user']"></fa-icon>
+        {{ task.assignee }}
+      </div>
+    }
+    @if (task.dueDate) {
+      <div class="task-due-date">
+        <fa-icon [icon]="['fas', 'calendar']"></fa-icon>
+        {{ task.dueDate | date: 'shortDate' }}
+      </div>
+    }
+  </div>
+</div>
