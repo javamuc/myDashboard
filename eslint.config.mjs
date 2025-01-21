@@ -124,7 +124,7 @@ export default tseslint.config(
   },
   {
     // Html templates requires some work
-    ignores: ['**/*.html'],
+    ignores: ['**/*.html', 'src/main/webapp/app/layouts/sidebar/sidebar.animations.ts'],
     extends: [prettier],
   },
   // jhipster-needle-eslint-add-config - JHipster will add additional config here

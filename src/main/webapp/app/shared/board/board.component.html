@@ -1,117 +1,124 @@
-<div class="board-container">
-  <div class="board-header">
-    <h1>{{ board.title }}</h1>
+@if (activeBoard(); as board) {
+  <div class="board-container">
+    <div class="board-header">
+      <h1>{{ board.title }}</h1>
 
-    <div class="board-controls">
-      <!-- Filter button -->
-      <div class="control-item">
-        <button class="icon-button" [class.active]="boardView().filters.length > 0" (click)="filterMenuOpen.set(!filterMenuOpen())">
-          <fa-icon icon="filter"></fa-icon>
-        </button>
-        @if (filterMenuOpen()) {
-          <div class="dropdown-menu">
-            @for (prop of taskProperties; track prop) {
-              <button class="dropdown-item" (click)="addFilter(prop, '')">
-                {{ prop | titlecase }}
-              </button>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Sort button -->
-      <div class="control-item">
-        <button
-          class="icon-button"
-          [class.active]="boardView().sort?.property !== 'lastModifiedDate'"
-          (click)="sortMenuOpen.set(!sortMenuOpen())"
-        >
-          <fa-icon icon="sort"></fa-icon>
-        </button>
-        @if (sortMenuOpen()) {
-          <div class="dropdown-menu">
-            @for (prop of taskProperties; track prop) {
-              <button class="dropdown-item" (click)="setSort(prop)">
-                {{ prop | titlecase }}
-                @if (boardView().sort?.property === prop) {
-                  <i class="fas fa-{{ boardView().sort?.direction === 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>
-                }
-              </button>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Search input -->
-      <div class="search-container">
-        <i class="fas fa-search"></i>
-        <input
-          type="text"
-          [ngModel]="boardView().searchTerm"
-          (ngModelChange)="setSearchTerm($event)"
-          placeholder="Type to search..."
-          class="search-input"
-        />
-      </div>
-
-      <!-- New task button -->
-      <button class="new-button" (click)="createNewTask($event)">
-        <span>New</span>
-        <i class="fas fa-chevron-down"></i>
-      </button>
-    </div>
-  </div>
-
-  <!-- Active filters and sorts -->
-  @if (boardView().filters.length > 0 || boardView().sort?.property !== 'lastModifiedDate') {
-    <div class="active-filters">
-      @for (filter of boardView().filters; track filter; let i = $index) {
-        <div class="filter-tag">
-          <span>{{ filter.property | titlecase }}: {{ filter.value }}</span>
-          <button class="remove-filter" (click)="removeFilter(i)">
-            <i class="fas fa-times"></i>
+      <div class="board-controls">
+        <!-- Filter button -->
+        <div class="control-item">
+          <button class="icon-button" [class.active]="boardView().filters.length > 0" (click)="filterMenuOpen.set(!filterMenuOpen())">
+            <fa-icon icon="filter"></fa-icon>
           </button>
-        </div>
-      }
-      @if (boardView().sort?.property !== 'lastModifiedDate') {
-        <div class="sort-tag">
-          <span>Sort: {{ boardView().sort?.property | titlecase }} ({{ boardView().sort?.direction | uppercase }})</span>
-        </div>
-      }
-    </div>
-  }
-
-  <!-- Kanban board columns -->
-  <div class="board-columns">
-    @for (status of statuses; track status) {
-      <div class="board-column">
-        <div class="column-header">
-          <span class="status-label">
-            <i class="fas fa-circle status-{{ status }}"></i>
-            {{ status | titlecase }}
-          </span>
-          <span class="task-count">{{ getTaskCount(status) }}</span>
-        </div>
-        <div class="column-content">
-          @for (task of tasksByStatus().get(status); track task.id) {
-            <div class="task-card">
-              <h3>{{ task.title }}</h3>
-              @if (task.assignee) {
-                <div class="task-assignee">
-                  <i class="fas fa-user"></i>
-                  {{ task.assignee }}
-                </div>
-              }
-              @if (task.dueDate) {
-                <div class="task-due-date">
-                  <i class="fas fa-calendar"></i>
-                  {{ task.dueDate | date }}
-                </div>
+          @if (filterMenuOpen()) {
+            <div class="dropdown-menu">
+              @for (prop of taskProperties; track prop) {
+                <button class="dropdown-item" (click)="addFilter(prop, '')">
+                  {{ prop | titlecase }}
+                </button>
               }
             </div>
           }
         </div>
+
+        <!-- Sort button -->
+        <div class="control-item">
+          <button
+            class="icon-button"
+            [class.active]="boardView().sort?.property !== 'lastModifiedDate'"
+            (click)="sortMenuOpen.set(!sortMenuOpen())"
+          >
+            <fa-icon icon="sort"></fa-icon>
+          </button>
+          @if (sortMenuOpen()) {
+            <div class="dropdown-menu">
+              @for (prop of taskProperties; track prop) {
+                <button class="dropdown-item" (click)="setSort(prop)">
+                  {{ prop | titlecase }}
+                  @if (boardView().sort?.property === prop) {
+                    <i class="fas fa-{{ boardView().sort?.direction === 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>
+                  }
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Search input -->
+        <div class="search-container">
+          <i class="fas fa-search"></i>
+          <input
+            type="text"
+            [ngModel]="boardView().searchTerm"
+            (ngModelChange)="setSearchTerm($event)"
+            placeholder="Type to search..."
+            class="search-input"
+          />
+        </div>
+
+        <!-- New task button -->
+        <button class="new-button" (click)="createNewTask($event)">
+          <span>New</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Active filters and sorts -->
+    @if (boardView().filters.length > 0 || boardView().sort?.property !== 'lastModifiedDate') {
+      <div class="active-filters">
+        @for (filter of boardView().filters; track filter; let i = $index) {
+          <div class="filter-tag">
+            <span>{{ filter.property | titlecase }}: {{ filter.value }}</span>
+            <button class="remove-filter" (click)="removeFilter(i)">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        }
+        @if (boardView().sort?.property !== 'lastModifiedDate') {
+          <div class="sort-tag">
+            <span>Sort: {{ boardView().sort?.property | titlecase }} ({{ boardView().sort?.direction | uppercase }})</span>
+          </div>
+        }
       </div>
     }
+
+    <!-- Kanban board columns -->
+    <div class="board-columns">
+      @for (status of statuses; track status) {
+        <div class="board-column">
+          <div class="column-header">
+            <span class="status-label">
+              <i class="fas fa-circle status-{{ status }}"></i>
+              {{ status | titlecase }}
+            </span>
+            <span class="task-count">{{ getTaskCount(status) }}</span>
+          </div>
+          <div class="column-content">
+            @for (task of tasksByStatus().get(status); track task.id) {
+              <div class="task-card">
+                <h3>{{ task.title }}</h3>
+                @if (task.assignee) {
+                  <div class="task-assignee">
+                    <i class="fas fa-user"></i>
+                    {{ task.assignee }}
+                  </div>
+                }
+                @if (task.dueDate) {
+                  <div class="task-due-date">
+                    <i class="fas fa-calendar"></i>
+                    {{ task.dueDate | date }}
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
   </div>
-</div>
+} @else {
+  <div class="no-boards">
+    <h2>No boards found</h2>
+    <p>Create a new board to get started</p>
+  </div>
+}

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, computed, signal, inject } from '@angular/core';
+import { Component, OnInit, computed, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Board, BoardFilter, BoardSort, BoardView } from './board.model';
@@ -7,6 +7,8 @@ import { TaskComponent } from '../task/task.component';
 import SharedModule from 'app/shared/shared.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
+import { BoardService } from './board.service';
+
 type TaskProperty = keyof Task;
 
 @Component({
@@ -16,14 +18,15 @@ type TaskProperty = keyof Task;
   standalone: true,
   imports: [CommonModule, FormsModule, TaskComponent, SharedModule, FontAwesomeModule],
 })
-export class BoardComponent {
-  @Input() board!: Board;
-
+export class BoardComponent implements OnInit {
   readonly statuses: TaskStatus[] = ['to-do', 'in-progress', 'done'];
   readonly taskProperties: TaskProperty[] = ['title', 'assignee', 'dueDate', 'priority', 'status', 'createdDate', 'lastModifiedDate'];
 
   filterMenuOpen = signal(false);
   sortMenuOpen = signal(false);
+
+  boards = signal<Board[]>([]);
+  activeBoard = signal<Board | undefined>(undefined);
 
   boardView = signal<BoardView>({
     filters: [],
@@ -32,7 +35,10 @@ export class BoardComponent {
   });
 
   filteredTasks = computed(() => {
-    let tasks = [...this.board.tasks];
+    const board = this.activeBoard();
+    if (!board) return [];
+
+    let tasks = [...board.tasks];
 
     // Apply search term filter
     if (this.boardView().searchTerm) {
@@ -75,6 +81,11 @@ export class BoardComponent {
   });
 
   private readonly sidebarService = inject(SidebarService);
+  private readonly boardService = inject(BoardService);
+
+  ngOnInit(): void {
+    this.loadBoards();
+  }
 
   addFilter(property: TaskProperty, value: any): void {
     const filters = [...this.boardView().filters];
@@ -118,5 +129,14 @@ export class BoardComponent {
 
   getTaskCount(status: TaskStatus): number {
     return this.tasksByStatus().get(status)?.length ?? 0;
+  }
+
+  private loadBoards(): void {
+    this.boardService.query().subscribe(boards => {
+      this.boards.set(boards);
+      if (boards.length > 0) {
+        this.activeBoard.set(boards[0]);
+      }
+    });
   }
 }
