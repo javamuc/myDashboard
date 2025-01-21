@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { format, addDays } from 'date-fns';
+import { format, addDays, addHours } from 'date-fns';
 
 export interface WeatherData {
   timestamp: string;
@@ -93,6 +93,8 @@ export class WeatherService {
   private readonly MUNICH_LAT = 48.137154;
   private readonly MUNICH_LON = 11.576124;
 
+  private readonly forecastAmount = 6;
+
   constructor(
     private http: HttpClient,
     private applicationConfigService: ApplicationConfigService,
@@ -113,24 +115,22 @@ export class WeatherService {
   }
 
   getForecast(): Observable<WeatherData[]> {
-    const today = format(new Date(), 'yyyy-MM-dd');
+    // 2023-08-07T08:00+02:00
+    const today = format(new Date(), "yyyy-MM-dd'T'HH:'00'xxx");
+    console.warn('today', today);
+    const tomorrow = format(addDays(new Date(), 2), 'yyyy-MM-dd');
+    const in6Hours = format(addHours(new Date(), 6), "yyyy-MM-dd'T'HH:'00'xxx");
     const currentHour = new Date().getHours();
 
     return this.http
-      .get<WeatherForecastResponse>(`${this.baseUrl}/weather?lat=${this.MUNICH_LAT}&lon=${this.MUNICH_LON}&date=${today}`)
+      .get<WeatherForecastResponse>(
+        `${this.baseUrl}/weather?lat=${this.MUNICH_LAT}&lon=${this.MUNICH_LON}&date=${today}&last_date=${in6Hours}`,
+      )
       .pipe(
         map(response => {
           // Get current hour
           // Filter to get next 5 hours from now
-          const nextHours = response.weather
-            .filter(item => {
-              const itemHour = new Date(item.timestamp).getHours();
-              const itemDate = format(new Date(item.timestamp).toDateString(), 'yyyy-MM-dd');
-              // Include items that are either from today with hours > currentHour
-              // or from tomorrow with hours that complete our 5-hour window
-              return (itemDate === today && itemHour > currentHour) || (itemDate !== today && itemHour <= (currentHour + 5) % 24);
-            })
-            .slice(0, 5); // Take only the first 5 items
+          const nextHours = response.weather.slice(0, this.forecastAmount); // Take only the first x items
 
           return nextHours.map(item => this.mapToWeatherData(item));
         }),

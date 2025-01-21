@@ -20,12 +20,10 @@ export class WeatherComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Initial load
-    this.loadWeatherData();
+    // this.loadWeatherData();
 
     // Set up auto-refresh every 5 minutes
-    this.subscription = timer(0, 300000)
-      .pipe(switchMap(() => this.weatherService.getCurrentWeather()))
-      .subscribe(data => this.currentWeather.set(data));
+    this.subscription = timer(0, 300000).subscribe(() => this.loadWeatherData());
   }
 
   ngOnDestroy(): void {
