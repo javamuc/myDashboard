@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject, Output, EventEmitter } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Task, TaskStatus } from './task.model';
@@ -14,7 +14,9 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
   standalone: true,
   imports: [CommonModule, FormsModule, FontAwesomeModule],
 })
-export class TaskComponent implements OnInit, OnDestroy {
+export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('titleInput') titleInput!: ElementRef<HTMLInputElement>;
+
   readonly statuses: TaskStatus[] = ['to-do', 'in-progress', 'done'];
   task: Task = {
     title: '',
@@ -30,6 +32,24 @@ export class TaskComponent implements OnInit, OnDestroy {
   private readonly sidebarService = inject(SidebarService);
   private readonly taskService = inject(TaskService);
 
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent): void {
+    // Check for CMD+Enter (Mac) or Ctrl+Enter (Windows)
+    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+      this.task = {
+        title: '',
+        description: '',
+        dueDate: undefined,
+        status: 'to-do',
+        boardId: undefined,
+        priority: 1,
+        assignee: '',
+      };
+    } else if (event.key === 'Escape') {
+      this.sidebarService.setIsOpen(false);
+    }
+  }
+
   ngOnInit(): void {
     // Subscribe to task data from sidebar service
     console.warn('ngOnInit');
@@ -41,6 +61,13 @@ export class TaskComponent implements OnInit, OnDestroy {
           this.task = task;
         }
       });
+  }
+
+  ngAfterViewInit(): void {
+    // Focus the title input after the view is initialized
+    setTimeout(() => {
+      this.titleInput.nativeElement.focus();
+    });
   }
 
   onTaskChange(): void {

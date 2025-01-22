@@ -1,6 +1,6 @@
 <div class="task-container">
   <div class="task-title">
-    <input type="text" [(ngModel)]="task.title" (ngModelChange)="onTaskChange()" placeholder="Task title" class="title-input" />
+    <input #titleInput type="text" [(ngModel)]="task.title" (ngModelChange)="onTaskChange()" placeholder="Task title" class="title-input" />
   </div>
 
   <div class="property">
