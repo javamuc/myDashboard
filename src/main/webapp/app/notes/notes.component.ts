@@ -5,13 +5,14 @@ import { Note } from './note.model';
 import { NoteListComponent } from './note-list/note-list.component';
 import { NoteEditorComponent } from './note-editor/note-editor.component';
 import { NoteService } from './note.service';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 @Component({
   selector: 'jhi-notes',
   templateUrl: './notes.component.html',
   styleUrls: ['./notes.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, NoteListComponent, NoteEditorComponent],
+  imports: [CommonModule, FormsModule, NoteListComponent, NoteEditorComponent, FaIconComponent],
 })
 export class NotesComponent implements OnInit {
   notes = signal<Note[]>([]);

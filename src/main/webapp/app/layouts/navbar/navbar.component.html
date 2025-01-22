@@ -19,34 +19,22 @@
     </a>
     <div class="navbar-collapse collapse" id="navbarResponsive" [ngbCollapse]="isNavbarCollapsed()">
       <ul class="navbar-nav ms-auto">
-        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-          <a class="nav-link" routerLink="/" (click)="collapseNavbar()">
-            <span>
-              <fa-icon icon="home"></fa-icon>
-              <span jhiTranslate="global.menu.home">Home</span>
-            </span>
-          </a>
+        <!-- View switcher buttons -->
+        <li class="nav-item d-flex align-items-center me-3">
+          <button class="btn btn-outline-light me-2" (click)="switchToTasks()">
+            <fa-icon icon="tasks"></fa-icon>
+            <span class="ms-1">Tasks</span>
+          </button>
+          <button class="btn btn-outline-light me-2" (click)="switchToBoard()">
+            <fa-icon icon="columns"></fa-icon>
+            <span class="ms-1">Board</span>
+          </button>
+          <button class="btn btn-outline-light" (click)="switchToNotes()">
+            <fa-icon icon="sticky-note"></fa-icon>
+            <span class="ms-1">Notes</span>
+          </button>
         </li>
         <!-- jhipster-needle-add-element-to-menu - JHipster will add new menu items here -->
-        @if (account() !== null) {
-          <li
-            ngbDropdown
-            class="nav-item dropdown pointer"
-            display="dynamic"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: true }"
-          >
-            <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="entity-menu" data-cy="entity">
-              <span>
-                <fa-icon icon="th-list"></fa-icon>
-                <span jhiTranslate="global.menu.entities.main">Entities</span>
-              </span>
-            </a>
-            <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="entity-menu">
-              <!-- jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here -->
-            </ul>
-          </li>
-        }
         <li
           *jhiHasAnyAuthority="'ROLE_ADMIN'"
           ngbDropdown

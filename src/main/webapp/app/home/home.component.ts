@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, takeUntil } from 'rxjs';
 
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
@@ -11,15 +10,18 @@ import { NotesComponent } from '../notes/notes.component';
 import { WeatherComponent } from 'app/shared/weather/weather.component';
 import { BoardComponent } from 'app/shared/board/board.component';
 import { Board } from 'app/shared/board/board.model';
+import { LoginService } from 'app/login/login.service';
+import { HomeService, type HomeComponent as HomeComponentType } from './home.service';
+import { TaskComponent } from '../shared/task/task.component';
 
 @Component({
   selector: 'jhi-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [SharedModule, RouterModule, ClockComponent, NotesComponent, WeatherComponent, BoardComponent],
+  imports: [SharedModule, RouterModule, ClockComponent, NotesComponent, WeatherComponent, BoardComponent, TaskComponent],
 })
 export default class HomeComponent implements OnInit, OnDestroy {
-  account = signal<Account | null>(null);
+  account = inject(AccountService).trackCurrentAccount();
   board = signal<Board>({
     id: 1,
     title: 'My Board',
@@ -27,17 +29,21 @@ export default class HomeComponent implements OnInit, OnDestroy {
     createdDate: new Date().toISOString(),
     lastModifiedDate: new Date().toISOString(),
   });
+  activeComponent = signal<HomeComponentType>('board');
 
   private readonly destroy$ = new Subject<void>();
 
-  private readonly accountService = inject(AccountService);
   private readonly router = inject(Router);
+  private readonly loginService = inject(LoginService);
+  private readonly homeService = inject(HomeService);
 
   ngOnInit(): void {
-    this.accountService
-      .getAuthenticationState()
+    this.homeService
+      .getActiveComponent()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(account => this.account.set(account));
+      .subscribe(component => {
+        this.activeComponent.set(component);
+      });
   }
 
   login(): void {

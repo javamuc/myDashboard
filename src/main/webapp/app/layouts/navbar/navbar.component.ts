@@ -13,12 +13,14 @@ import { EntityNavbarItems } from 'app/entities/entity-navbar-items';
 import { environment } from 'environments/environment';
 import ActiveMenuDirective from './active-menu.directive';
 import NavbarItem from './navbar-item.model';
+import { HomeService } from '../../home/home.service';
 
 @Component({
   selector: 'jhi-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
   imports: [RouterModule, SharedModule, HasAnyAuthorityDirective, ActiveMenuDirective],
+  standalone: true,
 })
 export default class NavbarComponent implements OnInit {
   inProduction?: boolean;
@@ -34,6 +36,7 @@ export default class NavbarComponent implements OnInit {
   private readonly stateStorageService = inject(StateStorageService);
   private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
+  private readonly homeService = inject(HomeService);
 
   constructor() {
     const { VERSION } = environment;
@@ -48,6 +51,18 @@ export default class NavbarComponent implements OnInit {
       this.inProduction = profileInfo.inProduction;
       this.openAPIEnabled = profileInfo.openAPIEnabled;
     });
+  }
+
+  switchToTasks(): void {
+    this.homeService.setActiveComponent('task');
+  }
+
+  switchToBoard(): void {
+    this.homeService.setActiveComponent('board');
+  }
+
+  switchToNotes(): void {
+    this.homeService.setActiveComponent('notes');
   }
 
   changeLanguage(languageKey: string): void {

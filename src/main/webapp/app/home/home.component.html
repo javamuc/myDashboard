@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="col-md-3">
+  <div class="left-sidebar col-md-3">
     <div>
       @if (account() !== null) {
         @if (account(); as accountRef) {
@@ -18,7 +18,17 @@
     <jhi-weather></jhi-weather>
   </div>
 
-  <div class="col-md-9">
-    <jhi-board></jhi-board>
+  <div class="home-content col-md-9">
+    @switch (activeComponent()) {
+      @case ('board') {
+        <jhi-board></jhi-board>
+      }
+      @case ('task') {
+        <jhi-task></jhi-task>
+      }
+      @case ('notes') {
+        <jhi-notes></jhi-notes>
+      }
+    }
   </div>
 </div>
