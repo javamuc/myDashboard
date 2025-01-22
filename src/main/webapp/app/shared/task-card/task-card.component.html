@@ -1,14 +1,8 @@
-<div class="task-card" (click)="openTask($event)" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+<div class="task-card" (click)="openTask($event)">
   <div class="task-header">
     <h3>{{ task.title }}</h3>
     <div class="task-priority priority-{{ task.priority }}">P{{ task.priority }}</div>
   </div>
-
-  @if (isExpanded && task.description) {
-    <div class="task-description">
-      {{ task.description }}
-    </div>
-  }
 
   <div class="task-details">
     @if (task.assignee) {
