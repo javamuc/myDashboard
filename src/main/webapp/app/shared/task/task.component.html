@@ -5,7 +5,21 @@
 
   <div class="property">
     <div class="property-value">
-      <textarea [(ngModel)]="task.description" (ngModelChange)="onTaskChange()" placeholder="Add a description..." rows="3"></textarea>
+      <jhi-task-description [task]="task" (descriptionChange)="onTaskChange()"></jhi-task-description>
+    </div>
+  </div>
+
+  <div class="property">
+    <div class="property-label">
+      <i class="fas fa-flag"></i>
+      Priority
+    </div>
+    <div class="property-value">
+      <select [(ngModel)]="task.priority" (ngModelChange)="onTaskChange()">
+        <option [value]="1">Low</option>
+        <option [value]="2">Medium</option>
+        <option [value]="3">High</option>
+      </select>
     </div>
   </div>
 
@@ -20,7 +34,7 @@
       </div>
     </div>
 
-    <div class="property">
+    <!-- <div class="property">
       <div class="property-label">
         <i class="fas fa-user"></i>
         Assignee
@@ -28,21 +42,7 @@
       <div class="property-value">
         <input type="text" [(ngModel)]="task.assignee" (ngModelChange)="onTaskChange()" placeholder="Assign to someone..." />
       </div>
-    </div>
-
-    <div class="property">
-      <div class="property-label">
-        <i class="fas fa-flag"></i>
-        Priority
-      </div>
-      <div class="property-value">
-        <select [(ngModel)]="task.priority" (ngModelChange)="onTaskChange()">
-          <option [value]="1">Low</option>
-          <option [value]="2">Medium</option>
-          <option [value]="3">High</option>
-        </select>
-      </div>
-    </div>
+    </div> -->
   </div>
 
   <div class="task-comments">

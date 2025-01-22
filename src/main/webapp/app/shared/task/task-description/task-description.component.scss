@@ -1,0 +1,27 @@
+.property {
+  margin-bottom: 0rem;
+
+  .property-value {
+    textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      resize: vertical;
+      min-height: 120px;
+
+      &:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+    }
+  }
+}

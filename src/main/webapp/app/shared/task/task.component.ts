@@ -6,13 +6,14 @@ import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { TaskService } from './task.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TaskDescriptionComponent } from './task-description/task-description.component';
 
 @Component({
   selector: 'jhi-task',
   templateUrl: './task.component.html',
   styleUrls: ['./task.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, TaskDescriptionComponent],
 })
 export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('titleInput') titleInput!: ElementRef<HTMLInputElement>;
