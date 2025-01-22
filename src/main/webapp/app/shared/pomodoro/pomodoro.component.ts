@@ -1,6 +1,7 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { FaviconService } from '../favicon/favicon.service';
 
 @Component({
   selector: 'jhi-pomodoro',
@@ -14,10 +15,12 @@ export class PomodoroComponent implements OnDestroy {
   timeLeft = this.WORK_TIME;
   isRunning = false;
   private timer: any;
+  private readonly faviconService = inject(FaviconService);
 
   startTimer(): void {
     if (!this.isRunning) {
       this.isRunning = true;
+      this.faviconService.setFocusMode(true);
       this.timer = setInterval(() => {
         if (this.timeLeft > 0) {
           this.timeLeft--;
@@ -30,6 +33,7 @@ export class PomodoroComponent implements OnDestroy {
 
   resetTimer(): void {
     this.isRunning = false;
+    this.faviconService.setFocusMode(false);
     clearInterval(this.timer);
     this.timeLeft = this.WORK_TIME;
   }
@@ -44,5 +48,6 @@ export class PomodoroComponent implements OnDestroy {
     if (this.timer) {
       clearInterval(this.timer);
     }
+    this.faviconService.setFocusMode(false);
   }
 }
