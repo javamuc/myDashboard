@@ -1,9 +1,8 @@
 @if (activeBoard(); as board) {
   <div class="board-container">
     <div class="board-header">
-      <h1>{{ board.title }}</h1>
-
       <div class="board-controls">
+        <h4>{{ board.title }}</h4>
         <div class="search-box">
           <input type="text" placeholder="Search tasks..." (input)="onSearchInput($event)" />
         </div>

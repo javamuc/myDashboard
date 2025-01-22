@@ -1,15 +1,20 @@
-<jhi-page-ribbon></jhi-page-ribbon>
+<!-- Main wrapper with flex layout -->
+<div class="main-wrapper">
+  <jhi-page-ribbon></jhi-page-ribbon>
 
-<div>
-  <router-outlet name="navbar"></router-outlet>
-</div>
-
-<div class="container-fluid">
-  <div class="card jh-card">
-    <router-outlet></router-outlet>
+  <!-- Navbar -->
+  <div>
+    <router-outlet name="navbar"></router-outlet>
   </div>
 
-  <!-- <jhi-footer></jhi-footer> -->
+  <!-- Main content area -->
+  <div class="container-fluid content-area">
+    <div class="card jh-card">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+
+  <!-- Footer -->
 </div>
 
 <jhi-sidebar
@@ -17,3 +22,5 @@
   [activeComponent]="(activeComponent() | async) ?? null"
   (isOpenChange)="onSidebarClose()"
 ></jhi-sidebar>
+
+<jhi-footer></jhi-footer>
