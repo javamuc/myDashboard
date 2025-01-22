@@ -52,4 +52,11 @@
       <input type="text" placeholder="Add a comment..." class="comment-text-input" />
     </div>
   </div>
+
+  <div class="delete-section">
+    <button class="delete-button" (click)="deleteTask()">
+      <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+      Delete Task
+    </button>
+  </div>
 </div>

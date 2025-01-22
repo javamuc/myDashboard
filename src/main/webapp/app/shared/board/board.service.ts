@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { Board } from './board.model';
+import { TaskService } from '../task/task.service';
 
 @Injectable({ providedIn: 'root' })
 export class BoardService {
@@ -11,6 +12,7 @@ export class BoardService {
   constructor(
     private http: HttpClient,
     private applicationConfigService: ApplicationConfigService,
+    private taskService: TaskService,
   ) {
     this.resourceUrl = this.applicationConfigService.getEndpointFor('api/boards');
   }
@@ -32,6 +34,15 @@ export class BoardService {
   }
 
   delete(id: number): Observable<unknown> {
-    return this.http.delete(`${this.resourceUrl}/${id}`);
+    return this.http.delete<unknown>(`${this.resourceUrl}/${id}`);
+  }
+
+  refreshCurrentBoard(boardId: number): Observable<Board> {
+    return this.find(boardId).pipe(
+      map(board => ({
+        ...board,
+        tasks: [], // Initialize with empty tasks
+      })),
+    );
   }
 }
