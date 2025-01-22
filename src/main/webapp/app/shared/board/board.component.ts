@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Board, BoardFilter, BoardSort, BoardView } from './board.model';
 import { Task, TaskStatus } from '../task/task.model';
-import { TaskCardComponent } from '../task-card/task-card.component';
 import SharedModule from 'app/shared/shared.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
 import { BoardService } from './board.service';
 import { TaskService } from '../task/task.service';
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { BoardColumnsComponent } from './board-columns/board-columns.component';
 
 type TaskProperty = keyof Task;
 
@@ -18,7 +18,7 @@ type TaskProperty = keyof Task;
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, TaskCardComponent, SharedModule, FontAwesomeModule, DragDropModule],
+  imports: [CommonModule, FormsModule, SharedModule, FontAwesomeModule, DragDropModule, BoardColumnsComponent],
 })
 export class BoardComponent implements OnInit {
   readonly statuses: TaskStatus[] = ['to-do', 'in-progress', 'done'];

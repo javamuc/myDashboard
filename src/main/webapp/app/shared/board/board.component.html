@@ -2,7 +2,7 @@
   <div class="board-container">
     <div class="board-header">
       <div class="board-controls">
-        <h4>{{ board.title }}</h4>
+        <h5>{{ board.title }}</h5>
         <div class="search-box">
           <input type="text" placeholder="Search tasks..." (input)="onSearchInput($event)" />
         </div>
@@ -56,31 +56,13 @@
       }
     </div>
 
-    <!-- Board Content -->
-    <div class="board-content">
-      @for (status of statuses; track status) {
-        <div class="column">
-          <div class="column-header">
-            <h2>{{ status }}</h2>
-            <span class="task-count">{{ getTaskCount(status) }}</span>
-          </div>
-          <div
-            class="column-content"
-            cdkDropList
-            [id]="status + '-list'"
-            [cdkDropListData]="tasksByStatus().get(status) ?? []"
-            [cdkDropListConnectedTo]="getConnectedLists(status)"
-            (cdkDropListDropped)="onDrop($event, status)"
-          >
-            @for (task of tasksByStatus().get(status) ?? []; track task.id) {
-              <div cdkDrag [cdkDragData]="task">
-                <jhi-task-card [task]="task"></jhi-task-card>
-              </div>
-            }
-          </div>
-        </div>
-      }
-    </div>
+    <jhi-board-columns
+      [statuses]="statuses"
+      [tasksByStatus]="tasksByStatus()"
+      [onDrop]="onDrop.bind(this)"
+      [getConnectedLists]="getConnectedLists.bind(this)"
+      [getTaskCount]="getTaskCount.bind(this)"
+    ></jhi-board-columns>
   </div>
 } @else {
   <div class="no-boards">
