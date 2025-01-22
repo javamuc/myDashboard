@@ -4,7 +4,13 @@
       <div class="board-controls">
         <h5>{{ board.title }}</h5>
         <div class="search-box">
-          <input type="text" placeholder="Search tasks..." (input)="onSearchInput($event)" />
+          <input
+            #searchInput
+            type="text"
+            placeholder="Search tasks..."
+            (input)="onSearchInput($event)"
+            (keydown.escape)="searchInput.blur()"
+          />
         </div>
 
         <div class="filter-sort">

@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, signal, inject, EventEmitter, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, computed, signal, inject, EventEmitter, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Board, BoardFilter, BoardSort, BoardView } from './board.model';
@@ -21,6 +21,8 @@ type TaskProperty = keyof Task;
   imports: [CommonModule, FormsModule, SharedModule, FontAwesomeModule, DragDropModule, BoardColumnsComponent],
 })
 export class BoardComponent implements OnInit, OnDestroy {
+  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
+
   readonly statuses: TaskStatus[] = ['to-do', 'in-progress', 'done'];
   readonly taskProperties: TaskProperty[] = ['title', 'assignee', 'dueDate', 'priority', 'status', 'createdDate', 'lastModifiedDate'];
 
@@ -214,10 +216,15 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
-    // Only trigger if 'n' is pressed and no input/textarea is focused
-    if (event.key === 'n' && !(event.target instanceof HTMLInputElement) && !(event.target instanceof HTMLTextAreaElement)) {
-      event.preventDefault(); // Prevent 'n' from being typed
+    // Only trigger if no input/textarea is focused (except for Escape key)
+    const isInputFocused = event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;
+
+    if (event.key === 'n' && !isInputFocused) {
+      event.preventDefault();
       this.createNewTask(event);
+    } else if (event.key === 'f' && !isInputFocused) {
+      event.preventDefault();
+      this.searchInput.nativeElement.focus();
     }
   }
 
