@@ -17,5 +17,9 @@
         {{ task.dueDate | date: 'shortDate' }}
       </div>
     }
+    <div class="task-last-modified-date">
+      <fa-icon [icon]="['fas', 'clock']"></fa-icon>
+      {{ task.lastModifiedDate | date: 'medium' }}
+    </div>
   </div>
 </div>
