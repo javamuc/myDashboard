@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, signal, inject } from '@angular/core';
+import { Component, OnInit, computed, signal, inject, EventEmitter, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Board, BoardFilter, BoardSort, BoardView } from './board.model';
@@ -20,7 +20,7 @@ type TaskProperty = keyof Task;
   standalone: true,
   imports: [CommonModule, FormsModule, SharedModule, FontAwesomeModule, DragDropModule, BoardColumnsComponent],
 })
-export class BoardComponent implements OnInit {
+export class BoardComponent implements OnInit, OnDestroy {
   readonly statuses: TaskStatus[] = ['to-do', 'in-progress', 'done'];
   readonly taskProperties: TaskProperty[] = ['title', 'assignee', 'dueDate', 'priority', 'status', 'createdDate', 'lastModifiedDate'];
 
@@ -85,9 +85,41 @@ export class BoardComponent implements OnInit {
   private readonly sidebarService = inject(SidebarService);
   private readonly boardService = inject(BoardService);
   private readonly taskService = inject(TaskService);
+  private taskCreatedListener = new EventEmitter<Task>();
+  private taskDeletedListener = new EventEmitter<Task>();
 
   ngOnInit(): void {
     this.loadBoards();
+    this.taskCreatedListener.subscribe(task => this.taskCreated(task));
+    this.taskDeletedListener.subscribe(task => this.taskDeleted(task));
+    this.sidebarService.setTaskCreatedListener(this.taskCreatedListener);
+    this.sidebarService.setTaskDeletedListener(this.taskDeletedListener);
+  }
+
+  ngOnDestroy(): void {
+    this.taskCreatedListener.unsubscribe();
+    this.taskDeletedListener.unsubscribe();
+  }
+
+  taskDeleted(task: Task): void {
+    this.activeBoard.update(board => {
+      if (!board) return board;
+      const tasks = [...board.tasks];
+      const index = tasks.findIndex(t => t.id === task.id);
+      if (index !== -1) {
+        tasks.splice(index, 1);
+      }
+      return { ...board, tasks };
+    });
+  }
+
+  taskCreated(task: Task): void {
+    this.activeBoard.update(board => {
+      if (!board) return board;
+      const tasks = [...board.tasks];
+      tasks.push(task);
+      return { ...board, tasks };
+    });
   }
 
   // Add a method to get the drop list IDs for connecting columns
@@ -169,28 +201,11 @@ export class BoardComponent implements OnInit {
     const board = this.activeBoard();
     if (!board) return;
 
-    const newTask: Task = {
-      title: '',
-      description: '',
-      dueDate: undefined,
-      status: 'to-do',
-      priority: 1,
-      boardId: board.id,
-    };
-
-    this.taskService.create(newTask).subscribe(createdTask => {
-      this.activeBoard.update(currentBoard => {
-        if (!currentBoard) return currentBoard;
-        return {
-          ...currentBoard,
-          tasks: [...currentBoard.tasks, createdTask],
-        };
-      });
-
-      this.sidebarService.setTaskData(createdTask);
-      this.sidebarService.setActiveComponent('task');
-      this.sidebarService.setIsOpen(true);
-    });
+    // Just set the task data and open the sidebar
+    this.sidebarService.setTaskData(null);
+    this.sidebarService.setBoardId(board.id);
+    this.sidebarService.setActiveComponent('task');
+    this.sidebarService.setIsOpen(true);
   }
 
   getTaskCount(status: TaskStatus): number {

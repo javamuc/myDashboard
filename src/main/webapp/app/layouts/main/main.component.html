@@ -17,10 +17,17 @@
   <!-- Footer -->
 </div>
 
-<jhi-sidebar
-  [isOpen]="(isOpen() | async) ?? false"
-  [activeComponent]="(activeComponent() | async) ?? null"
-  (isOpenChange)="onSidebarClose()"
-></jhi-sidebar>
+@if ((isOpen() | async) ?? false) {
+  <jhi-sidebar [isOpen]="(isOpen() | async) ?? false" [activeComponent]="activeComponent() | async" (isOpenChange)="onSidebarClose()">
+    @switch (activeComponent() | async) {
+      @case ('task') {
+        <jhi-task></jhi-task>
+      }
+      @case ('note') {
+        <jhi-note-editor></jhi-note-editor>
+      }
+    }
+  </jhi-sidebar>
+}
 
 <jhi-footer></jhi-footer>

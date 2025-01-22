@@ -19,14 +19,12 @@ export class TaskComponent implements OnInit, OnDestroy {
   task: Task = {
     title: '',
     description: '',
-    dueDate: new Date().toISOString(),
+    dueDate: undefined,
     status: 'to-do',
     boardId: undefined,
     priority: 1,
     assignee: '',
   };
-
-  @Output() taskDeleted = new EventEmitter<Task>();
 
   private destroy$ = new Subject<void>();
   private readonly sidebarService = inject(SidebarService);
@@ -34,6 +32,7 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Subscribe to task data from sidebar service
+    console.warn('ngOnInit');
     this.sidebarService
       .getTaskData()
       .pipe(takeUntil(this.destroy$))
@@ -48,20 +47,30 @@ export class TaskComponent implements OnInit, OnDestroy {
     const updatedTask: Task = {
       ...this.task,
     };
-    // Persist the task in the database
-    this.taskService.update(updatedTask).subscribe(savedTask => {
-      this.task.id = savedTask.id;
-      this.task.lastModifiedDate = savedTask.lastModifiedDate;
-      this.task.createdDate = savedTask.createdDate;
-      // this.sidebarService.setTaskData(savedTask);
-    });
+    if (this.task.id) {
+      // Persist the task in the database
+      this.taskService.update(updatedTask).subscribe(savedTask => {
+        this.task.id = savedTask.id;
+        this.task.lastModifiedDate = savedTask.lastModifiedDate;
+        this.task.createdDate = savedTask.createdDate;
+      });
+    } else {
+      this.sidebarService.getBoardId().subscribe(boardId => (updatedTask.boardId = boardId));
+      this.task.boardId = updatedTask.boardId;
+      this.taskService.create(updatedTask).subscribe(createdTask => {
+        this.task.id = createdTask.id;
+        this.task.lastModifiedDate = createdTask.lastModifiedDate;
+        this.task.createdDate = createdTask.createdDate;
+        this.sidebarService.getTaskCreatedListener().subscribe(listener => listener?.emit(this.task));
+      });
+    }
   }
 
   deleteTask(): void {
     if (!this.task.id) return;
 
     this.taskService.delete(this.task.id).subscribe(() => {
-      this.taskDeleted.emit(this.task);
+      this.sidebarService.getTaskDeletedListener().subscribe(listener => listener?.emit(this.task));
       this.sidebarService.setIsOpen(false);
     });
   }
