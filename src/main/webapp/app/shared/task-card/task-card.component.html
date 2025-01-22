@@ -1,6 +1,12 @@
 <div class="task-card" (click)="openTask($event)">
   <div class="task-header">
-    <h3>{{ task.title }}</h3>
+    <h3>
+      {{ task.title }}
+      @if (task.description) {
+        <span class="task-description-icon"><fa-icon [icon]="['fas', 'info']"></fa-icon></span>
+      }
+    </h3>
+
     <div class="task-priority priority-{{ task.priority }}">P{{ task.priority }}</div>
   </div>
 
