@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Task } from '../task/task.model';
@@ -13,8 +13,20 @@ import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
 })
 export class TaskCardComponent {
   @Input() task!: Task;
+  isExpanded = false;
+  private hoverTimer: any;
+  private readonly sidebarService = inject(SidebarService);
 
-  constructor(private sidebarService: SidebarService) {}
+  onMouseEnter(): void {
+    this.hoverTimer = setTimeout(() => {
+      this.isExpanded = true;
+    }, 1200);
+  }
+
+  onMouseLeave(): void {
+    clearTimeout(this.hoverTimer);
+    this.isExpanded = false;
+  }
 
   openTask(event: Event): void {
     event.stopPropagation();
