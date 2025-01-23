@@ -6,11 +6,13 @@
       </button>
       <div class="search-container">
         <input
+          #searchInput
           type="text"
           class="form-control search-input"
           placeholder="Search notes..."
           [(ngModel)]="searchQuery"
           (ngModelChange)="onSearch()"
+          (keydown.escape)="searchInput.blur()"
         />
         <span class="fas fa-search search-icon"></span>
       </div>

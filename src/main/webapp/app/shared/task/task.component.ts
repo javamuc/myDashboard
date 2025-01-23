@@ -45,7 +45,7 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
     console.warn('handleKeyboardEvent', event);
     // Check for CMD+Enter (Mac) or Ctrl+Enter (Windows)
     if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
-      event.stopPropagation();
+      event.preventDefault();
       this.task = {
         title: '',
         description: '',
@@ -56,11 +56,11 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
         assignee: '',
       };
     } else if (event.key === 'Escape') {
-      event.stopPropagation();
+      event.preventDefault();
       this.sidebarService.setIsOpen(false);
     } else if (event.key === 'Backspace' && event.shiftKey && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault();
       this.taskUpdateSubject.complete();
-      event.stopPropagation();
       this.deleteTask();
     }
   }
