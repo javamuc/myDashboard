@@ -18,23 +18,22 @@
       <fa-icon icon="bars"></fa-icon>
     </a>
     <div class="navbar-collapse collapse" id="navbarResponsive" [ngbCollapse]="isNavbarCollapsed()">
-      <ul class="navbar-nav ms-auto">
-        <!-- View switcher buttons -->
-        <li class="nav-item d-flex align-items-center me-3">
-          <button class="btn btn-outline-light me-2" (click)="switchToTasks()">
-            <fa-icon icon="tasks"></fa-icon>
-            <span class="ms-1">Tasks</span>
-          </button>
-          <button class="btn btn-outline-light me-2" (click)="switchToBoard()">
+      <ul class="navbar-nav me-auto mb-2 mb-md-0">
+        <li class="nav-item">
+          <button class="btn btn-link nav-link" (click)="switchToBoard()">
             <fa-icon icon="columns"></fa-icon>
-            <span class="ms-1">Board</span>
-          </button>
-          <button class="btn btn-outline-light" (click)="switchToNotes()">
-            <fa-icon icon="sticky-note"></fa-icon>
-            <span class="ms-1">Notes</span>
+            <span>Board (1)</span>
           </button>
         </li>
-        <!-- jhipster-needle-add-element-to-menu - JHipster will add new menu items here -->
+        <li class="nav-item">
+          <button class="btn btn-link nav-link" (click)="switchToNotes()">
+            <fa-icon icon="sticky-note"></fa-icon>
+            <span>Notes (2)</span>
+          </button>
+        </li>
+      </ul>
+      <!-- jhipster-needle-add-element-to-menu - JHipster will add new menu items here -->
+      <ul class="navbar-nav ms-auto">
         <li
           *jhiHasAnyAuthority="'ROLE_ADMIN'"
           ngbDropdown

@@ -1,6 +1,7 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, HostListener } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { StateStorageService } from 'app/core/auth/state-storage.service';
 import SharedModule from 'app/shared/shared.module';
@@ -14,12 +15,13 @@ import { environment } from 'environments/environment';
 import ActiveMenuDirective from './active-menu.directive';
 import NavbarItem from './navbar-item.model';
 import { HomeService } from '../../home/home.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
   selector: 'jhi-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
-  imports: [RouterModule, SharedModule, HasAnyAuthorityDirective, ActiveMenuDirective],
+  imports: [RouterModule, SharedModule, HasAnyAuthorityDirective, ActiveMenuDirective, NgbDropdownModule, FontAwesomeModule],
   standalone: true,
 })
 export default class NavbarComponent implements OnInit {
@@ -51,6 +53,22 @@ export default class NavbarComponent implements OnInit {
       this.inProduction = profileInfo.inProduction;
       this.openAPIEnabled = profileInfo.openAPIEnabled;
     });
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent): void {
+    // Only trigger if no input/textarea is focused
+    const isInputFocused = event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;
+
+    if (!isInputFocused) {
+      if (event.key === '1') {
+        event.preventDefault();
+        this.switchToBoard();
+      } else if (event.key === '2') {
+        event.preventDefault();
+        this.switchToNotes();
+      }
+    }
   }
 
   switchToTasks(): void {
