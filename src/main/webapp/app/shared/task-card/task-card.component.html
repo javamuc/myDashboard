@@ -1,4 +1,11 @@
-<div class="task-card" (click)="openTask($event)">
+<div
+  class="task-card"
+  (click)="openTask($event)"
+  (keydown.enter)="openTask($event)"
+  tabindex="0"
+  role="button"
+  [attr.aria-label]="'Task: ' + task.title"
+>
   <div class="task-header">
     <h3>
       {{ task.title }}

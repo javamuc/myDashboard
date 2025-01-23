@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Task } from '../task/task.model';
@@ -16,6 +16,8 @@ export class TaskCardComponent {
 
   constructor(private sidebarService: SidebarService) {}
 
+  @HostListener('keydown.enter', ['$event'])
+  @HostListener('click', ['$event'])
   openTask(event: Event): void {
     event.stopPropagation();
     this.sidebarService.setTaskData(this.task);

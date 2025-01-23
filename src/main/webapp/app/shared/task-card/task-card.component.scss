@@ -5,12 +5,25 @@
   cursor: pointer;
   transition:
     transform 0.2s ease,
-    background-color 0.2s ease;
+    background-color 0.2s ease,
+    outline-color 0.2s ease;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 
   &:hover {
     transform: translateY(-2px);
     background-color: #34495e;
+  }
+
+  &:focus {
+    outline-color: var(--primary);
+    transform: translateY(-2px);
+    background-color: #34495e;
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: none;
   }
 
   .task-header {
