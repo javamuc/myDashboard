@@ -1,20 +1,24 @@
 <div class="editor-container">
   <div class="editor-header">
     <input
+      #titleInput
       type="text"
       class="form-control title-input"
       [ngModel]="note.title"
       (ngModelChange)="onTitleChange($event)"
       placeholder="Note title"
+      (keydown.escape)="titleInput.blur()"
     />
     <div class="last-modified">Last modified: {{ note.lastModified | date: 'medium' }}</div>
   </div>
   <div class="editor-content">
     <textarea
+      #contentInput
       class="form-control content-input"
       [ngModel]="note.content"
       (ngModelChange)="onContentChange($event)"
       placeholder="Start writing your note here..."
+      (keydown.escape)="contentInput.blur()"
     ></textarea>
   </div>
 </div>

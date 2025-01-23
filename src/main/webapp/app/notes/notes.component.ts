@@ -71,15 +71,10 @@ export class NotesComponent implements OnInit, OnDestroy {
 
   createNewNote(): void {
     const newNote: Note = {
-      title: 'New Note',
+      title: '',
       content: '',
     };
-
-    this.noteService.create(newNote).subscribe(createdNote => {
-      this.notes.update(notes => [...notes, createdNote]);
-      this.selectedNote.set(createdNote);
-      this.updateFilteredNotes();
-    });
+    this.selectedNote.set(newNote);
   }
 
   onNoteSelected(note: Note): void {
@@ -87,11 +82,19 @@ export class NotesComponent implements OnInit, OnDestroy {
   }
 
   onNoteUpdated(updatedNote: Note): void {
-    const note = { ...updatedNote };
-    this.notes.update(notes => notes.map(n => (n.id === note.id ? note : n)));
-    this.selectedNote.set(note);
-    this.updateFilteredNotes();
-    this.noteUpdateSubject.next(note);
+    if (!updatedNote.id) {
+      this.noteService.create(updatedNote).subscribe(createdNote => {
+        this.selectedNote.update(note => createdNote);
+        this.notes.update(notes => [...notes, createdNote]);
+        this.updateFilteredNotes();
+      });
+    } else {
+      const note = { ...updatedNote };
+      this.notes.update(notes => notes.map(n => (n.id === note.id ? note : n)));
+      this.selectedNote.set(note);
+      this.updateFilteredNotes();
+      this.noteUpdateSubject.next(note);
+    }
   }
 
   onSearch(): void {

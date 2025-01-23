@@ -5,7 +5,7 @@ export type HomeComponent = 'task' | 'board' | 'notes';
 
 @Injectable({ providedIn: 'root' })
 export class HomeService {
-  private readonly activeComponentSubject = new BehaviorSubject<HomeComponent>('board');
+  private readonly activeComponentSubject = new BehaviorSubject<HomeComponent>('notes');
 
   getActiveComponent(): Observable<HomeComponent> {
     return this.activeComponentSubject.asObservable();

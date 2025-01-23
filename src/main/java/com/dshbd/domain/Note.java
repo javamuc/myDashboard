@@ -21,7 +21,7 @@ public class Note implements Serializable {
     private Long id;
 
     @NotNull
-    @Size(min = 1, max = 100)
+    @Size(min = 0, max = 100)
     @Column(name = "title", length = 100, nullable = false)
     private String title;
 
