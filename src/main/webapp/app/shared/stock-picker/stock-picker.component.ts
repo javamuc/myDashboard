@@ -1,0 +1,156 @@
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Subject, fromEvent } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/operators';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { StockPickerService, StockSearchResult } from './stock-picker.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
+@Component({
+  selector: 'jhi-stock-picker',
+  templateUrl: './stock-picker.component.html',
+  styleUrls: ['./stock-picker.component.scss'],
+  standalone: true,
+  imports: [FontAwesomeModule, CommonModule],
+})
+export class StockPickerComponent implements OnInit, OnDestroy {
+  @ViewChild('searchInput') searchInput!: ElementRef;
+
+  searchResults: StockSearchResult[] = [];
+  selectedStocks: StockSearchResult[] = [];
+  isLoading = false;
+  showDropdown = false;
+  selectedIndex = -1;
+  faTimesCircle = faTimesCircle;
+  private destroy$ = new Subject<void>();
+
+  constructor(private stockPickerService: StockPickerService) {}
+
+  @HostListener('document:click', ['$event'])
+  handleClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.stock-picker-container')) {
+      this.closeDropdown();
+    }
+  }
+
+  ngOnInit(): void {
+    this.loadSavedStocks();
+    setTimeout(() => this.setupSearchListener(), 0);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  selectStock(stock: StockSearchResult): void {
+    if (!this.selectedStocks.find(s => s.symbol === stock.symbol)) {
+      this.stockPickerService
+        .addStock(stock)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.selectedStocks.push(stock);
+            this.closeDropdown();
+            this.searchInput.nativeElement.value = '';
+          },
+        });
+    }
+  }
+
+  removeStock(stock: StockSearchResult): void {
+    this.stockPickerService
+      .removeStock(stock.symbol)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.selectedStocks = this.selectedStocks.filter(s => s.symbol !== stock.symbol);
+        },
+      });
+  }
+
+  private loadSavedStocks(): void {
+    this.stockPickerService
+      .getSavedStocks()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (stocks: StockSearchResult[]) => {
+          this.selectedStocks = stocks;
+        },
+      });
+  }
+
+  private closeDropdown(): void {
+    this.showDropdown = false;
+    this.searchResults = [];
+    this.selectedIndex = -1;
+  }
+
+  private setupSearchListener(): void {
+    fromEvent<Event>(this.searchInput.nativeElement, 'input')
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        filter((event: Event) => (event.target as HTMLInputElement).value.length > 0),
+        takeUntil(this.destroy$),
+      )
+      .subscribe(() => {
+        this.searchStocks();
+      });
+
+    fromEvent<KeyboardEvent>(this.searchInput.nativeElement, 'keydown')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((event: KeyboardEvent) => {
+        this.handleKeyboardNavigation(event);
+      });
+  }
+
+  private searchStocks(): void {
+    const query = this.searchInput.nativeElement.value;
+    if (!query) {
+      this.searchResults = [];
+      this.showDropdown = false;
+      return;
+    }
+
+    this.isLoading = true;
+    this.stockPickerService
+      .searchStocks(query)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (results: StockSearchResult[]) => {
+          this.searchResults = results;
+          this.showDropdown = true;
+          this.isLoading = false;
+          this.selectedIndex = -1;
+        },
+        error: () => {
+          this.isLoading = false;
+        },
+      });
+  }
+
+  private handleKeyboardNavigation(event: KeyboardEvent): void {
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.selectedIndex = Math.min(this.selectedIndex + 1, this.searchResults.length - 1);
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
+        break;
+      case 'Enter':
+        event.preventDefault();
+        if (this.selectedIndex >= 0 || (this.searchResults.length === 1 && this.selectedIndex === -1)) {
+          const selectedStock = this.searchResults[this.selectedIndex >= 0 ? this.selectedIndex : 0];
+          this.selectStock(selectedStock);
+        }
+        break;
+      case 'Escape':
+        this.closeDropdown();
+        break;
+    }
+  }
+}

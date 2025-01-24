@@ -14,12 +14,23 @@ import { LoginService } from 'app/login/login.service';
 import { HomeService, type HomeComponent as HomeComponentType } from './home.service';
 import { TaskComponent } from '../shared/task/task.component';
 import { PomodoroComponent } from '../shared/pomodoro/pomodoro.component';
+import StockPickerComponent from '../shared/shared.module';
 
 @Component({
   selector: 'jhi-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [SharedModule, RouterModule, ClockComponent, NotesComponent, WeatherComponent, BoardComponent, TaskComponent, PomodoroComponent],
+  imports: [
+    SharedModule,
+    RouterModule,
+    ClockComponent,
+    NotesComponent,
+    WeatherComponent,
+    BoardComponent,
+    TaskComponent,
+    PomodoroComponent,
+    StockPickerComponent,
+  ],
 })
 export default class HomeComponent implements OnInit, OnDestroy {
   account = inject(AccountService).trackCurrentAccount();

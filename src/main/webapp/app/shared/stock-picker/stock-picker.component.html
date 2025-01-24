@@ -1,0 +1,40 @@
+<div class="stock-picker-container" (click)="$event.stopPropagation()">
+  <div class="search-container">
+    <input #searchInput type="text" class="form-control" placeholder="Add Stock or Crypto" autocomplete="off" />
+    <div class="spinner-border spinner-border-sm" *ngIf="isLoading"></div>
+  </div>
+
+  <div class="dropdown-menu" [class.show]="showDropdown">
+    <div
+      class="dropdown-item"
+      *ngFor="let result of searchResults; let i = index"
+      [class.active]="i === selectedIndex"
+      (click)="selectStock(result)"
+    >
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <strong>{{ result.symbol }}</strong>
+          <span class="text-muted ms-2">{{ result.description }}</span>
+        </div>
+        <span class="badge bg-secondary">{{ result.type }}</span>
+      </div>
+    </div>
+    <div class="dropdown-item text-muted" *ngIf="searchResults.length === 0">No results found</div>
+  </div>
+
+  <div class="selected-stocks mt-3">
+    <div class="list-group">
+      <div class="list-group-item" *ngFor="let stock of selectedStocks">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ stock.symbol }}</strong>
+            <span class="text-muted ms-2">{{ stock.description }}</span>
+          </div>
+          <button class="btn btn-sm btn-outline-danger" (click)="removeStock(stock)">
+            <fa-icon icon="times-circle"></fa-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -8,12 +8,23 @@ import FindLanguageFromKeyPipe from './language/find-language-from-key.pipe';
 import TranslateDirective from './language/translate.directive';
 import { AlertComponent } from './alert/alert.component';
 import { AlertErrorComponent } from './alert/alert-error.component';
+import { StockPickerComponent } from './stock-picker/stock-picker.component';
 
 /**
  * Application wide Module
  */
 @NgModule({
-  imports: [AlertComponent, AlertErrorComponent, FindLanguageFromKeyPipe, TranslateDirective],
+  imports: [
+    CommonModule,
+    NgbModule,
+    FontAwesomeModule,
+    TranslateModule,
+    AlertComponent,
+    AlertErrorComponent,
+    FindLanguageFromKeyPipe,
+    TranslateDirective,
+    StockPickerComponent,
+  ],
   exports: [
     CommonModule,
     NgbModule,
@@ -23,6 +34,7 @@ import { AlertErrorComponent } from './alert/alert-error.component';
     TranslateModule,
     FindLanguageFromKeyPipe,
     TranslateDirective,
+    StockPickerComponent,
   ],
 })
 export default class SharedModule {}

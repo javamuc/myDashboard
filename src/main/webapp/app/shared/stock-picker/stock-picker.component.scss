@@ -1,0 +1,64 @@
+.stock-picker-container {
+  position: relative;
+  width: 100%;
+  padding: 1rem;
+  max-width: 600px;
+}
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .spinner-border {
+    position: absolute;
+    right: 10px;
+    color: #6c757d;
+  }
+}
+
+.dropdown-menu {
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 0;
+  padding: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+
+  &.show {
+    display: block;
+  }
+
+  .dropdown-item {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+
+    &:hover,
+    &.active {
+      background-color: #6c757d;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+    }
+  }
+}
+
+.selected-stocks {
+  .list-group-item {
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+    }
+  }
+}
