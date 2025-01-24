@@ -20,7 +20,9 @@
   @if (getHashtags().length > 0) {
     <div class="task-tags">
       @for (tag of getHashtags(); track tag) {
-        <span class="tag">{{ tag }}</span>
+        <span class="tag" [style.background-color]="getTagColor(tag)" [style.color]="getTagTextColor(tag)">
+          {{ tag }}
+        </span>
       }
     </div>
   }
@@ -28,18 +30,18 @@
   <div class="task-details">
     @if (task.assignee) {
       <div class="task-assignee">
-        <i class="fas fa-user"></i>
+        <fa-icon icon="user"></fa-icon>
         {{ task.assignee }}
       </div>
     }
     @if (task.dueDate) {
       <div class="task-due-date">
-        <i class="fas fa-calendar"></i>
+        <fa-icon icon="calendar"></fa-icon>
         {{ task.dueDate | date: 'shortDate' }}
       </div>
     }
     <div class="task-last-modified-date">
-      <i class="fas fa-clock"></i>
+      <fa-icon icon="clock"></fa-icon>
       {{ task.lastModifiedDate | date: 'short' }}
     </div>
   </div>

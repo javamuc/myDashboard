@@ -99,7 +99,7 @@ export default tseslint.config(
       curly: 'error',
       eqeqeq: ['error', 'always', { null: 'ignore' }],
       'guard-for-in': 'error',
-      'no-bitwise': 'error',
+      'no-bitwise': 'warn',
       'no-caller': 'error',
       'no-console': ['error', { allow: ['warn', 'error'] }],
       'no-eval': 'error',

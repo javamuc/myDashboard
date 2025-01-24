@@ -70,24 +70,22 @@
   .task-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
+    gap: 4px;
+    margin-top: 8px;
+  }
 
-    .tag {
-      background-color: rgba(52, 152, 219, 0.2);
-      color: #3498db;
-      padding: 0.25rem 0.5rem;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      border: 1px solid rgba(52, 152, 219, 0.3);
-    }
+  .tag {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 500;
   }
 
   .task-details {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
 
     .task-assignee,
     .task-due-date {
@@ -107,6 +105,7 @@
       color: rgba(255, 255, 255, 0.5);
       display: flex;
       align-items: center;
+      margin-left: auto;
       gap: 0.5rem;
 
       i {
