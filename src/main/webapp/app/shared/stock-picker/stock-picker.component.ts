@@ -21,6 +21,7 @@ export class StockPickerComponent implements OnInit, OnDestroy {
   searchResults: StockSearchResult[] = [];
   selectedStocks: StockSearchResult[] = [];
   exchangeSymbols: any[] = [];
+  filteredSymbols: any[] = [];
   isLoading = false;
   showDropdown = false;
   selectedIndex = -1;
@@ -78,7 +79,7 @@ export class StockPickerComponent implements OnInit, OnDestroy {
     this.selectedExchange = exchangeCode;
     this.loadExchangeSymbols(exchangeCode);
     if (this.searchInput.nativeElement.value) {
-      this.searchStocks();
+      this.filterSymbols();
     }
   }
 
@@ -110,46 +111,26 @@ export class StockPickerComponent implements OnInit, OnDestroy {
 
   private setupSearchListener(): void {
     fromEvent<Event>(this.searchInput.nativeElement, 'input')
-      .pipe(
-        debounceTime(300),
-        distinctUntilChanged(),
-        filter((event: Event) => (event.target as HTMLInputElement).value.length > 0),
-        takeUntil(this.destroy$),
-      )
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
       .subscribe(() => {
-        this.searchStocks();
+        this.filterSymbols();
       });
 
-    fromEvent<KeyboardEvent>(this.searchInput.nativeElement, 'keydown')
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((event: KeyboardEvent) => {
-        this.handleKeyboardNavigation(event);
-      });
+    // fromEvent<KeyboardEvent>(this.searchInput.nativeElement, 'keydown')
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe((event: KeyboardEvent) => {
+    //     this.handleKeyboardNavigation(event);
+    //   });
   }
 
-  private searchStocks(): void {
-    const query = this.searchInput.nativeElement.value;
-    if (!query) {
-      this.searchResults = [];
-      this.showDropdown = false;
-      return;
-    }
-
-    this.isLoading = true;
-    this.stockPickerService
-      .searchStocks(query, this.selectedExchange)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (results: StockSearchResult[]) => {
-          this.searchResults = results;
-          this.showDropdown = true;
-          this.isLoading = false;
-          this.selectedIndex = -1;
-        },
-        error: () => {
-          this.isLoading = false;
-        },
-      });
+  private filterSymbols(): void {
+    const query = (this.searchInput.nativeElement.value as string).toLowerCase();
+    this.filteredSymbols = this.exchangeSymbols.filter(
+      symbol =>
+        symbol.symbol.toLowerCase().includes(query) ||
+        symbol.description.toLowerCase().includes(query) ||
+        symbol.displaySymbol.toLowerCase().includes(query),
+    );
   }
 
   private handleKeyboardNavigation(event: KeyboardEvent): void {
@@ -183,6 +164,7 @@ export class StockPickerComponent implements OnInit, OnDestroy {
       .subscribe({
         next: symbols => {
           this.exchangeSymbols = symbols;
+          this.filteredSymbols = symbols;
           this.isLoading = false;
         },
         error: () => {

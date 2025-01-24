@@ -1,8 +1,5 @@
 <div class="exchange-selection-container" (click)="$event.stopPropagation()">
-  <button class="btn btn-outline-secondary" (click)="toggleDropdown()">
-    <fa-icon [icon]="faExchangeAlt"></fa-icon>
-    Exchange
-  </button>
+  <button class="btn btn-outline-secondary" (click)="toggleDropdown()">Exchange</button>
 
   <div class="dropdown-menu" [class.show]="showDropdown">
     <div class="search-container px-2 pb-2">
