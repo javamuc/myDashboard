@@ -10,29 +10,37 @@
     <h3>
       {{ task.title }}
       @if (task.description) {
-        <span class="task-description-icon"><fa-icon [icon]="['fas', 'info']"></fa-icon></span>
+        <i class="fas fa-align-left task-description-icon"></i>
       }
     </h3>
 
     <div class="task-priority priority-{{ task.priority }}">P{{ task.priority }}</div>
   </div>
 
+  @if (getHashtags().length > 0) {
+    <div class="task-tags">
+      @for (tag of getHashtags(); track tag) {
+        <span class="tag">{{ tag }}</span>
+      }
+    </div>
+  }
+
   <div class="task-details">
     @if (task.assignee) {
       <div class="task-assignee">
-        <fa-icon [icon]="['fas', 'user']"></fa-icon>
+        <i class="fas fa-user"></i>
         {{ task.assignee }}
       </div>
     }
     @if (task.dueDate) {
       <div class="task-due-date">
-        <fa-icon [icon]="['fas', 'calendar']"></fa-icon>
+        <i class="fas fa-calendar"></i>
         {{ task.dueDate | date: 'shortDate' }}
       </div>
     }
     <div class="task-last-modified-date">
-      <fa-icon [icon]="['fas', 'clock']"></fa-icon>
-      {{ task.lastModifiedDate | date: 'medium' }}
+      <i class="fas fa-clock"></i>
+      {{ task.lastModifiedDate | date: 'short' }}
     </div>
   </div>
 </div>

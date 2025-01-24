@@ -24,4 +24,12 @@ export class TaskCardComponent {
     this.sidebarService.setActiveComponent('task');
     this.sidebarService.setIsOpen(true);
   }
+
+  getHashtags(): string[] {
+    if (!this.task.description) {
+      return [];
+    }
+    const hashtagRegex = /#[\w_-]+/g;
+    return this.task.description.match(hashtagRegex) ?? [];
+  }
 }
