@@ -25,4 +25,5 @@
     <include file="config/liquibase/changelog/20240320000001_added_entity_Task.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240124_add_lastModifiedDate_to_task.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240124_update_task_entity.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240321000000_added_entity_Exchange.xml" relativeToChangelogFile="false"/>
 </databaseChangeLog>
