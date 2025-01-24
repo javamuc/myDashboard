@@ -57,17 +57,6 @@ export class BoardComponent implements OnInit, OnDestroy {
       });
     });
 
-    // Apply sorting
-    const sort = this.boardView().sort;
-    if (sort) {
-      tasks.sort((a, b) => {
-        const aValue = a[sort.property];
-        const bValue = b[sort.property];
-        const comparison = aValue === undefined || bValue === undefined ? 0 : aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-        return sort.direction === 'asc' ? comparison : -comparison;
-      });
-    }
-
     return tasks;
   });
 
@@ -79,6 +68,28 @@ export class BoardComponent implements OnInit, OnDestroy {
       const statusTasks = grouped.get(task.status) ?? [];
       statusTasks.push(task);
       grouped.set(task.status, statusTasks);
+    });
+
+    // Apply custom sorting for each status
+    grouped.forEach((tasks, status) => {
+      if (status === 'done') {
+        // Sort done tasks by lastModifiedDate desc
+        tasks.sort((a, b) => {
+          const aDate = a.lastModifiedDate ? new Date(a.lastModifiedDate).getTime() : 0;
+          const bDate = b.lastModifiedDate ? new Date(b.lastModifiedDate).getTime() : 0;
+          return bDate - aDate;
+        });
+      } else {
+        // Sort to-do and in-progress tasks by priority desc, then lastModifiedDate desc
+        tasks.sort((a, b) => {
+          if (a.priority !== b.priority) {
+            return b.priority - a.priority; // Higher priority first
+          }
+          const aDate = a.lastModifiedDate ? new Date(a.lastModifiedDate).getTime() : 0;
+          const bDate = b.lastModifiedDate ? new Date(b.lastModifiedDate).getTime() : 0;
+          return bDate - aDate;
+        });
+      }
     });
 
     return grouped;
