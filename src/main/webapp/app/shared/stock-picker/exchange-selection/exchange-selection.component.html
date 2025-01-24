@@ -1,0 +1,30 @@
+<div class="exchange-selection-container" (click)="$event.stopPropagation()">
+  <button class="btn btn-outline-secondary" (click)="toggleDropdown()">
+    <fa-icon [icon]="faExchangeAlt"></fa-icon>
+    Exchange
+  </button>
+
+  <div class="dropdown-menu" [class.show]="showDropdown">
+    <div class="search-container px-2 pb-2">
+      <input #searchInput type="text" class="form-control form-control-sm" placeholder="Search exchanges..." autocomplete="off" />
+    </div>
+
+    <div class="exchange-list">
+      <div
+        class="dropdown-item"
+        *ngFor="let exchange of filteredExchanges; let i = index"
+        [class.active]="i === selectedIndex"
+        (click)="selectExchange(exchange)"
+      >
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ exchange.code }}</strong>
+            <span class="text-muted ms-2">{{ exchange.name }}</span>
+          </div>
+          <span class="badge bg-secondary">{{ exchange.countryName }}</span>
+        </div>
+      </div>
+      <div class="dropdown-item text-muted" *ngIf="filteredExchanges.length === 0">No exchanges found</div>
+    </div>
+  </div>
+</div>

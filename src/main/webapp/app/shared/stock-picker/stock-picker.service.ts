@@ -9,14 +9,30 @@ export interface StockSearchResult {
   type: string;
 }
 
+export interface StockSymbol {
+  currency: string;
+  description: string;
+  displaySymbol: string;
+  figi: string;
+  mic: string;
+  symbol: string;
+  type: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class StockPickerService {
   private readonly apiUrl = 'api/stocks'; // Backend endpoint
 
   constructor(private http: HttpClient) {}
 
-  searchStocks(query: string): Observable<StockSearchResult[]> {
-    return this.http.get<StockSearchResult[]>(`${this.apiUrl}/search?query=${encodeURIComponent(query)}`);
+  searchStocks(query: string, exchange: string | null): Observable<StockSearchResult[]> {
+    return this.http.get<StockSearchResult[]>(
+      `${this.apiUrl}/search?query=${encodeURIComponent(query)}&exchange=${exchange ? exchange : ''}`,
+    );
+  }
+
+  getExchangeSymbols(exchange: string): Observable<StockSymbol[]> {
+    return this.http.get<StockSymbol[]>(`${this.apiUrl}/symbols/${exchange}`);
   }
 
   getSavedStocks(): Observable<StockSearchResult[]> {

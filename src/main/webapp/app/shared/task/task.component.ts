@@ -35,7 +35,7 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
   private taskUpdateSubject = new Subject<Task>();
 
   constructor() {
-    this.taskUpdateSubject.pipe(debounceTime(1000)).subscribe(task => {
+    this.taskUpdateSubject.pipe(debounceTime(300)).subscribe(task => {
       this.saveTask(task);
     });
   }

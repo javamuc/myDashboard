@@ -24,7 +24,7 @@ public class ExchangeService {
     @Transactional(readOnly = true)
     public List<ExchangeVM> findAll() {
         log.debug("Request to get all Exchanges");
-        return exchangeRepository.findAll();
+        return exchangeRepository.findAllExchangesVM();
     }
 
     @Transactional(readOnly = true)

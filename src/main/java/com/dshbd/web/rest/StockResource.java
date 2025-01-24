@@ -2,6 +2,7 @@ package com.dshbd.web.rest;
 
 import com.dshbd.service.StockService;
 import com.dshbd.service.dto.StockDTO;
+import com.dshbd.service.dto.StockSymbolDTO;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,5 +44,11 @@ public class StockResource {
         log.debug("REST request to delete stock: {}", symbol);
         stockService.deleteStock(symbol);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/symbols/{exchange}")
+    public ResponseEntity<List<StockSymbolDTO>> getExchangeSymbols(@PathVariable String exchange) {
+        log.debug("REST request to get symbols for exchange: {}", exchange);
+        return ResponseEntity.ok(stockService.getExchangeSymbols(exchange));
     }
 }

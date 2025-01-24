@@ -12,7 +12,7 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="name" type="varchar(255)"/>
-            <column name="mic" type="varchar(10)"/>
+            <column name="mic" type="varchar(255)"/>
             <column name="timezone" type="varchar(255)"/>
             <column name="pre_market" type="varchar(255)"/>
             <column name="hour" type="varchar(255)"/>
@@ -24,8 +24,8 @@
         </createTable>
 
         <loadData
-            file="config/liquibase/data/Finnhub_exchanges.csv"
-            separator=","
+            file="config/liquibase/data/Finnhub_exchanges2.csv"
+            separator=";"
             tableName="exchange"
             usePreparedStatements="true">
             <column name="code" type="string"/>

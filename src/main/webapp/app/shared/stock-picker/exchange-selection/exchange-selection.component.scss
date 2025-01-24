@@ -1,0 +1,41 @@
+.exchange-selection-container {
+  position: relative;
+  display: inline-block;
+
+  .dropdown-menu {
+    position: absolute;
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+
+    &.show {
+      display: block;
+    }
+
+    .search-container {
+      position: sticky;
+      top: 0;
+      background-color: white;
+      z-index: 1;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .exchange-list {
+      .dropdown-item {
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+
+        &:hover,
+        &.active {
+          background-color: #f8f9fa;
+        }
+
+        .badge {
+          font-size: 0.75rem;
+        }
+      }
+    }
+  }
+}

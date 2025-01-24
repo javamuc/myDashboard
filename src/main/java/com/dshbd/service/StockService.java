@@ -2,7 +2,9 @@ package com.dshbd.service;
 
 import com.dshbd.config.ApplicationProperties;
 import com.dshbd.service.dto.StockDTO;
+import com.dshbd.service.dto.StockSymbolDTO;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -19,7 +22,10 @@ public class StockService {
 
     private final Logger log = LoggerFactory.getLogger(StockService.class);
     private final RestTemplate restTemplate;
-    private final String finnhubApiKey;
+
+    @Value("${application.finnhub.api-key}")
+    private String finnhubApiKey;
+
     private final Map<String, StockDTO> savedStocks = new ConcurrentHashMap<>();
 
     public StockService(RestTemplate restTemplate, ApplicationProperties properties) {
@@ -61,6 +67,22 @@ public class StockService {
 
     public void deleteStock(String symbol) {
         savedStocks.remove(symbol);
+    }
+
+    public List<StockSymbolDTO> getExchangeSymbols(String exchange) {
+        try {
+            String url = UriComponentsBuilder.fromHttpUrl("https://finnhub.io/api/v1/stock/symbol")
+                .queryParam("exchange", exchange)
+                .queryParam("token", finnhubApiKey)
+                .build()
+                .toUriString();
+
+            ResponseEntity<StockSymbolDTO[]> response = restTemplate.getForEntity(url, StockSymbolDTO[].class);
+            return response.getBody() != null ? Arrays.asList(response.getBody()) : Collections.emptyList();
+        } catch (Exception e) {
+            log.error("Error fetching exchange symbols: {}", e.getMessage());
+            return Collections.emptyList();
+        }
     }
 
     private static class FinnhubSearchResponse {

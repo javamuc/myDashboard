@@ -1,0 +1,19 @@
+.stock-symbol-list {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: 1rem;
+
+  .list-group-item {
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #f8f9fa;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+    }
+  }
+}

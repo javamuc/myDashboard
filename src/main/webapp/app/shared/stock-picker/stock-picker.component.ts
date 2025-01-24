@@ -5,23 +5,27 @@ import { debounceTime, distinctUntilChanged, filter, takeUntil } from 'rxjs/oper
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { StockPickerService, StockSearchResult } from './stock-picker.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ExchangeSelectionComponent } from './exchange-selection/exchange-selection.component';
+import { StockSymbolListComponent } from './stock-symbol-list/stock-symbol-list.component';
 
 @Component({
   selector: 'jhi-stock-picker',
   templateUrl: './stock-picker.component.html',
   styleUrls: ['./stock-picker.component.scss'],
   standalone: true,
-  imports: [FontAwesomeModule, CommonModule],
+  imports: [FontAwesomeModule, CommonModule, ExchangeSelectionComponent, StockSymbolListComponent],
 })
 export class StockPickerComponent implements OnInit, OnDestroy {
   @ViewChild('searchInput') searchInput!: ElementRef;
 
   searchResults: StockSearchResult[] = [];
   selectedStocks: StockSearchResult[] = [];
+  exchangeSymbols: any[] = [];
   isLoading = false;
   showDropdown = false;
   selectedIndex = -1;
   faTimesCircle = faTimesCircle;
+  selectedExchange: string | null = null;
   private destroy$ = new Subject<void>();
 
   constructor(private stockPickerService: StockPickerService) {}
@@ -70,6 +74,23 @@ export class StockPickerComponent implements OnInit, OnDestroy {
       });
   }
 
+  onExchangeSelected(exchangeCode: string): void {
+    this.selectedExchange = exchangeCode;
+    this.loadExchangeSymbols(exchangeCode);
+    if (this.searchInput.nativeElement.value) {
+      this.searchStocks();
+    }
+  }
+
+  onSymbolSelected(symbol: any): void {
+    const stockResult: StockSearchResult = {
+      symbol: symbol.symbol,
+      description: symbol.description,
+      type: symbol.type,
+    };
+    this.selectStock(stockResult);
+  }
+
   private loadSavedStocks(): void {
     this.stockPickerService
       .getSavedStocks()
@@ -116,7 +137,7 @@ export class StockPickerComponent implements OnInit, OnDestroy {
 
     this.isLoading = true;
     this.stockPickerService
-      .searchStocks(query)
+      .searchStocks(query, this.selectedExchange)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (results: StockSearchResult[]) => {
@@ -152,5 +173,21 @@ export class StockPickerComponent implements OnInit, OnDestroy {
         this.closeDropdown();
         break;
     }
+  }
+
+  private loadExchangeSymbols(exchange: string): void {
+    this.isLoading = true;
+    this.stockPickerService
+      .getExchangeSymbols(exchange)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: symbols => {
+          this.exchangeSymbols = symbols;
+          this.isLoading = false;
+        },
+        error: () => {
+          this.isLoading = false;
+        },
+      });
   }
 }

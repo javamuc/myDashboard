@@ -27,7 +27,7 @@ export class NotesComponent implements OnInit, OnDestroy {
   private noteUpdateSubject = new Subject<Note>();
 
   constructor(private noteService: NoteService) {
-    this.noteUpdateSubject.pipe(debounceTime(1000)).subscribe(note => {
+    this.noteUpdateSubject.pipe(debounceTime(300)).subscribe(note => {
       this.saveNote(note);
     });
   }
