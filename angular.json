@@ -31,8 +31,8 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/main/webapp/content",
-              "src/main/webapp/favicon.ico",
               "src/main/webapp/favicon_focus.ico",
+              "src/main/webapp/favicon.ico",
               "src/main/webapp/manifest.webapp",
               "src/main/webapp/robots.txt"
             ],

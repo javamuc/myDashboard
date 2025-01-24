@@ -42,7 +42,6 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
-    console.warn('handleKeyboardEvent', event);
     // Check for CMD+Enter (Mac) or Ctrl+Enter (Windows)
     if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();

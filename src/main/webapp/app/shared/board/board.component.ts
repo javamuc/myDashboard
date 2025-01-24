@@ -1,4 +1,16 @@
-import { Component, OnInit, computed, signal, inject, EventEmitter, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  computed,
+  signal,
+  inject,
+  EventEmitter,
+  OnDestroy,
+  HostListener,
+  ViewChild,
+  ElementRef,
+  OnChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Board, BoardFilter, BoardSort, BoardView } from './board.model';
