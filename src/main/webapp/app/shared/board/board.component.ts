@@ -34,6 +34,7 @@ type TaskProperty = keyof Task;
 })
 export class BoardComponent implements OnInit, OnDestroy {
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
+  @ViewChild(BoardColumnsComponent) boardColumns!: BoardColumnsComponent;
 
   readonly statuses: TaskStatus[] = ['to-do', 'in-progress', 'done'];
   readonly taskProperties: TaskProperty[] = ['title', 'assignee', 'dueDate', 'priority', 'status', 'createdDate', 'lastModifiedDate'];
@@ -145,6 +146,12 @@ export class BoardComponent implements OnInit, OnDestroy {
       tasks.push(task);
       return { ...board, tasks };
     });
+    // Scroll to the newly created task
+    if (task.id) {
+      setTimeout(() => {
+        this.boardColumns.scrollToTask(task.id!);
+      }, 100); // Small delay to ensure the task is rendered
+    }
   }
 
   // Add a method to get the drop list IDs for connecting columns

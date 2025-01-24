@@ -16,7 +16,7 @@
         tabindex="-1"
       >
         @for (task of tasksByStatus.get(status) ?? []; track task.id) {
-          <div cdkDrag [cdkDragData]="task" tabindex="-1">
+          <div cdkDrag [cdkDragData]="task" tabindex="-1" #taskCard [attr.data-task-id]="task.id">
             <jhi-task-card [task]="task"></jhi-task-card>
           </div>
         }
