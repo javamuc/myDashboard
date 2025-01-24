@@ -43,8 +43,12 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
     // Check for CMD+Enter (Mac) or Ctrl+Enter (Windows)
-    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey) && event.type === 'keydown') {
       event.preventDefault();
+      // this.taskUpdateSubject.complete();
+      // this.taskUpdateSubject.pipe(debounceTime(1000)).subscribe(task => {
+      //   this.saveTask(task);
+      // });
       this.task = {
         title: '',
         description: '',
@@ -58,6 +62,7 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
       event.preventDefault();
       this.sidebarService.setIsOpen(false);
     } else if (event.key === 'Backspace' && event.shiftKey && (event.metaKey || event.ctrlKey)) {
+      console.warn('Backspace');
       event.preventDefault();
       this.taskUpdateSubject.complete();
       this.deleteTask();
@@ -126,6 +131,7 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
         this.task.id = createdTask.id;
         this.task.lastModifiedDate = createdTask.lastModifiedDate;
         this.task.createdDate = createdTask.createdDate;
+        this.sidebarService.setTaskData(this.task);
         this.sidebarService.getTaskCreatedListener().subscribe(listener => listener?.emit(this.task));
       });
     }
