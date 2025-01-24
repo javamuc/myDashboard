@@ -225,4 +225,4 @@ jhipster:
 
 application:
   finnhub:
-    api-key: $FINNHUB_API
+    api-key: ${FINNHHUB_API}
