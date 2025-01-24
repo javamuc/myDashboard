@@ -14,6 +14,7 @@ public interface ExchangeRepository extends JpaRepository<Exchange, String> {
          new com.dshbd.repository.ExchangeVM(e.code, e.name, e.countryName)
         FROM
          Exchange e
+        WHERE e.enabled = true
          """
     )
     List<ExchangeVM> findAllExchangesVM();

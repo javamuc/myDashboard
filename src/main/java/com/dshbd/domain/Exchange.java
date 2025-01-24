@@ -45,6 +45,9 @@ public class Exchange implements Serializable {
     @Column(name = "source")
     private String source;
 
+    @Column(name = "enabled")
+    private boolean enabled;
+
     // Getters and Setters
     public String getCode() {
         return code;
@@ -132,6 +135,14 @@ public class Exchange implements Serializable {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
