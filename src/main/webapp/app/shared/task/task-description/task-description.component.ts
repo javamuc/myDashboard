@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild, ElementRef } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Task } from '../task.model';
@@ -11,7 +11,7 @@ import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
 })
-export class TaskDescriptionComponent {
+export class TaskDescriptionComponent implements OnChanges {
   @Input() task!: Task;
   @Output() descriptionChange = new EventEmitter<void>();
   @ViewChild('textarea') textarea!: ElementRef<HTMLTextAreaElement>;
@@ -24,12 +24,17 @@ export class TaskDescriptionComponent {
 
   constructor(private sidebarService: SidebarService) {}
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['task'].currentValue.id !== changes['task'].previousValue?.id) {
+      this.showTagDropdown = false;
+    }
+  }
+
   onDescriptionChange(): void {
     this.descriptionChange.emit();
   }
 
   onBlur(): void {
-    console.warn('onBlur');
     const hashtags = this.getHashtags();
     if (hashtags.length > 0) {
       this.sidebarService.addTags(hashtags);

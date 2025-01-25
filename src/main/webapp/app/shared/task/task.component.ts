@@ -115,6 +115,7 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private saveTask(task: Task): void {
+    console.warn('update', task);
     if (task.id) {
       // Persist the task in the database
       this.taskService.update(task).subscribe(savedTask => {
