@@ -1,8 +1,10 @@
-import { Component, EventEmitter, Input, Output, ViewChild, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, ElementRef, OnChanges, SimpleChanges, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Task } from '../task.model';
 import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, switchMap, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'jhi-task-description',
@@ -11,7 +13,7 @@ import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
 })
-export class TaskDescriptionComponent implements OnChanges {
+export class TaskDescriptionComponent implements OnChanges, OnInit, OnDestroy {
   @Input() task!: Task;
   @Output() descriptionChange = new EventEmitter<void>();
   @ViewChild('textarea') textarea!: ElementRef<HTMLTextAreaElement>;
@@ -22,7 +24,42 @@ export class TaskDescriptionComponent implements OnChanges {
   cursorPosition = 0;
   currentTagStart = -1;
 
+  private tagInputSubject = new Subject<{ tag: string; start: number }>();
+  private subscription?: Subscription;
+
   constructor(private sidebarService: SidebarService) {}
+
+  ngOnInit(): void {
+    this.subscription = this.tagInputSubject
+      .pipe(
+        debounceTime(150),
+        distinctUntilChanged((prev, curr) => prev.tag === curr.tag),
+        switchMap(({ tag, start }) =>
+          this.sidebarService.getTags().pipe(
+            switchMap(tags =>
+              Promise.resolve({
+                suggestions: Array.from(tags)
+                  .filter(t => t.toLowerCase().includes(tag.toLowerCase()))
+                  .sort(),
+                start,
+              }),
+            ),
+          ),
+        ),
+      )
+      .subscribe(({ suggestions, start }) => {
+        // Only update if the tag start position hasn't changed
+        if (start === this.currentTagStart) {
+          this.tagSuggestions = suggestions;
+          this.showTagDropdown = suggestions.length > 0;
+          this.selectedTagIndex = -1;
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['task'].currentValue.id !== changes['task'].previousValue?.id) {
@@ -86,17 +123,10 @@ export class TaskDescriptionComponent implements OnChanges {
 
     if (this.currentTagStart >= 0 && (this.currentTagStart === 0 || textarea.value[this.currentTagStart - 1] === ' ')) {
       const currentTag = textBeforeCursor.substring(this.currentTagStart + 1);
-
-      // Get all tags from the service and filter based on the current input
-      this.sidebarService.getTags().subscribe(tags => {
-        this.tagSuggestions = Array.from(tags)
-          .filter(tag => tag.toLowerCase().includes(currentTag.toLowerCase()))
-          .sort();
-        this.showTagDropdown = this.tagSuggestions.length > 0;
-        this.selectedTagIndex = -1;
-      });
+      this.tagInputSubject.next({ tag: currentTag, start: this.currentTagStart });
     } else {
       this.showTagDropdown = false;
+      this.tagSuggestions = [];
     }
 
     this.onDescriptionChange();

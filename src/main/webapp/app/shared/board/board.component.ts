@@ -22,6 +22,7 @@ import { BoardService } from './board.service';
 import { TaskService } from '../task/task.service';
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { BoardColumnsComponent } from './board-columns/board-columns.component';
+import { SetWithContentEquality } from 'app/core/util/SetUtils';
 
 type TaskProperty = keyof Task;
 
@@ -53,9 +54,9 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   filteredTasks = computed(() => {
     const board = this.activeBoard();
-    if (!board) return [];
+    if (!board) return [] as Task[];
 
-    let tasks = [...board.tasks];
+    let tasks = board.tasks.values() as Task[];
 
     // Apply search term filter
     if (this.boardView().searchTerm) {
@@ -130,21 +131,17 @@ export class BoardComponent implements OnInit, OnDestroy {
   taskDeleted(task: Task): void {
     this.activeBoard.update(board => {
       if (!board) return board;
-      const tasks = [...board.tasks];
-      const index = tasks.findIndex(t => t.id === task.id);
-      if (index !== -1) {
-        tasks.splice(index, 1);
-      }
-      return { ...board, tasks };
+      board.tasks.delete(task);
+      return board;
     });
   }
 
   taskCreated(task: Task): void {
+    console.warn('taskCreated in board', task);
     this.activeBoard.update(board => {
       if (!board) return board;
-      const tasks = [...board.tasks];
-      tasks.push(task);
-      return { ...board, tasks };
+      board.tasks.add(task);
+      return board;
     });
     // Scroll to the newly created task
     if (task.id) {
@@ -167,22 +164,15 @@ export class BoardComponent implements OnInit, OnDestroy {
 
       // Update the task's status in the database
       const task = event.container.data[event.currentIndex];
-      const updatedTask: Task = {
-        ...task,
-        status: newStatus,
-        lastModifiedDate: new Date().toISOString(),
-      };
+      const updatedTask = new Task(task);
+      updatedTask.status = newStatus;
 
       this.taskService.update(updatedTask).subscribe(savedTask => {
         // Update the task in the board's tasks array
         this.activeBoard.update(board => {
           if (!board) return board;
-          const tasks = [...board.tasks];
-          const index = tasks.findIndex(t => t.id === savedTask.id);
-          if (index !== -1) {
-            tasks[index] = savedTask;
-          }
-          return { ...board, tasks };
+          board.tasks.get(savedTask)?.update(savedTask);
+          return board;
         });
       });
     }
@@ -236,15 +226,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     // Just set the task data and open the sidebar
     console.warn('New Task, setting boardId', board.id);
     this.sidebarService.setBoardId(board.id);
-    this.sidebarService.setTaskData({
-      title: '',
-      description: '',
-      dueDate: undefined,
-      status: 'to-do',
-      boardId: board.id,
-      priority: 1,
-      assignee: '',
-    });
+    this.sidebarService.setTaskData(new Task({ boardId: board.id }));
     this.sidebarService.setActiveComponent('task');
     this.sidebarService.setIsOpen(true);
   }
@@ -275,7 +257,10 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.taskService.getBoardTasks(firstBoard.id!).subscribe(tasks => {
           this.activeBoard.set({
             ...firstBoard,
-            tasks,
+            tasks: new SetWithContentEquality<Task>(
+              tasks.map(task => new Task(task)),
+              (task: Task) => task.id!.toString(),
+            ),
           });
         });
       }

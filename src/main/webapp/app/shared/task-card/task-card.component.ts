@@ -26,6 +26,7 @@ export class TaskCardComponent implements OnInit {
   @HostListener('keydown.enter', ['$event'])
   @HostListener('click', ['$event'])
   openTask(event: Event): void {
+    console.warn('openTask', this.task);
     event.stopPropagation();
     this.sidebarService.setTaskData(this.task);
     this.sidebarService.setBoardId(this.task.boardId);

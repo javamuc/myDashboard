@@ -1,9 +1,10 @@
+import { SetWithContentEquality } from 'app/core/util/SetUtils';
 import { Task } from '../task/task.model';
 
 export interface Board {
   id?: number;
   title: string;
-  tasks: Task[];
+  tasks: SetWithContentEquality<Task>;
   createdDate?: string;
   lastModifiedDate?: string;
 }

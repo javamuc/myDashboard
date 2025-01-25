@@ -4,6 +4,8 @@ import { Observable, map } from 'rxjs';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { Board } from './board.model';
 import { TaskService } from '../task/task.service';
+import { SetWithContentEquality } from 'app/core/util/SetUtils';
+import { Task } from '../task/task.model';
 
 @Injectable({ providedIn: 'root' })
 export class BoardService {
@@ -41,7 +43,7 @@ export class BoardService {
     return this.find(boardId).pipe(
       map(board => ({
         ...board,
-        tasks: [], // Initialize with empty tasks
+        tasks: new SetWithContentEquality<Task>([], (task: Task) => task.id!.toString()), // Initialize with empty tasks
       })),
     );
   }

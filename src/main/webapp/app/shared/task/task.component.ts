@@ -15,19 +15,11 @@ import { TaskDescriptionComponent } from './task-description/task-description.co
   standalone: true,
   imports: [CommonModule, FormsModule, FontAwesomeModule, TaskDescriptionComponent],
 })
-export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
+export class TaskComponent implements OnDestroy, AfterViewInit {
   @ViewChild('titleInput') titleInput!: ElementRef<HTMLInputElement>;
 
   readonly statuses: TaskStatus[] = ['to-do', 'in-progress', 'done'];
-  task: Task = {
-    title: '',
-    description: '',
-    dueDate: undefined,
-    status: 'to-do',
-    boardId: undefined,
-    priority: 1,
-    assignee: '',
-  };
+  task: Task = new Task();
 
   private destroy$ = new Subject<void>();
   private readonly sidebarService = inject(SidebarService);
@@ -49,15 +41,7 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
       // this.taskUpdateSubject.pipe(debounceTime(1000)).subscribe(task => {
       //   this.saveTask(task);
       // });
-      this.task = {
-        title: '',
-        description: '',
-        dueDate: undefined,
-        status: 'to-do',
-        boardId: undefined,
-        priority: 1,
-        assignee: '',
-      };
+      this.task = new Task();
       this.titleInput.nativeElement.focus();
     } else if (event.key === 'Escape') {
       event.preventDefault();
@@ -69,33 +53,31 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  ngOnInit(): void {
-    // Subscribe to task data from sidebar service
+  ngAfterViewInit(): void {
+    // Focus the title input after the view is initialized
+    setTimeout(() => {
+      this.titleInput.nativeElement.focus();
+    });
+
     this.sidebarService
       .getTaskData()
       .pipe(takeUntil(this.destroy$))
       .subscribe(task => {
         if (task) {
           this.task = task;
+          console.warn('new task from task service', this.task);
         }
       });
   }
 
-  ngAfterViewInit(): void {
-    // Focus the title input after the view is initialized
-    setTimeout(() => {
-      this.titleInput.nativeElement.focus();
-    });
-  }
-
   onTaskChange(): void {
-    const updatedTask: Task = {
-      ...this.task,
-    };
+    console.warn('onTaskChange', this.task);
+    const updatedTask = new Task(this.task);
     this.taskUpdateSubject.next(updatedTask);
   }
 
   update(task: Task): void {
+    console.warn('update', task);
     // Instead of immediately saving, push to the subject
     this.taskUpdateSubject.next(task);
   }
@@ -115,7 +97,7 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private saveTask(task: Task): void {
-    console.warn('update', task);
+    console.warn('saveTask', task);
     if (task.id) {
       // Persist the task in the database
       this.taskService.update(task).subscribe(savedTask => {
@@ -130,7 +112,6 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
           this.task.boardId = boardId;
           this.task.lastModifiedDate = createdTask.lastModifiedDate;
           this.task.createdDate = createdTask.createdDate;
-          this.sidebarService.setTaskData(this.task);
           this.sidebarService.getTaskCreatedListener().subscribe(listener => listener?.emit(this.task));
         });
       });

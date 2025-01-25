@@ -15,6 +15,8 @@ import { HomeService, type HomeComponent as HomeComponentType } from './home.ser
 import { TaskComponent } from '../shared/task/task.component';
 import { PomodoroComponent } from '../shared/pomodoro/pomodoro.component';
 import StockPickerComponent from '../shared/shared.module';
+import { SetWithContentEquality } from 'app/core/util/SetUtils';
+import { Task } from 'app/shared/task/task.model';
 
 @Component({
   selector: 'jhi-home',
@@ -37,7 +39,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
   board = signal<Board>({
     id: 1,
     title: 'My Board',
-    tasks: [],
+    tasks: new SetWithContentEquality<Task>([], (task: Task) => task.id!.toString()),
     createdDate: new Date().toISOString(),
     lastModifiedDate: new Date().toISOString(),
   });

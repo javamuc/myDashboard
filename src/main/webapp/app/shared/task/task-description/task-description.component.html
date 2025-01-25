@@ -13,7 +13,7 @@
       ></textarea>
       @if (showTagDropdown) {
         <div class="tag-suggestions">
-          @for (tag of tagSuggestions; track tag; let i = $index) {
+          @for (tag of tagSuggestions; track $index; let i = $index) {
             <div
               class="tag-suggestion"
               [class.selected]="i === selectedTagIndex"

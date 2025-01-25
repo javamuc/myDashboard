@@ -10,7 +10,7 @@
     <h3>
       {{ task.title }}
       @if (task.description) {
-        <i class="fas fa-align-left task-description-icon"></i>
+        <fa-icon icon="align-left" class="task-description-icon"></fa-icon>
       }
     </h3>
 
@@ -19,7 +19,7 @@
 
   @if (getHashtags().length > 0) {
     <div class="task-tags">
-      @for (tag of getHashtags(); track tag) {
+      @for (tag of getHashtags(); track $index) {
         <span class="tag" [style.background-color]="getTagColor(tag)" [style.color]="getTagTextColor(tag)">
           {{ tag }}
         </span>

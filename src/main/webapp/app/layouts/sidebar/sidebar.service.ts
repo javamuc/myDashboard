@@ -33,6 +33,7 @@ export class SidebarService {
   }
 
   setTaskData(task: Task | null): void {
+    console.warn('setTaskData', task);
     this.taskDataSubject.next(task);
   }
 
