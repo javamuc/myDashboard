@@ -22,7 +22,7 @@ import { BoardService } from './board.service';
 import { TaskService } from '../task/task.service';
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { BoardColumnsComponent } from './board-columns/board-columns.component';
-import { SetWithContentEquality } from 'app/core/util/SetUtils';
+import { takeUntil } from 'rxjs';
 
 type TaskProperty = keyof Task;
 
@@ -54,9 +54,9 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   filteredTasks = computed(() => {
     const board = this.activeBoard();
-    if (!board) return [] as Task[];
+    if (!board) return [];
 
-    let tasks = board.tasks.values() as Task[];
+    let tasks = [...board.tasks];
 
     // Apply search term filter
     if (this.boardView().searchTerm) {
@@ -112,27 +112,27 @@ export class BoardComponent implements OnInit, OnDestroy {
   private readonly sidebarService = inject(SidebarService);
   private readonly boardService = inject(BoardService);
   private readonly taskService = inject(TaskService);
-  private taskCreatedListener = new EventEmitter<Task>();
   private taskDeletedListener = new EventEmitter<Task>();
 
   ngOnInit(): void {
     this.loadBoards();
-    this.taskCreatedListener.subscribe(task => this.taskCreated(task));
     this.taskDeletedListener.subscribe(task => this.taskDeleted(task));
-    this.sidebarService.setTaskCreatedListener(this.taskCreatedListener);
     this.sidebarService.setTaskDeletedListener(this.taskDeletedListener);
   }
 
   ngOnDestroy(): void {
-    this.taskCreatedListener.unsubscribe();
     this.taskDeletedListener.unsubscribe();
   }
 
   taskDeleted(task: Task): void {
     this.activeBoard.update(board => {
       if (!board) return board;
-      board.tasks.delete(task);
-      return board;
+      const tasks = [...board.tasks];
+      const index = tasks.findIndex(t => t.id === task.id);
+      if (index !== -1) {
+        tasks.splice(index, 1);
+      }
+      return { ...board, tasks };
     });
   }
 
@@ -140,8 +140,9 @@ export class BoardComponent implements OnInit, OnDestroy {
     console.warn('taskCreated in board', task);
     this.activeBoard.update(board => {
       if (!board) return board;
-      board.tasks.add(task);
-      return board;
+      const tasks = [...board.tasks];
+      tasks.push(task);
+      return { ...board, tasks };
     });
     // Scroll to the newly created task
     if (task.id) {
@@ -164,15 +165,22 @@ export class BoardComponent implements OnInit, OnDestroy {
 
       // Update the task's status in the database
       const task = event.container.data[event.currentIndex];
-      const updatedTask = new Task(task);
-      updatedTask.status = newStatus;
+      const updatedTask: Task = {
+        ...task,
+        status: newStatus,
+        lastModifiedDate: new Date().toISOString(),
+      };
 
       this.taskService.update(updatedTask).subscribe(savedTask => {
         // Update the task in the board's tasks array
         this.activeBoard.update(board => {
           if (!board) return board;
-          board.tasks.get(savedTask)?.update(savedTask);
-          return board;
+          const tasks = [...board.tasks];
+          const index = tasks.findIndex(t => t.id === savedTask.id);
+          if (index !== -1) {
+            tasks[index] = savedTask;
+          }
+          return { ...board, tasks };
         });
       });
     }
@@ -223,10 +231,22 @@ export class BoardComponent implements OnInit, OnDestroy {
     const board = this.activeBoard();
     if (!board) return;
 
+    const task: Task = {
+      title: '',
+      description: '',
+      dueDate: undefined,
+      status: 'to-do',
+      boardId: board.id,
+      priority: 1,
+      assignee: '',
+    };
+    this.taskService.create(task).subscribe(createdTask => {
+      this.sidebarService.setTaskData(createdTask);
+      this.taskCreated(createdTask);
+    });
+
     // Just set the task data and open the sidebar
-    console.warn('New Task, setting boardId', board.id);
     this.sidebarService.setBoardId(board.id);
-    this.sidebarService.setTaskData(new Task({ boardId: board.id }));
     this.sidebarService.setActiveComponent('task');
     this.sidebarService.setIsOpen(true);
   }
@@ -237,6 +257,9 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey) && event.type === 'keydown') {
+      this.createNewTask(event);
+    }
     // Only trigger if no input/textarea is focused (except for Escape key)
     const isInputFocused = event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;
 
@@ -257,10 +280,7 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.taskService.getBoardTasks(firstBoard.id!).subscribe(tasks => {
           this.activeBoard.set({
             ...firstBoard,
-            tasks: new SetWithContentEquality<Task>(
-              tasks.map(task => new Task(task)),
-              (task: Task) => task.id!.toString(),
-            ),
+            tasks,
           });
         });
       }

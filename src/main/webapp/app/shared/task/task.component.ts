@@ -19,7 +19,15 @@ export class TaskComponent implements OnDestroy, AfterViewInit {
   @ViewChild('titleInput') titleInput!: ElementRef<HTMLInputElement>;
 
   readonly statuses: TaskStatus[] = ['to-do', 'in-progress', 'done'];
-  task: Task = new Task();
+  task: Task = {
+    title: '',
+    description: '',
+    dueDate: undefined,
+    status: 'to-do',
+    boardId: undefined,
+    priority: 1,
+    assignee: '',
+  };
 
   private destroy$ = new Subject<void>();
   private readonly sidebarService = inject(SidebarService);
@@ -35,15 +43,7 @@ export class TaskComponent implements OnDestroy, AfterViewInit {
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
     // Check for CMD+Enter (Mac) or Ctrl+Enter (Windows)
-    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey) && event.type === 'keydown') {
-      event.preventDefault();
-      // this.taskUpdateSubject.complete();
-      // this.taskUpdateSubject.pipe(debounceTime(1000)).subscribe(task => {
-      //   this.saveTask(task);
-      // });
-      this.task = new Task();
-      this.titleInput.nativeElement.focus();
-    } else if (event.key === 'Escape') {
+    if (event.key === 'Escape') {
       event.preventDefault();
       this.sidebarService.setIsOpen(false);
     } else if (event.key === 'Backspace' && event.shiftKey && (event.metaKey || event.ctrlKey)) {
@@ -71,8 +71,9 @@ export class TaskComponent implements OnDestroy, AfterViewInit {
   }
 
   onTaskChange(): void {
-    console.warn('onTaskChange', this.task);
-    const updatedTask = new Task(this.task);
+    const updatedTask: Task = {
+      ...this.task,
+    };
     this.taskUpdateSubject.next(updatedTask);
   }
 
@@ -102,18 +103,6 @@ export class TaskComponent implements OnDestroy, AfterViewInit {
       // Persist the task in the database
       this.taskService.update(task).subscribe(savedTask => {
         this.task.lastModifiedDate = savedTask.lastModifiedDate;
-        this.task.createdDate = savedTask.createdDate;
-      });
-    } else {
-      this.sidebarService.getBoardId().subscribe(boardId => {
-        task.boardId = boardId;
-        this.taskService.create(task).subscribe(createdTask => {
-          this.task.id = createdTask.id;
-          this.task.boardId = boardId;
-          this.task.lastModifiedDate = createdTask.lastModifiedDate;
-          this.task.createdDate = createdTask.createdDate;
-          this.sidebarService.getTaskCreatedListener().subscribe(listener => listener?.emit(this.task));
-        });
       });
     }
   }
