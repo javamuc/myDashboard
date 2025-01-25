@@ -10,13 +10,13 @@ export class SidebarService {
   private readonly isOpenSubject = new BehaviorSubject<boolean>(false);
   private readonly activeComponentSubject = new BehaviorSubject<'task' | 'note' | null>(null);
   private readonly taskDataSubject = new BehaviorSubject<Task | null>(null);
+  private readonly tagsSubject = new BehaviorSubject<Set<string>>(new Set<string>());
 
   getIsOpen(): Observable<boolean> {
     return this.isOpenSubject.asObservable();
   }
 
   setIsOpen(isOpen: boolean): void {
-    console.warn('setIsOpen', isOpen);
     this.isOpenSubject.next(isOpen);
   }
 
@@ -25,7 +25,6 @@ export class SidebarService {
   }
 
   setActiveComponent(component: 'task' | 'note' | null): void {
-    console.warn('setActiveComponent', component);
     this.activeComponentSubject.next(component);
   }
 
@@ -63,5 +62,21 @@ export class SidebarService {
 
   toggle(): void {
     this.isOpenSubject.next(!this.isOpenSubject.value);
+  }
+
+  getTags(): Observable<Set<string>> {
+    return this.tagsSubject.asObservable();
+  }
+
+  addTags(tags: string[]): void {
+    const currentTags = this.tagsSubject.value;
+    tags.forEach(tag => currentTags.add(tag));
+    this.tagsSubject.next(currentTags);
+  }
+
+  removeTags(tags: string[]): void {
+    const currentTags = this.tagsSubject.value;
+    tags.forEach(tag => currentTags.delete(tag));
+    this.tagsSubject.next(currentTags);
   }
 }

@@ -1,6 +1,30 @@
 <div class="property">
   <div class="property-value">
-    <textarea [(ngModel)]="task.description" (ngModelChange)="onDescriptionChange()" placeholder="Add a description..." rows="3">
-    </textarea>
+    <div class="textarea-container">
+      <textarea
+        #textarea
+        [(ngModel)]="task.description"
+        (ngModelChange)="onDescriptionChange()"
+        (input)="onInput($event)"
+        (keydown)="onKeyDown($event)"
+        (blur)="onBlur()"
+        placeholder="Add a description..."
+        rows="3"
+      ></textarea>
+      @if (showTagDropdown) {
+        <div class="tag-suggestions">
+          @for (tag of tagSuggestions; track tag; let i = $index) {
+            <div
+              class="tag-suggestion"
+              [class.selected]="i === selectedTagIndex"
+              (click)="selectTag(tag)"
+              (mouseenter)="selectedTagIndex = i"
+            >
+              {{ tag }}
+            </div>
+          }
+        </div>
+      }
+    </div>
   </div>
 </div>

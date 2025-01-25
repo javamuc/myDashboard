@@ -58,11 +58,11 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
         priority: 1,
         assignee: '',
       };
+      this.titleInput.nativeElement.focus();
     } else if (event.key === 'Escape') {
       event.preventDefault();
       this.sidebarService.setIsOpen(false);
     } else if (event.key === 'Backspace' && event.shiftKey && (event.metaKey || event.ctrlKey)) {
-      console.warn('Backspace');
       event.preventDefault();
       this.taskUpdateSubject.complete();
       this.deleteTask();
@@ -71,7 +71,6 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     // Subscribe to task data from sidebar service
-    console.warn('ngOnInit');
     this.sidebarService
       .getTaskData()
       .pipe(takeUntil(this.destroy$))
@@ -102,7 +101,6 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   deleteTask(): void {
-    console.warn('deleteTask', this.task);
     if (!this.task.id) return;
 
     this.taskService.delete(this.task.id).subscribe(() => {
@@ -120,19 +118,20 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
     if (task.id) {
       // Persist the task in the database
       this.taskService.update(task).subscribe(savedTask => {
-        this.task.id = savedTask.id;
         this.task.lastModifiedDate = savedTask.lastModifiedDate;
         this.task.createdDate = savedTask.createdDate;
       });
     } else {
-      this.sidebarService.getBoardId().subscribe(boardId => (task.boardId = boardId));
-      this.task.boardId = task.boardId;
-      this.taskService.create(task).subscribe(createdTask => {
-        this.task.id = createdTask.id;
-        this.task.lastModifiedDate = createdTask.lastModifiedDate;
-        this.task.createdDate = createdTask.createdDate;
-        this.sidebarService.setTaskData(this.task);
-        this.sidebarService.getTaskCreatedListener().subscribe(listener => listener?.emit(this.task));
+      this.sidebarService.getBoardId().subscribe(boardId => {
+        task.boardId = boardId;
+        this.taskService.create(task).subscribe(createdTask => {
+          this.task.id = createdTask.id;
+          this.task.boardId = boardId;
+          this.task.lastModifiedDate = createdTask.lastModifiedDate;
+          this.task.createdDate = createdTask.createdDate;
+          this.sidebarService.setTaskData(this.task);
+          this.sidebarService.getTaskCreatedListener().subscribe(listener => listener?.emit(this.task));
+        });
       });
     }
   }

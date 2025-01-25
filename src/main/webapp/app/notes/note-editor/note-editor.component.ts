@@ -19,7 +19,6 @@ export class NoteEditorComponent implements AfterViewInit, OnChanges {
 
   ngAfterViewInit(): void {
     // Focus title for new notes, content for existing notes
-    console.warn('ngAfterViewInit ', this.note.title.length);
     setTimeout(() => {
       if (this.note.title.length === 0) {
         this.titleInput.nativeElement.focus();

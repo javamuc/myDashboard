@@ -234,8 +234,17 @@ export class BoardComponent implements OnInit, OnDestroy {
     if (!board) return;
 
     // Just set the task data and open the sidebar
-    this.sidebarService.setTaskData(null);
+    console.warn('New Task, setting boardId', board.id);
     this.sidebarService.setBoardId(board.id);
+    this.sidebarService.setTaskData({
+      title: '',
+      description: '',
+      dueDate: undefined,
+      status: 'to-do',
+      boardId: board.id,
+      priority: 1,
+      assignee: '',
+    });
     this.sidebarService.setActiveComponent('task');
     this.sidebarService.setIsOpen(true);
   }
