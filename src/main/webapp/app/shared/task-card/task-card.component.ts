@@ -38,6 +38,10 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  onFocus(): void {
+    this.sidebarService.setTaskData(this.task);
+  }
+
   ngAfterViewInit(): void {
     setTimeout(() => {
       if (this.index === 0 && this.task.status === 'in-progress') {
@@ -104,6 +108,16 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
             (firstCard as HTMLElement).focus();
           }
         }
+        break;
+      }
+      case 'p': {
+        event.preventDefault();
+        let newP = this.task.priority + 1;
+        if (newP > 3) {
+          newP = 1;
+        }
+        this.task.priority = newP;
+        this.sidebarService.requestTaskUpdate(this.task);
         break;
       }
     }
