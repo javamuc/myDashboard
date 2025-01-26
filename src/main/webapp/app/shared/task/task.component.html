@@ -1,40 +1,48 @@
 <div class="task-container">
-  <div class="task-title">
-    <input #titleInput type="text" [(ngModel)]="task.title" (ngModelChange)="onTaskChange()" placeholder="Task title" class="title-input" />
-  </div>
-
-  <div class="property">
-    <div class="property-value">
-      <jhi-task-description [task]="task" (descriptionChange)="onTaskChange()"></jhi-task-description>
+  <div *ngIf="task()">
+    <div class="task-title">
+      <input
+        #titleInput
+        type="text"
+        [(ngModel)]="task()!.title"
+        (ngModelChange)="onTaskChange()"
+        placeholder="Task title"
+        class="title-input"
+      />
     </div>
-  </div>
 
-  <div class="property">
-    <div class="property-label">
-      <i class="fas fa-flag"></i>
-      Priority
+    <div class="property">
+      <div class="property-value">
+        <jhi-task-description [task]="task()!" (descriptionChange)="onTaskChange()"></jhi-task-description>
+      </div>
     </div>
-    <div class="property-value">
-      <select [(ngModel)]="task.priority" (ngModelChange)="onTaskChange()">
-        <option [value]="1">Low</option>
-        <option [value]="2">Medium</option>
-        <option [value]="3">High</option>
-      </select>
-    </div>
-  </div>
 
-  <div class="task-properties">
     <div class="property">
       <div class="property-label">
-        <i class="fas fa-calendar"></i>
-        Due Date
+        <i class="fas fa-flag"></i>
+        Priority
       </div>
       <div class="property-value">
-        <input type="date" [(ngModel)]="task.dueDate" (ngModelChange)="onTaskChange()" />
+        <select [(ngModel)]="task()!.priority" (ngModelChange)="onTaskChange()">
+          <option [value]="1">Low</option>
+          <option [value]="2">Medium</option>
+          <option [value]="3">High</option>
+        </select>
       </div>
     </div>
 
-    <!-- <div class="property">
+    <div class="task-properties">
+      <div class="property">
+        <div class="property-label">
+          <i class="fas fa-calendar"></i>
+          Due Date
+        </div>
+        <div class="property-value">
+          <input type="date" [(ngModel)]="task()!.dueDate" (ngModelChange)="onTaskChange()" />
+        </div>
+      </div>
+
+      <!-- <div class="property">
       <div class="property-label">
         <i class="fas fa-user"></i>
         Assignee
@@ -43,20 +51,21 @@
         <input type="text" [(ngModel)]="task.assignee" (ngModelChange)="onTaskChange()" placeholder="Assign to someone..." />
       </div>
     </div> -->
-  </div>
-
-  <div class="task-comments">
-    <h3>Comments</h3>
-    <div class="comment-input">
-      <div class="user-avatar">S</div>
-      <input type="text" placeholder="Add a comment..." class="comment-text-input" />
     </div>
-  </div>
 
-  <div class="delete-section">
-    <button class="delete-button" (click)="deleteTask()">
-      <fa-icon [icon]="['fas', 'trash']"></fa-icon>
-      Delete Task
-    </button>
+    <div class="task-comments">
+      <h3>Comments</h3>
+      <div class="comment-input">
+        <div class="user-avatar">S</div>
+        <input type="text" placeholder="Add a comment..." class="comment-text-input" />
+      </div>
+    </div>
+
+    <div class="delete-section">
+      <button class="delete-button" (click)="deleteTask()">
+        <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+        Delete Task
+      </button>
+    </div>
   </div>
 </div>

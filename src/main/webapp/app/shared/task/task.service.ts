@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { Task } from './task.model';
+import { NewTask, Task } from './task.model';
 
 @Injectable({ providedIn: 'root' })
 export class TaskService {
@@ -15,7 +15,7 @@ export class TaskService {
     this.resourceUrl = this.applicationConfigService.getEndpointFor('api/tasks');
   }
 
-  create(task: Task): Observable<Task> {
+  create(task: NewTask): Observable<Task> {
     return this.http.post<Task>(this.resourceUrl, task);
   }
 

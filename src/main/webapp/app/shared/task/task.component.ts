@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, ViewChild, ElementRef, AfterViewInit, HostListener, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Task, TaskStatus } from './task.model';
@@ -19,15 +19,7 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('titleInput') titleInput!: ElementRef<HTMLInputElement>;
 
   readonly statuses: TaskStatus[] = ['to-do', 'in-progress', 'done'];
-  task: Task = {
-    title: '',
-    description: '',
-    dueDate: null,
-    status: 'to-do',
-    boardId: undefined,
-    priority: 1,
-    assignee: '',
-  };
+  task = signal<Task | undefined>(undefined);
 
   private destroy$ = new Subject<void>();
   private readonly sidebarService = inject(SidebarService);
@@ -46,7 +38,7 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(task => {
         if (task) {
-          this.task = task;
+          this.task.set(task);
           console.warn('new task from task service', this.task);
         }
       });
@@ -61,7 +53,7 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onTaskChange(): void {
     const updatedTask: Task = {
-      ...this.task,
+      ...this.task()!,
     };
     this.taskUpdateSubject.next(updatedTask);
   }
@@ -78,7 +70,7 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   deleteTask(): void {
-    this.sidebarService.requestTaskDeletion(this.task);
+    this.sidebarService.requestTaskDeletion(this.task()!);
   }
 
   private saveTask(task: Task): void {
@@ -86,7 +78,9 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
     if (task.id) {
       // Persist the task in the database
       this.taskService.update(task).subscribe(savedTask => {
-        this.task.lastModifiedDate = savedTask.lastModifiedDate;
+        if (this.task() && this.task()?.id === savedTask.id) {
+          this.task()!.lastModifiedDate = savedTask.lastModifiedDate;
+        }
       });
     }
   }

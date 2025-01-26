@@ -14,7 +14,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Board, BoardFilter, BoardSort, BoardView } from './board.model';
-import { Task, TaskStatus } from '../task/task.model';
+import { NewTask, Task, TaskStatus } from '../task/task.model';
 import SharedModule from 'app/shared/shared.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
@@ -266,7 +266,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     const board = this.activeBoard();
     if (!board) return;
 
-    const task: Task = {
+    const task: NewTask = {
       title: '',
       description: '',
       dueDate: null,
@@ -310,10 +310,10 @@ export class BoardComponent implements OnInit, OnDestroy {
       console.warn('Close sidebar');
       if (
         this.task() &&
-        this.task()?.createdDate?.substring(0, this.task()?.createdDate?.lastIndexOf('.')) ===
-          this.task()?.lastModifiedDate?.substring(0, this.task()?.lastModifiedDate?.lastIndexOf('.'))
+        this.task()?.createdDate.substring(0, this.task()!.createdDate.lastIndexOf('.') + 1) ===
+          this.task()?.lastModifiedDate.substring(0, this.task()!.lastModifiedDate.lastIndexOf('.') + 1)
       ) {
-        console.warn('task is new and unchanged');
+        this.deleteTask();
       }
       this.sidebarService.setIsOpen(false);
     }
