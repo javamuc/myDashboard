@@ -22,7 +22,7 @@ import { BoardService } from './board.service';
 import { TaskService } from '../task/task.service';
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { BoardColumnsComponent } from './board-columns/board-columns.component';
-import { takeUntil } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs';
 import { Subject } from 'rxjs';
 
 type TaskProperty = keyof Task;
@@ -116,6 +116,13 @@ export class BoardComponent implements OnInit, OnDestroy {
   private readonly boardService = inject(BoardService);
   private readonly taskService = inject(TaskService);
   private destroy$ = new Subject<void>();
+  private taskUpdateSubject = new Subject<Task>();
+
+  constructor() {
+    this.taskUpdateSubject.pipe(debounceTime(300)).subscribe(task => {
+      this.saveTask(task);
+    });
+  }
 
   ngOnInit(): void {
     this.loadBoards();
@@ -132,6 +139,13 @@ export class BoardComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(isOpen => {
         this.sidebarOpen.set(isOpen);
+      });
+
+    this.sidebarService
+      .getTaskUpdateRequests()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(task => {
+        this.taskUpdateSubject.next(task);
       });
 
     // Subscribe to task deletion requests
@@ -307,15 +321,12 @@ export class BoardComponent implements OnInit, OnDestroy {
     // Check for CMD+Enter (Mac) or Ctrl+Enter (Windows)
     if (event.key === 'Escape' && this.sidebarOpen()) {
       event.preventDefault();
-      console.warn('Close sidebar');
       if (
         this.task() &&
         this.task()?.createdDate.substring(0, this.task()!.createdDate.lastIndexOf('.') + 1) ===
           this.task()?.lastModifiedDate.substring(0, this.task()!.lastModifiedDate.lastIndexOf('.') + 1)
       ) {
         this.deleteTask();
-      } else {
-        this.sidebarService.setTaskData(undefined);
       }
       this.sidebarService.setIsOpen(false);
     }
@@ -328,6 +339,18 @@ export class BoardComponent implements OnInit, OnDestroy {
     } else if (event.key === 'f' && !isInputFocused) {
       event.preventDefault();
       this.searchInput.nativeElement.focus();
+    }
+  }
+
+  private saveTask(task: Task): void {
+    console.warn('saveTask', task);
+    if (task.id) {
+      // Persist the task in the database
+      this.taskService.update(task).subscribe(savedTask => {
+        if (this.task() && this.task()?.id === savedTask.id) {
+          this.task()!.lastModifiedDate = savedTask.lastModifiedDate;
+        }
+      });
     }
   }
 

@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Task, TaskStatus } from './task.model';
 import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
-import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
-import { TaskService } from './task.service';
+import { Subject, takeUntil } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TaskDescriptionComponent } from './task-description/task-description.component';
 
@@ -23,14 +22,6 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private destroy$ = new Subject<void>();
   private readonly sidebarService = inject(SidebarService);
-  private readonly taskService = inject(TaskService);
-  private taskUpdateSubject = new Subject<Task>();
-
-  constructor() {
-    this.taskUpdateSubject.pipe(debounceTime(300)).subscribe(task => {
-      this.saveTask(task);
-    });
-  }
 
   ngOnInit(): void {
     this.sidebarService
@@ -39,7 +30,7 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(task => {
         if (task) {
           this.task.set(task);
-          console.warn('new task from task service', this.task);
+          console.warn('new task from task service', task);
         }
       });
   }
@@ -55,13 +46,13 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
     const updatedTask: Task = {
       ...this.task()!,
     };
-    this.taskUpdateSubject.next(updatedTask);
+    this.sidebarService.requestTaskUpdate(updatedTask);
   }
 
   update(task: Task): void {
     console.warn('update', task);
     // Instead of immediately saving, push to the subject
-    this.taskUpdateSubject.next(task);
+    this.sidebarService.requestTaskUpdate(task);
   }
 
   ngOnDestroy(): void {
@@ -71,17 +62,5 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
 
   deleteTask(): void {
     this.sidebarService.requestTaskDeletion(this.task()!);
-  }
-
-  private saveTask(task: Task): void {
-    console.warn('saveTask', task);
-    if (task.id) {
-      // Persist the task in the database
-      this.taskService.update(task).subscribe(savedTask => {
-        if (this.task() && this.task()?.id === savedTask.id) {
-          this.task()!.lastModifiedDate = savedTask.lastModifiedDate;
-        }
-      });
-    }
   }
 }

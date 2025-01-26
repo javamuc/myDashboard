@@ -31,7 +31,6 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(isOpen => {
         if (!isOpen) {
-          console.warn('sidebar is closed, focus on first task card');
           if (this.sidebarService.getTaskDataValue()?.id === this.task.id) {
             this.taskCard.nativeElement.focus();
           }
@@ -64,8 +63,6 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostListener('keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
-    event.stopPropagation();
-
     const currentCard = event.target as HTMLElement;
     const currentColumn = currentCard.closest('.column');
 

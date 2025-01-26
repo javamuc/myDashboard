@@ -11,6 +11,7 @@ export class SidebarService {
   private readonly tagsSubject = new BehaviorSubject<Set<string>>(new Set<string>());
 
   private taskDeleteRequested = new Subject<Task>();
+  private taskUpdateRequested = new Subject<Task>();
 
   getIsOpen(): Observable<boolean> {
     return this.isOpenSubject.asObservable();
@@ -75,5 +76,13 @@ export class SidebarService {
 
   getTaskDeleteRequests(): Observable<Task> {
     return this.taskDeleteRequested.asObservable();
+  }
+
+  requestTaskUpdate(task: Task): void {
+    this.taskUpdateRequested.next(task);
+  }
+
+  getTaskUpdateRequests(): Observable<Task> {
+    return this.taskUpdateRequested.asObservable();
   }
 }
