@@ -32,6 +32,10 @@ export class SidebarService {
     return this.taskDataSubject.asObservable();
   }
 
+  getTaskDataValue(): Task | undefined {
+    return this.taskDataSubject.getValue();
+  }
+
   setTaskData(task: Task | undefined): void {
     console.warn('setTaskData', task);
     this.taskDataSubject.next(task);

@@ -1,8 +1,10 @@
-import { Component, Input, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, HostListener, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Task } from '../task/task.model';
 import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'jhi-task-card',
@@ -11,8 +13,11 @@ import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
   standalone: true,
   imports: [CommonModule, FontAwesomeModule],
 })
-export class TaskCardComponent implements OnInit {
+export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() task!: Task;
+  @Input() index!: number;
+  @ViewChild('taskCard') taskCard!: ElementRef;
+  private destroy$ = new Subject<void>();
 
   constructor(private sidebarService: SidebarService) {}
 
@@ -21,17 +26,90 @@ export class TaskCardComponent implements OnInit {
     if (tags.length > 0) {
       this.sidebarService.addTags(tags);
     }
+    this.sidebarService
+      .getIsOpen()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isOpen => {
+        if (!isOpen) {
+          console.warn('sidebar is closed, focus on first task card');
+          if (this.sidebarService.getTaskDataValue()?.id === this.task.id) {
+            this.taskCard.nativeElement.focus();
+          }
+        }
+      });
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      if (this.index === 0 && this.task.status === 'in-progress') {
+        this.taskCard.nativeElement.focus();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   @HostListener('keydown.enter', ['$event'])
   @HostListener('click', ['$event'])
   openTask(event: Event): void {
-    console.warn('openTask', this.task);
     event.stopPropagation();
     this.sidebarService.setTaskData(this.task);
     this.sidebarService.setBoardId(this.task.boardId);
     this.sidebarService.setActiveComponent('task');
     this.sidebarService.setIsOpen(true);
+  }
+
+  @HostListener('keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
+    event.stopPropagation();
+
+    const currentCard = event.target as HTMLElement;
+    const currentColumn = currentCard.closest('.column');
+
+    switch (event.key) {
+      case 'ArrowDown': {
+        event.preventDefault();
+        const nextCard = currentCard.parentElement?.parentElement?.nextElementSibling?.querySelector('.task-card');
+        if (nextCard) {
+          (nextCard as HTMLElement).focus();
+        }
+        break;
+      }
+      case 'ArrowUp': {
+        event.preventDefault();
+        const prevCard = currentCard.parentElement?.parentElement?.previousElementSibling?.querySelector('.task-card');
+        if (prevCard) {
+          (prevCard as HTMLElement).focus();
+        }
+        break;
+      }
+      case 'ArrowRight': {
+        event.preventDefault();
+        console.warn(currentColumn);
+        const nextColumn = currentColumn?.nextElementSibling;
+        if (nextColumn) {
+          const firstCard = nextColumn.querySelector('.task-card');
+          if (firstCard) {
+            (firstCard as HTMLElement).focus();
+          }
+        }
+        break;
+      }
+      case 'ArrowLeft': {
+        event.preventDefault();
+        const prevColumn = currentColumn?.previousElementSibling;
+        if (prevColumn) {
+          const firstCard = prevColumn.querySelector('.task-card');
+          if (firstCard) {
+            (firstCard as HTMLElement).focus();
+          }
+        }
+        break;
+      }
+    }
   }
 
   getHashtags(): string[] {

@@ -314,6 +314,8 @@ export class BoardComponent implements OnInit, OnDestroy {
           this.task()?.lastModifiedDate.substring(0, this.task()!.lastModifiedDate.lastIndexOf('.') + 1)
       ) {
         this.deleteTask();
+      } else {
+        this.sidebarService.setTaskData(undefined);
       }
       this.sidebarService.setIsOpen(false);
     }
