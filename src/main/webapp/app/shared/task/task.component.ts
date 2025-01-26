@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject, ViewChild, ElementRef, AfterViewInit, HostListener, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, ViewChild, ElementRef, AfterViewInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Task, TaskStatus } from './task.model';
@@ -30,16 +30,12 @@ export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(task => {
         if (task) {
           this.task.set(task);
-          console.warn('new task from task service', task);
         }
       });
   }
 
   ngAfterViewInit(): void {
-    // Focus the title input after the view is initialized
-    setTimeout(() => {
-      this.titleInput.nativeElement.focus();
-    });
+    this.titleInput.nativeElement.focus();
   }
 
   onTaskChange(): void {
