@@ -15,14 +15,14 @@ import { TaskDescriptionComponent } from './task-description/task-description.co
   standalone: true,
   imports: [CommonModule, FormsModule, FontAwesomeModule, TaskDescriptionComponent],
 })
-export class TaskComponent implements OnDestroy, AfterViewInit {
+export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('titleInput') titleInput!: ElementRef<HTMLInputElement>;
 
   readonly statuses: TaskStatus[] = ['to-do', 'in-progress', 'done'];
   task: Task = {
     title: '',
     description: '',
-    dueDate: undefined,
+    dueDate: null,
     status: 'to-do',
     boardId: undefined,
     priority: 1,
@@ -40,25 +40,7 @@ export class TaskComponent implements OnDestroy, AfterViewInit {
     });
   }
 
-  @HostListener('document:keydown', ['$event'])
-  handleKeyboardEvent(event: KeyboardEvent): void {
-    // Check for CMD+Enter (Mac) or Ctrl+Enter (Windows)
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      this.sidebarService.setIsOpen(false);
-    } else if (event.key === 'Backspace' && event.shiftKey && (event.metaKey || event.ctrlKey)) {
-      event.preventDefault();
-      this.taskUpdateSubject.complete();
-      this.deleteTask();
-    }
-  }
-
-  ngAfterViewInit(): void {
-    // Focus the title input after the view is initialized
-    setTimeout(() => {
-      this.titleInput.nativeElement.focus();
-    });
-
+  ngOnInit(): void {
     this.sidebarService
       .getTaskData()
       .pipe(takeUntil(this.destroy$))
@@ -68,6 +50,13 @@ export class TaskComponent implements OnDestroy, AfterViewInit {
           console.warn('new task from task service', this.task);
         }
       });
+  }
+
+  ngAfterViewInit(): void {
+    // Focus the title input after the view is initialized
+    setTimeout(() => {
+      this.titleInput.nativeElement.focus();
+    });
   }
 
   onTaskChange(): void {
@@ -83,18 +72,13 @@ export class TaskComponent implements OnDestroy, AfterViewInit {
     this.taskUpdateSubject.next(task);
   }
 
-  deleteTask(): void {
-    if (!this.task.id) return;
-
-    this.taskService.delete(this.task.id).subscribe(() => {
-      this.sidebarService.getTaskDeletedListener().subscribe(listener => listener?.emit(this.task));
-      this.sidebarService.setIsOpen(false);
-    });
-  }
-
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  deleteTask(): void {
+    this.sidebarService.requestTaskDeletion(this.task);
   }
 
   private saveTask(task: Task): void {

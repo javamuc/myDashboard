@@ -4,7 +4,7 @@ export interface Task {
   id?: number;
   title: string;
   description: string;
-  dueDate: string | undefined;
+  dueDate: string | null;
   priority: number;
   status: TaskStatus;
   assignee?: string;

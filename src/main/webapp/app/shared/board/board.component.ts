@@ -23,6 +23,7 @@ import { TaskService } from '../task/task.service';
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { BoardColumnsComponent } from './board-columns/board-columns.component';
 import { takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 
 type TaskProperty = keyof Task;
 
@@ -42,9 +43,11 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   filterMenuOpen = signal(false);
   sortMenuOpen = signal(false);
+  sidebarOpen = signal(false);
 
   boards = signal<Board[]>([]);
   activeBoard = signal<Board | undefined>(undefined);
+  task = signal<Task | undefined>(undefined);
 
   boardView = signal<BoardView>({
     filters: [],
@@ -112,19 +115,47 @@ export class BoardComponent implements OnInit, OnDestroy {
   private readonly sidebarService = inject(SidebarService);
   private readonly boardService = inject(BoardService);
   private readonly taskService = inject(TaskService);
-  private taskDeletedListener = new EventEmitter<Task>();
+  private destroy$ = new Subject<void>();
 
   ngOnInit(): void {
     this.loadBoards();
-    this.taskDeletedListener.subscribe(task => this.taskDeleted(task));
-    this.sidebarService.setTaskDeletedListener(this.taskDeletedListener);
+
+    this.sidebarService
+      .getTaskData()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(task => {
+        this.task.set(task);
+      });
+
+    this.sidebarService
+      .getIsOpen()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isOpen => {
+        this.sidebarOpen.set(isOpen);
+      });
+
+    // Subscribe to task deletion requests
+    this.sidebarService
+      .getTaskDeleteRequests()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(task => {
+        if (task.id) {
+          this.taskService.delete(task.id).subscribe(() => {
+            this.taskDeleted(task);
+          });
+        }
+      });
   }
 
   ngOnDestroy(): void {
-    this.taskDeletedListener.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   taskDeleted(task: Task): void {
+    this.sidebarService.setIsOpen(false);
+    this.task.set(undefined);
+    this.sidebarService.setTaskData(undefined);
     this.activeBoard.update(board => {
       if (!board) return board;
       const tasks = [...board.tasks];
@@ -137,7 +168,6 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   taskCreated(task: Task): void {
-    console.warn('taskCreated in board', task);
     this.activeBoard.update(board => {
       if (!board) return board;
       const tasks = [...board.tasks];
@@ -150,6 +180,11 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.boardColumns.scrollToTask(task.id!);
       }, 100); // Small delay to ensure the task is rendered
     }
+
+    this.sidebarService.setTaskData(task);
+    console.warn('taskCreated in board', task);
+    this.sidebarService.setActiveComponent('task');
+    this.sidebarService.setIsOpen(true);
   }
 
   // Add a method to get the drop list IDs for connecting columns
@@ -234,31 +269,53 @@ export class BoardComponent implements OnInit, OnDestroy {
     const task: Task = {
       title: '',
       description: '',
-      dueDate: undefined,
+      dueDate: null,
       status: 'to-do',
       boardId: board.id,
       priority: 1,
       assignee: '',
     };
     this.taskService.create(task).subscribe(createdTask => {
-      this.sidebarService.setTaskData(createdTask);
       this.taskCreated(createdTask);
     });
-
-    // Just set the task data and open the sidebar
-    this.sidebarService.setBoardId(board.id);
-    this.sidebarService.setActiveComponent('task');
-    this.sidebarService.setIsOpen(true);
   }
 
   getTaskCount(status: TaskStatus): number {
     return this.tasksByStatus().get(status)?.length ?? 0;
   }
 
+  deleteTask(): void {
+    if (!this.task()?.id) return;
+
+    this.taskService.delete(this.task()!.id!).subscribe(() => {
+      this.taskDeleted(this.task()!);
+    });
+  }
+
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
     if (event.key === 'Enter' && (event.metaKey || event.ctrlKey) && event.type === 'keydown') {
+      event.preventDefault();
       this.createNewTask(event);
+    }
+    if (event.key === 'Backspace' && event.shiftKey && (event.metaKey || event.ctrlKey)) {
+      console.warn('delete task in board component');
+      event.preventDefault();
+      this.deleteTask();
+    }
+
+    // Check for CMD+Enter (Mac) or Ctrl+Enter (Windows)
+    if (event.key === 'Escape' && this.sidebarOpen()) {
+      event.preventDefault();
+      console.warn('Close sidebar');
+      if (
+        this.task() &&
+        this.task()?.createdDate?.substring(0, this.task()?.createdDate?.lastIndexOf('.')) ===
+          this.task()?.lastModifiedDate?.substring(0, this.task()?.lastModifiedDate?.lastIndexOf('.'))
+      ) {
+        console.warn('task is new and unchanged');
+      }
+      this.sidebarService.setIsOpen(false);
     }
     // Only trigger if no input/textarea is focused (except for Escape key)
     const isInputFocused = event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;

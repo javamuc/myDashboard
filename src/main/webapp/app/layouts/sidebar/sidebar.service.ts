@@ -1,16 +1,16 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Task } from 'app/shared/task/task.model';
 
 @Injectable({ providedIn: 'root' })
 export class SidebarService {
   private readonly boardIdSubject = new BehaviorSubject<number | undefined>(undefined);
-  private readonly taskCreatedSubject = new BehaviorSubject<EventEmitter<Task> | undefined>(undefined);
-  private readonly taskDeletedSubject = new BehaviorSubject<EventEmitter<Task> | undefined>(undefined);
   private readonly isOpenSubject = new BehaviorSubject<boolean>(false);
   private readonly activeComponentSubject = new BehaviorSubject<'task' | 'note' | null>(null);
-  private readonly taskDataSubject = new BehaviorSubject<Task | null>(null);
+  private readonly taskDataSubject = new BehaviorSubject<Task | undefined>(undefined);
   private readonly tagsSubject = new BehaviorSubject<Set<string>>(new Set<string>());
+
+  private taskDeleteRequested = new Subject<Task>();
 
   getIsOpen(): Observable<boolean> {
     return this.isOpenSubject.asObservable();
@@ -28,11 +28,11 @@ export class SidebarService {
     this.activeComponentSubject.next(component);
   }
 
-  getTaskData(): Observable<Task | null> {
+  getTaskData(): Observable<Task | undefined> {
     return this.taskDataSubject.asObservable();
   }
 
-  setTaskData(task: Task | null): void {
+  setTaskData(task: Task | undefined): void {
     console.warn('setTaskData', task);
     this.taskDataSubject.next(task);
   }
@@ -43,22 +43,6 @@ export class SidebarService {
 
   setBoardId(boardId: number | undefined): void {
     this.boardIdSubject.next(boardId);
-  }
-
-  getTaskCreatedListener(): Observable<EventEmitter<Task> | undefined> {
-    return this.taskCreatedSubject.asObservable();
-  }
-
-  setTaskCreatedListener(listener: EventEmitter<Task>): void {
-    this.taskCreatedSubject.next(listener);
-  }
-
-  getTaskDeletedListener(): Observable<EventEmitter<Task> | undefined> {
-    return this.taskDeletedSubject.asObservable();
-  }
-
-  setTaskDeletedListener(taskDeletedListener: EventEmitter<Task>): void {
-    this.taskDeletedSubject.next(taskDeletedListener);
   }
 
   toggle(): void {
@@ -79,5 +63,13 @@ export class SidebarService {
     const currentTags = this.tagsSubject.value;
     tags.forEach(tag => currentTags.delete(tag));
     this.tagsSubject.next(currentTags);
+  }
+
+  requestTaskDeletion(task: Task): void {
+    this.taskDeleteRequested.next(task);
+  }
+
+  getTaskDeleteRequests(): Observable<Task> {
+    return this.taskDeleteRequested.asObservable();
   }
 }
