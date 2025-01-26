@@ -22,7 +22,7 @@
             tabindex="-1"
             #taskCard
             [attr.data-task-id]="task.id"
-            [class.active-task]="task.id === activeTaskId()"
+            [class.active-task]="sidebarOpen() && task.id === activeTaskId()"
           >
             <jhi-task-card [task]="task" [index]="index"></jhi-task-card>
           </div>

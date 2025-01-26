@@ -38,7 +38,6 @@ export class SidebarService {
   }
 
   setTaskData(task: Task | undefined): void {
-    console.warn('setTaskData', task);
     this.taskDataSubject.next(task);
   }
 

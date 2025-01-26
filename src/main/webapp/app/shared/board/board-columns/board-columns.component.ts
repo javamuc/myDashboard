@@ -22,6 +22,7 @@ export class BoardColumnsComponent implements OnInit, OnDestroy {
   @ViewChildren('taskCard') taskCards!: QueryList<ElementRef>;
 
   activeTaskId = signal<number | undefined>(undefined);
+  sidebarOpen = signal<boolean>(false);
   private destroy$ = new Subject<void>();
 
   constructor(private sidebarService: SidebarService) {}
@@ -33,6 +34,12 @@ export class BoardColumnsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(task => {
         this.activeTaskId.set(task?.id);
+      });
+    this.sidebarService
+      .getIsOpen()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(isOpen => {
+        this.sidebarOpen.set(isOpen);
       });
   }
 
