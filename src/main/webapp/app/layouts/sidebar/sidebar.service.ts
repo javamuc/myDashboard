@@ -12,6 +12,7 @@ export class SidebarService {
 
   private taskDeleteRequested = new Subject<Task>();
   private taskUpdateRequested = new Subject<Task>();
+  private taskStatusUpdateRequested = new Subject<Task>();
 
   getIsOpen(): Observable<boolean> {
     return this.isOpenSubject.asObservable();
@@ -83,5 +84,13 @@ export class SidebarService {
 
   getTaskUpdateRequests(): Observable<Task> {
     return this.taskUpdateRequested.asObservable();
+  }
+
+  requestTaskStatusUpdate(task: Task): void {
+    this.taskStatusUpdateRequested.next(task);
+  }
+
+  getTaskStatusUpdateRequests(): Observable<Task> {
+    return this.taskStatusUpdateRequested.asObservable();
   }
 }

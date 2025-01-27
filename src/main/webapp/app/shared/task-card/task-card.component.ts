@@ -69,56 +69,86 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
   onKeyDown(event: KeyboardEvent): void {
     const currentCard = event.target as HTMLElement;
     const currentColumn = currentCard.closest('.column');
-
-    switch (event.key) {
-      case 'ArrowDown': {
-        event.preventDefault();
-        const nextCard = currentCard.parentElement?.parentElement?.nextElementSibling?.querySelector('.task-card');
-        if (nextCard) {
-          (nextCard as HTMLElement).focus();
-        }
-        break;
-      }
-      case 'ArrowUp': {
-        event.preventDefault();
-        const prevCard = currentCard.parentElement?.parentElement?.previousElementSibling?.querySelector('.task-card');
-        if (prevCard) {
-          (prevCard as HTMLElement).focus();
-        }
-        break;
-      }
-      case 'ArrowRight': {
-        event.preventDefault();
-        console.warn(currentColumn);
-        const nextColumn = currentColumn?.nextElementSibling;
-        if (nextColumn) {
-          const firstCard = nextColumn.querySelector('.task-card');
-          if (firstCard) {
-            (firstCard as HTMLElement).focus();
+    // command key
+    if (event.metaKey || event.ctrlKey) {
+      switch (event.key) {
+        case 'ArrowLeft': {
+          event.preventDefault();
+          console.warn('ArrowLeft with command key');
+          if (this.task.status === 'in-progress') {
+            this.task.status = 'to-do';
+            this.sidebarService.requestTaskStatusUpdate(this.task);
+          } else if (this.task.status === 'done') {
+            this.task.status = 'in-progress';
+            this.sidebarService.requestTaskStatusUpdate(this.task);
           }
+          break;
         }
-        break;
-      }
-      case 'ArrowLeft': {
-        event.preventDefault();
-        const prevColumn = currentColumn?.previousElementSibling;
-        if (prevColumn) {
-          const firstCard = prevColumn.querySelector('.task-card');
-          if (firstCard) {
-            (firstCard as HTMLElement).focus();
+        case 'ArrowRight': {
+          event.preventDefault();
+          console.warn('ArrowRight with command key');
+          if (this.task.status === 'to-do') {
+            this.task.status = 'in-progress';
+            this.sidebarService.requestTaskStatusUpdate(this.task);
+          } else if (this.task.status === 'in-progress') {
+            this.task.status = 'done';
+            this.sidebarService.requestTaskStatusUpdate(this.task);
           }
+          break;
         }
-        break;
       }
-      case 'p': {
-        event.preventDefault();
-        let newP = this.task.priority + 1;
-        if (newP > 3) {
-          newP = 1;
+      // no command key
+    } else {
+      switch (event.key) {
+        case 'ArrowDown': {
+          event.preventDefault();
+          const nextCard = currentCard.parentElement?.parentElement?.nextElementSibling?.querySelector('.task-card');
+          if (nextCard) {
+            (nextCard as HTMLElement).focus();
+          }
+          break;
         }
-        this.task.priority = newP;
-        this.sidebarService.requestTaskUpdate(this.task);
-        break;
+        case 'ArrowUp': {
+          event.preventDefault();
+          const prevCard = currentCard.parentElement?.parentElement?.previousElementSibling?.querySelector('.task-card');
+          if (prevCard) {
+            (prevCard as HTMLElement).focus();
+          }
+          break;
+        }
+        case 'ArrowRight': {
+          event.preventDefault();
+          console.warn(currentColumn);
+          const nextColumn = currentColumn?.nextElementSibling;
+          if (nextColumn) {
+            const firstCard = nextColumn.querySelector('.task-card');
+            if (firstCard) {
+              (firstCard as HTMLElement).focus();
+            }
+          }
+          break;
+        }
+        case 'ArrowLeft': {
+          event.preventDefault();
+          const prevColumn = currentColumn?.previousElementSibling;
+          if (prevColumn) {
+            const firstCard = prevColumn.querySelector('.task-card');
+            if (firstCard) {
+              (firstCard as HTMLElement).focus();
+            }
+          }
+          break;
+        }
+        case 'p': {
+          event.preventDefault();
+          let newP = this.task.priority + 1;
+          if (newP > 3) {
+            newP = 1;
+          }
+          this.task.priority = newP;
+          this.sidebarService.requestTaskUpdate(this.task);
+          break;
+        }
       }
     }
   }

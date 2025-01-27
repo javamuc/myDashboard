@@ -148,6 +148,13 @@ export class BoardComponent implements OnInit, OnDestroy {
         this.taskUpdateSubject.next(task);
       });
 
+    this.sidebarService
+      .getTaskStatusUpdateRequests()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(task => {
+        this.updateStatus(task, task.status);
+      });
+
     // Subscribe to task deletion requests
     this.sidebarService
       .getTaskDeleteRequests()
@@ -214,24 +221,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
       // Update the task's status in the database
       const task = event.container.data[event.currentIndex];
-      const updatedTask: Task = {
-        ...task,
-        status: newStatus,
-        lastModifiedDate: new Date().toISOString(),
-      };
-
-      this.taskService.update(updatedTask).subscribe(savedTask => {
-        // Update the task in the board's tasks array
-        this.activeBoard.update(board => {
-          if (!board) return board;
-          const tasks = [...board.tasks];
-          const index = tasks.findIndex(t => t.id === savedTask.id);
-          if (index !== -1) {
-            tasks[index] = savedTask;
-          }
-          return { ...board, tasks };
-        });
-      });
+      this.updateStatus(task, newStatus);
     }
   }
 
@@ -342,13 +332,25 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
   }
 
-  private saveTask(task: Task): void {
+  private saveTask(task: Task, updateBoard = false): void {
     console.warn('saveTask', task);
     if (task.id) {
       // Persist the task in the database
       this.taskService.update(task).subscribe(savedTask => {
         if (this.task() && this.task()?.id === savedTask.id) {
           this.task()!.lastModifiedDate = savedTask.lastModifiedDate;
+
+          if (updateBoard) {
+            this.activeBoard.update(board => {
+              if (!board) return board;
+              const tasks = [...board.tasks];
+              const index = tasks.findIndex(t => t.id === savedTask.id);
+              if (index !== -1) {
+                tasks[index] = savedTask;
+              }
+              return { ...board, tasks };
+            });
+          }
         }
       });
     }
@@ -367,5 +369,9 @@ export class BoardComponent implements OnInit, OnDestroy {
         });
       }
     });
+  }
+
+  private updateStatus(task: Task, newStatus: TaskStatus): void {
+    this.saveTask(task, true);
   }
 }
