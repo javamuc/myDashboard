@@ -2,7 +2,6 @@ package com.dshbd.service;
 
 import com.dshbd.domain.Board;
 import com.dshbd.repository.BoardRepository;
-import com.dshbd.security.SecurityUtils;
 import com.dshbd.service.dto.BoardDTO;
 import java.util.List;
 import java.util.Optional;
@@ -60,7 +59,10 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public Optional<Board> getBoard(Long id) {
-        return boardRepository.findById(id);
+        return boardRepository.findByIdAndOwnerId(
+            id,
+            userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId()
+        );
     }
 
     public void deleteBoard(Long id) {
@@ -69,7 +71,10 @@ public class BoardService {
 
     public Board updateBoard(BoardDTO boardDTO) {
         return boardRepository
-            .findById(boardDTO.getId())
+            .findByIdAndOwnerId(
+                boardDTO.getId(),
+                userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId()
+            )
             .map(board -> {
                 board.setTitle(boardDTO.getTitle());
                 board.setDescription(boardDTO.getDescription());

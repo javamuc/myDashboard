@@ -27,4 +27,5 @@
     <include file="config/liquibase/changelog/20240124_update_task_entity.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240321000000_added_entity_Exchange.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240322000000_add_enabled_to_exchange.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240321000000_added_entity_Idea.xml" relativeToChangelogFile="false"/>
 </databaseChangeLog>

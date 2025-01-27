@@ -198,7 +198,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     // Scroll to the newly created task
     if (task.id) {
       setTimeout(() => {
-        this.boardColumns.scrollToTask(task.id!);
+        this.boardColumns.scrollToTask(task.id);
       }, 100); // Small delay to ensure the task is rendered
     }
 
@@ -308,7 +308,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   deleteTask(): void {
     if (!this.task()?.id) return;
 
-    this.taskService.delete(this.task()!.id!).subscribe(() => {
+    this.taskService.delete(this.task()!.id).subscribe(() => {
       this.taskDeleted(this.task()!);
     });
   }
