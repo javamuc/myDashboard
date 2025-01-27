@@ -16,12 +16,21 @@ import ActiveMenuDirective from './active-menu.directive';
 import NavbarItem from './navbar-item.model';
 import { HomeService } from '../../home/home.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { QuickIdeaComponent } from '../../shared/idea/quick-idea.component';
 
 @Component({
   selector: 'jhi-navbar',
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
-  imports: [RouterModule, SharedModule, HasAnyAuthorityDirective, ActiveMenuDirective, NgbDropdownModule, FontAwesomeModule],
+  imports: [
+    RouterModule,
+    SharedModule,
+    HasAnyAuthorityDirective,
+    ActiveMenuDirective,
+    NgbDropdownModule,
+    FontAwesomeModule,
+    QuickIdeaComponent,
+  ],
   standalone: true,
 })
 export default class NavbarComponent implements OnInit {

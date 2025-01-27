@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { Board } from './board.model';
-import { TaskService } from '../task/task.service';
 
 @Injectable({ providedIn: 'root' })
 export class BoardService {
@@ -12,7 +11,6 @@ export class BoardService {
   constructor(
     private http: HttpClient,
     private applicationConfigService: ApplicationConfigService,
-    private taskService: TaskService,
   ) {
     this.resourceUrl = this.applicationConfigService.getEndpointFor('api/boards');
   }

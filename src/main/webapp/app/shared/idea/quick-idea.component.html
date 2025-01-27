@@ -1,0 +1,18 @@
+<div class="quick-idea">
+  <button class="btn btn-link nav-link" (click)="toggleOverlay($event)" title="Quick Idea (⌘I)">
+    <fa-icon icon="lightbulb"></fa-icon>
+    <span>Quick Idea (⌘I)</span>
+  </button>
+  @if (isOpen()) {
+    <div class="idea-overlay" (click)="onOverlayClick($event)">
+      <div class="idea-content" (click)="$event.stopPropagation()">
+        <textarea
+          #ideaInput
+          [(ngModel)]="content"
+          placeholder="Type your idea here... (Press Enter or ⌘Enter to save, Escape to cancel)"
+          (keydown)="onKeyDown($event)"
+        ></textarea>
+      </div>
+    </div>
+  }
+</div>
