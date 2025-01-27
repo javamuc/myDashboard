@@ -72,15 +72,22 @@ export default class NavbarComponent implements OnInit {
     if (!isInputFocused) {
       if (event.key === '1') {
         event.preventDefault();
-        this.switchToBoard();
+        this.switchToHome();
       } else if (event.key === '2') {
         event.preventDefault();
-        this.switchToNotes();
+        this.switchToBoard();
       } else if (event.key === '3') {
+        event.preventDefault();
+        this.switchToNotes();
+      } else if (event.key === '4') {
         event.preventDefault();
         this.switchToStocks();
       }
     }
+  }
+
+  switchToHome(): void {
+    this.homeService.setActiveComponent('dashboard');
   }
 
   switchToTasks(): void {

@@ -15,6 +15,7 @@ import { HomeService, type HomeComponent as HomeComponentType } from './home.ser
 import { TaskComponent } from '../shared/task/task.component';
 import { PomodoroComponent } from '../shared/pomodoro/pomodoro.component';
 import StockPickerComponent from '../shared/shared.module';
+import { DashboardComponent } from '../dashboard/dashboard.component';
 
 @Component({
   selector: 'jhi-home',
@@ -30,6 +31,7 @@ import StockPickerComponent from '../shared/shared.module';
     TaskComponent,
     PomodoroComponent,
     StockPickerComponent,
+    DashboardComponent,
   ],
 })
 export default class HomeComponent implements OnInit, OnDestroy {
@@ -41,7 +43,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
     createdDate: new Date().toISOString(),
     lastModifiedDate: new Date().toISOString(),
   });
-  activeComponent = signal<HomeComponentType>('board');
+  activeComponent = signal<HomeComponentType>('dashboard');
 
   private readonly destroy$ = new Subject<void>();
 

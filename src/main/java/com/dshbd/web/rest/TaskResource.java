@@ -3,6 +3,7 @@ package com.dshbd.web.rest;
 import com.dshbd.domain.Task;
 import com.dshbd.service.TaskService;
 import com.dshbd.service.dto.TaskDTO;
+import com.dshbd.service.vm.TaskVM;
 import com.dshbd.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -71,5 +72,11 @@ public class TaskResource {
         log.debug("REST request to delete Task : {}", id);
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/tasks/status/{status}")
+    public List<TaskVM> getTasksByStatus(@PathVariable String status) {
+        log.debug("REST request to get Tasks by status : {}", status);
+        return taskService.findByStatus(status);
     }
 }

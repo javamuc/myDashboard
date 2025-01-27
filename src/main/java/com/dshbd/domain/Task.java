@@ -128,4 +128,9 @@ public class Task implements Serializable {
     public void setBoardId(Long boardId) {
         this.boardId = boardId;
     }
+
+    @Override
+    public String toString() {
+        return "Task{" + "id=" + id + ", boardId=" + boardId + '}';
+    }
 }

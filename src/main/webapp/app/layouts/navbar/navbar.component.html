@@ -20,21 +20,27 @@
     <div class="navbar-collapse collapse" id="navbarResponsive" [ngbCollapse]="isNavbarCollapsed()">
       <ul class="navbar-nav me-auto mb-2 mb-md-0">
         <li class="nav-item">
+          <button class="btn btn-link nav-link" (click)="switchToHome()">
+            <fa-icon icon="home"></fa-icon>
+            <span>Home (1)</span>
+          </button>
+        </li>
+        <li class="nav-item">
           <button class="btn btn-link nav-link" (click)="switchToBoard()">
             <fa-icon icon="columns"></fa-icon>
-            <span>Board (1)</span>
+            <span>Board (2)</span>
           </button>
         </li>
         <li class="nav-item">
           <button class="btn btn-link nav-link" (click)="switchToNotes()">
             <fa-icon icon="sticky-note"></fa-icon>
-            <span>Notes (2)</span>
+            <span>Notes (3)</span>
           </button>
         </li>
         <li class="nav-item">
           <button class="btn btn-link nav-link" (click)="switchToStocks()">
             <fa-icon icon="dollar-sign"></fa-icon>
-            <span>Stocks (3)</span>
+            <span>Stocks (4)</span>
           </button>
         </li>
         <li>

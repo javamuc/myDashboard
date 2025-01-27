@@ -1,0 +1,43 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Dashboard</h1>
+  </div>
+
+  <div class="dashboard-content">
+    <!-- Recent Ideas Section -->
+    <section class="dashboard-section">
+      <div class="section-header">
+        <h2>Recent Ideas</h2>
+        <a routerLink="/ideas" class="view-all">View All</a>
+      </div>
+      <div class="section-content">
+        <div *ngIf="loading" class="loading">Loading...</div>
+        <div *ngIf="!loading && recentIdeas.length === 0" class="empty-state">
+          No ideas yet. Click the lightbulb icon in the navbar to capture your first idea!
+        </div>
+        <div *ngFor="let idea of recentIdeas" class="idea-card">
+          <div class="idea-content">{{ idea.content }}</div>
+          <div class="idea-date">{{ idea.createdDate | date: 'medium' }}</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recent Tasks Section -->
+    <section class="dashboard-section">
+      <div class="section-header">
+        <h2>Recent Tasks</h2>
+        <a routerLink="/board" class="view-all">View All</a>
+      </div>
+      <div class="section-content">
+        <div *ngIf="loading" class="loading">Loading...</div>
+        <div *ngIf="!loading && recentTasks.length === 0" class="empty-state">No tasks yet. Go to the board to create your first task!</div>
+        <div *ngFor="let task of recentTasks" class="task-card">
+          <div class="task-status" [class]="task.task.status">{{ task.task.status }}</div>
+          <div class="task-title">{{ task.task.title }}</div>
+          <div class="task-board">{{ task.board.title }}</div>
+          <div class="task-date">{{ task.task.lastModifiedDate | date: 'medium' }}</div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

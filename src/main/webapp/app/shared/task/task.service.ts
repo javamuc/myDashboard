@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { NewTask, Task } from './task.model';
+import { NewTask, Task, TaskStatus, TaskVM } from './task.model';
 
 @Injectable({ providedIn: 'root' })
 export class TaskService {
@@ -13,6 +13,10 @@ export class TaskService {
     private applicationConfigService: ApplicationConfigService,
   ) {
     this.resourceUrl = this.applicationConfigService.getEndpointFor('api/tasks');
+  }
+
+  findTasksByStatus(status: TaskStatus): Observable<TaskVM[]> {
+    return this.http.get<TaskVM[]>(`${this.resourceUrl}/status/${status}`);
   }
 
   create(task: NewTask): Observable<Task> {

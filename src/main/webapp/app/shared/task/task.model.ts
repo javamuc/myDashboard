@@ -1,3 +1,5 @@
+import { Board } from '../board/board.model';
+
 export type TaskStatus = 'to-do' | 'in-progress' | 'done';
 
 export interface Task {
@@ -20,4 +22,9 @@ export interface NewTask {
   status: TaskStatus;
   assignee?: string;
   boardId: number | undefined;
+}
+
+export interface TaskVM {
+  task: Task;
+  board: Board;
 }
