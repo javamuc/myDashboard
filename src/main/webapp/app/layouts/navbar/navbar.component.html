@@ -20,25 +20,25 @@
     <div class="navbar-collapse collapse" id="navbarResponsive" [ngbCollapse]="isNavbarCollapsed()">
       <ul class="navbar-nav me-auto mb-2 mb-md-0">
         <li class="nav-item">
-          <button class="btn btn-link nav-link" (click)="switchToHome()">
+          <button class="btn btn-link nav-link" (click)="switchToHome()" [class.active]="isActive('dashboard')">
             <fa-icon icon="home"></fa-icon>
             <span>Home (1)</span>
           </button>
         </li>
         <li class="nav-item">
-          <button class="btn btn-link nav-link" (click)="switchToBoard()">
+          <button class="btn btn-link nav-link" (click)="switchToBoard()" [class.active]="isActive('board')">
             <fa-icon icon="columns"></fa-icon>
             <span>Board (2)</span>
           </button>
         </li>
         <li class="nav-item">
-          <button class="btn btn-link nav-link" (click)="switchToNotes()">
+          <button class="btn btn-link nav-link" (click)="switchToNotes()" [class.active]="isActive('notes')">
             <fa-icon icon="sticky-note"></fa-icon>
             <span>Notes (3)</span>
           </button>
         </li>
         <li class="nav-item">
-          <button class="btn btn-link nav-link" (click)="switchToStocks()">
+          <button class="btn btn-link nav-link" (click)="switchToStocks()" [class.active]="isActive('stocks')">
             <fa-icon icon="dollar-sign"></fa-icon>
             <span>Stocks (4)</span>
           </button>

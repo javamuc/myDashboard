@@ -14,7 +14,7 @@ import { EntityNavbarItems } from 'app/entities/entity-navbar-items';
 import { environment } from 'environments/environment';
 import ActiveMenuDirective from './active-menu.directive';
 import NavbarItem from './navbar-item.model';
-import { HomeService } from '../../home/home.service';
+import { HomeService, HomeComponent } from '../../home/home.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { QuickIdeaComponent } from '../../shared/idea/quick-idea.component';
 
@@ -41,6 +41,7 @@ export default class NavbarComponent implements OnInit {
   version = '';
   account = inject(AccountService).trackCurrentAccount();
   entitiesNavbarItems: NavbarItem[] = [];
+  activeComponent = signal<HomeComponent>('dashboard');
 
   private readonly loginService = inject(LoginService);
   private readonly translateService = inject(TranslateService);
@@ -62,6 +63,15 @@ export default class NavbarComponent implements OnInit {
       this.inProduction = profileInfo.inProduction;
       this.openAPIEnabled = profileInfo.openAPIEnabled;
     });
+
+    // Subscribe to active component changes
+    this.homeService.getActiveComponent().subscribe(component => {
+      this.activeComponent.set(component);
+    });
+  }
+
+  isActive(component: HomeComponent): boolean {
+    return this.activeComponent() === component;
   }
 
   @HostListener('document:keydown', ['$event'])
