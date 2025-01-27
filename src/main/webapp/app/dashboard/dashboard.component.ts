@@ -4,16 +4,17 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IdeaService } from '../shared/idea/idea.service';
 import { TaskService } from '../shared/task/task.service';
 import { Idea } from '../shared/idea/idea.model';
-import { Task, TaskVM } from '../shared/task/task.model';
+import { TaskVM } from '../shared/task/task.model';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { TaskListComponent } from '../shared/task/task-list/task-list.component';
 
 @Component({
   selector: 'jhi-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule, RouterModule, FormsModule],
+  imports: [CommonModule, FontAwesomeModule, RouterModule, FormsModule, TaskListComponent],
 })
 export class DashboardComponent implements OnInit {
   recentIdeas: Idea[] = [];

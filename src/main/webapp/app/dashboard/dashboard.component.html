@@ -23,21 +23,11 @@
     </section>
 
     <!-- Recent Tasks Section -->
-    <section class="dashboard-section">
-      <div class="section-header">
-        <h2>Recent Tasks</h2>
-        <a routerLink="/board" class="view-all">View All</a>
-      </div>
-      <div class="section-content">
-        <div *ngIf="loading" class="loading">Loading...</div>
-        <div *ngIf="!loading && recentTasks.length === 0" class="empty-state">No tasks yet. Go to the board to create your first task!</div>
-        <div *ngFor="let task of recentTasks" class="task-card">
-          <div class="task-status" [class]="task.task.status">{{ task.task.status }}</div>
-          <div class="task-title">{{ task.task.title }}</div>
-          <div class="task-board">{{ task.board.title }}</div>
-          <div class="task-date">{{ task.task.lastModifiedDate | date: 'medium' }}</div>
-        </div>
-      </div>
-    </section>
+    <jhi-task-list
+      [tasks]="recentTasks"
+      [loading]="loading"
+      title="In-Progress Tasks"
+      emptyStateMessage="No tasks yet. Go to the board to create your first task!"
+    ></jhi-task-list>
   </div>
 </div>

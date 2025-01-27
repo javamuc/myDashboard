@@ -47,6 +47,7 @@ import {
   faTimesCircle,
   faDollarSign,
   faAlignLeft,
+  faLightbulb,
   // jhipster-needle-add-icon-import
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -99,5 +100,6 @@ export const fontAwesomeIcons = [
   faTimesCircle,
   faDollarSign,
   faAlignLeft,
+  faLightbulb,
   // jhipster-needle-add-icon-import
 ];

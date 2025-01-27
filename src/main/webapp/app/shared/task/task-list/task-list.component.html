@@ -1,0 +1,17 @@
+<section class="dashboard-section">
+  <div class="section-header">
+    <h2>{{ title }}</h2>
+    <a routerLink="/board" class="view-all">View All</a>
+  </div>
+  <div class="section-content">
+    <div *ngIf="loading" class="loading">Loading...</div>
+    <div *ngIf="!loading && tasks.length === 0" class="empty-state">{{ emptyStateMessage }}</div>
+    <div *ngFor="let task of tasks; let index = index" class="task-card">
+      <jhi-task-card [task]="task.task" [index]="index"></jhi-task-card>
+      <!-- <div class="task-status" [class]="task.task.status">{{ task.task.status }}</div>
+      <div class="task-title">{{ task.task.title }}</div>
+      <div class="task-board">{{ task.board.title }}</div>
+      <div class="task-date">{{ task.task.lastModifiedDate | date:'medium' }}</div> -->
+    </div>
+  </div>
+</section>
