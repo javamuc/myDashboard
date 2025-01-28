@@ -1,0 +1,66 @@
+.dashboard-section {
+  background: var(--background-secondary);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h2 {
+      font-size: 1.25rem;
+      margin: 0;
+      color: var(--text-color);
+    }
+
+    .view-all {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-size: 0.875rem;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .section-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.loading {
+  text-align: center;
+  padding: 1rem;
+  color: var(--text-secondary);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.idea-card {
+  background-color: #1b3147;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+
+  .idea-content {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+  }
+
+  .idea-date {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+  }
+}

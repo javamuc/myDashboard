@@ -1,0 +1,16 @@
+<section class="dashboard-section">
+  <div class="section-header">
+    <h2>{{ title }}</h2>
+    <a routerLink="/ideas" class="view-all">View All</a>
+  </div>
+  <div class="section-content">
+    <div *ngIf="loading" class="loading">Loading...</div>
+    <div *ngIf="!loading && ideas.length === 0" class="empty-state">
+      {{ emptyStateMessage }}
+    </div>
+    <div *ngFor="let idea of ideas" class="idea-card">
+      <div class="idea-content">{{ idea.content }}</div>
+      <div class="idea-date">{{ idea.createdDate | date: 'medium' }}</div>
+    </div>
+  </div>
+</section>

@@ -12,8 +12,8 @@ import java.io.Serializable;
 import java.time.Instant;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "idea")
@@ -32,11 +32,11 @@ public class Idea implements Serializable {
     private String content;
 
     @Column(name = "created_date")
-    @CreatedDate
+    @CreationTimestamp
     private Instant createdDate;
 
     @Column(name = "last_updated_date")
-    @LastModifiedDate
+    @UpdateTimestamp
     private Instant lastUpdatedDate;
 
     private Long ownerId;
