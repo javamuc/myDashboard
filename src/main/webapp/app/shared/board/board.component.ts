@@ -307,6 +307,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   deleteTask(): void {
     if (!this.task()?.id) return;
+    if (this.task()?.status !== 'to-do') return;
 
     this.taskService.delete(this.task()!.id).subscribe(() => {
       this.taskDeleted(this.task()!);
@@ -352,6 +353,9 @@ export class BoardComponent implements OnInit, OnDestroy {
   private saveTask(task: Task, updateBoard = false): void {
     console.warn('saveTask', task);
     if (task.id) {
+      if (task.status === 'done') {
+        throw new Error('Task has already been completed');
+      }
       // Persist the task in the database
       this.taskService.update(task).subscribe(savedTask => {
         if (this.task() && this.task()?.id === savedTask.id) {

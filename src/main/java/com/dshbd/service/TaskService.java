@@ -60,41 +60,74 @@ public class TaskService {
 
     @Transactional(readOnly = true)
     public Optional<Task> getTask(Long id) {
-        return taskRepository.findById(id);
+        Optional<Task> task = taskRepository.findById(id);
+        if (task.isPresent()) {
+            List<Long> boardIds = getBoardsIdsForCurrentUser();
+            if (boardIds.contains(task.get().getBoardId())) {
+                return task;
+            }
+        }
+        throw new IllegalStateException("Task could not be found");
     }
 
     public void deleteTask(Long id) {
-        taskRepository.deleteById(id);
+        Optional<Task> task = getTask(id);
+        log.info("Task: {}", task);
+        if (task.isPresent()) {
+            if (task.get().getStatus().equals("to-do")) {
+                taskRepository.deleteById(id);
+            } else {
+                throw new IllegalStateException("Task has already been started");
+            }
+        } else {
+            throw new IllegalStateException("Task could not be found");
+        }
     }
 
     public Task updateTask(TaskDTO taskDTO) {
-        return taskRepository
-            .findById(taskDTO.getId())
-            .map(task -> {
-                task.setTitle(taskDTO.getTitle());
-                task.setDescription(taskDTO.getDescription());
-                task.setDueDate(taskDTO.getDueDate());
-                task.setStatus(taskDTO.getStatus());
-                task.setPriority(taskDTO.getPriority());
-                task.setAssignee(taskDTO.getAssignee());
-                return taskRepository.save(task);
-            })
-            .orElseThrow(() -> new IllegalStateException("Task could not be found"));
+        Optional<Task> task = getTask(taskDTO.getId());
+        if (task.isPresent()) {
+            if (!task.get().getStatus().equals("done")) {
+                Task taskToUpdate = task.get();
+                taskToUpdate.setTitle(taskDTO.getTitle());
+                taskToUpdate.setDescription(taskDTO.getDescription());
+                taskToUpdate.setDueDate(taskDTO.getDueDate());
+                taskToUpdate.setStatus(taskDTO.getStatus());
+                taskToUpdate.setPriority(taskDTO.getPriority());
+                taskToUpdate.setAssignee(taskDTO.getAssignee());
+                return taskRepository.save(taskToUpdate);
+            } else {
+                throw new IllegalStateException("Task has already been completed");
+            }
+        } else {
+            throw new IllegalStateException("Task could not be found");
+        }
     }
 
     @Transactional(readOnly = true)
     public List<TaskVM> findByStatus(String status) {
-        Long userId =
-            this.userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId();
-        log.info("User ID: {}", userId);
-        List<Board> boards = boardRepository.findByOwnerId(userId);
-        List<Long> boardIds = boards.stream().map(e -> e.getId()).toList();
+        List<Board> boards = getBoardsForCurrentUser();
+        List<Long> boardIds = boards.stream().map(Board::getId).toList();
         log.info("Board IDs: {}", boardIds);
         List<Task> tasks = taskRepository.findByBoardIdInAndStatus(boardIds, status);
         log.info("Tasks: {}", tasks);
         //map the tasks to a taskvm
         List<TaskVM> list = tasks.stream().map(task -> new TaskVM(task, getBoardForTask(boards, task))).toList();
         return list;
+    }
+
+    private List<Long> getBoardsIdsForCurrentUser() {
+        Long userId =
+            this.userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId();
+        List<Board> boards = boardRepository.findByOwnerId(userId);
+        return boards.stream().map(Board::getId).toList();
+    }
+
+    private List<Board> getBoardsForCurrentUser() {
+        Long userId =
+            this.userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId();
+        List<Board> boards = boardRepository.findByOwnerId(userId);
+        return boards;
     }
 
     private Board getBoardForTask(List<Board> boards, Task task) {
