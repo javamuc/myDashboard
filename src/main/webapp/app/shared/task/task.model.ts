@@ -1,6 +1,6 @@
 import { Board } from '../board/board.model';
 
-export type TaskStatus = 'to-do' | 'in-progress' | 'done';
+export type TaskStatus = 'to-do' | 'in-progress' | 'done' | 'backlog';
 
 export interface Task {
   id: number;

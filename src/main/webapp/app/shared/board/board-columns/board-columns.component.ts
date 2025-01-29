@@ -15,6 +15,7 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class BoardColumnsComponent implements OnInit, OnDestroy {
   @Input() statuses!: TaskStatus[];
+  @Input() taskCreateSubject!: Subject<Task>;
   @Input() tasksByStatus!: Map<TaskStatus, Task[]>;
   @Input({ required: true }) onDrop!: (event: CdkDragDrop<Task[]>, status: TaskStatus) => void;
   @Input({ required: true }) getConnectedLists!: (status: TaskStatus) => string[];
@@ -28,6 +29,11 @@ export class BoardColumnsComponent implements OnInit, OnDestroy {
   constructor(private sidebarService: SidebarService) {}
 
   ngOnInit(): void {
+    this.taskCreateSubject.pipe(takeUntil(this.destroy$)).subscribe(task => {
+      setTimeout(() => {
+        this.scrollToTask(task.id);
+      }, 100); // Small delay to ensure the task is rendered
+    });
     // Subscribe to active task changes
     this.sidebarService
       .getTaskData()

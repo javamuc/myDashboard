@@ -6,6 +6,8 @@ export interface Board {
   tasks: Task[];
   createdDate?: string;
   lastModifiedDate?: string;
+  description?: string;
+  ownerId?: number;
 }
 
 export interface BoardFilter {

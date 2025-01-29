@@ -1,0 +1,16 @@
+<div class="backlog-container">
+  <div class="backlog-header">
+    <h2>Backlog</h2>
+    <span class="task-count">{{ backlogTasks.length }}</span>
+  </div>
+
+  <div class="backlog-content" cdkDropList id="backlog-list">
+    <div *ngIf="loading" class="loading">Loading...</div>
+    <div *ngIf="!loading && backlogTasks.length === 0" class="empty-state">
+      No tasks in backlog. Drag tasks here to add them to the backlog.
+    </div>
+    <div *ngFor="let task of backlogTasks; let index = index" cdkDrag>
+      <jhi-task-card [task]="task" [index]="index"></jhi-task-card>
+    </div>
+  </div>
+</div>

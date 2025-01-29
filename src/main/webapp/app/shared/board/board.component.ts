@@ -25,6 +25,7 @@ import { BoardColumnsComponent } from './board-columns/board-columns.component';
 import { debounceTime, takeUntil } from 'rxjs';
 import { Subject } from 'rxjs';
 import { AlertService } from 'app/core/util/alert.service';
+import { BacklogBoardComponent } from './backlog-board/backlog-board.component';
 
 type TaskProperty = keyof Task;
 
@@ -33,7 +34,7 @@ type TaskProperty = keyof Task;
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedModule, FontAwesomeModule, DragDropModule, BoardColumnsComponent],
+  imports: [CommonModule, FormsModule, SharedModule, FontAwesomeModule, DragDropModule, BoardColumnsComponent, BacklogBoardComponent],
 })
 export class BoardComponent implements OnInit, OnDestroy {
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
@@ -44,6 +45,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   filterMenuOpen = signal(false);
   sortMenuOpen = signal(false);
+  showBacklog = signal(false);
   sidebarOpen = signal(false);
 
   boards = signal<Board[]>([]);
@@ -113,6 +115,8 @@ export class BoardComponent implements OnInit, OnDestroy {
     return grouped;
   });
 
+  taskCreateSubject = new Subject<Task>();
+  taskDeletedSubject = new Subject<Task>();
   private readonly sidebarService = inject(SidebarService);
   private readonly boardService = inject(BoardService);
   private readonly taskService = inject(TaskService);
@@ -197,17 +201,12 @@ export class BoardComponent implements OnInit, OnDestroy {
       tasks.push(task);
       return { ...board, tasks };
     });
-    // Scroll to the newly created task
-    if (task.id) {
-      setTimeout(() => {
-        this.boardColumns.scrollToTask(task.id);
-      }, 100); // Small delay to ensure the task is rendered
-    }
 
     this.sidebarService.setTaskData(task);
     console.warn('taskCreated in board', task);
     this.sidebarService.setActiveComponent('task');
     this.sidebarService.setIsOpen(true);
+    this.taskCreateSubject.next(task);
   }
 
   // Add a method to get the drop list IDs for connecting columns
@@ -293,7 +292,7 @@ export class BoardComponent implements OnInit, OnDestroy {
       title: '',
       description: '',
       dueDate: null,
-      status: 'to-do',
+      status: 'backlog',
       boardId: board.id,
       priority: 1,
       assignee: '',
@@ -309,10 +308,10 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   deleteTask(): void {
     if (!this.task()?.id) return;
-    if (this.task()?.status !== 'to-do') {
+    if (this.task()?.status !== 'backlog') {
       this.alertService.addAlert({
         type: 'warning',
-        message: 'Task has not the status "to-do"',
+        message: 'Task has not the status "backlog"',
       });
       return;
     }
@@ -355,6 +354,9 @@ export class BoardComponent implements OnInit, OnDestroy {
     } else if (event.key === 'f' && !isInputFocused) {
       event.preventDefault();
       this.searchInput.nativeElement.focus();
+    } else if (event.key === 'b' && !isInputFocused) {
+      event.preventDefault();
+      this.showBacklog.set(!this.showBacklog());
     }
   }
 

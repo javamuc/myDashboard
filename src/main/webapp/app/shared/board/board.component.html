@@ -62,13 +62,18 @@
       }
     </div>
 
-    <jhi-board-columns
-      [statuses]="statuses"
-      [tasksByStatus]="tasksByStatus()"
-      [onDrop]="onDrop.bind(this)"
-      [getConnectedLists]="getConnectedLists.bind(this)"
-      [getTaskCount]="getTaskCount.bind(this)"
-    ></jhi-board-columns>
+    @if (showBacklog()) {
+      <jhi-backlog-board [taskCreateSubject]="taskCreateSubject" [backlogTasks]="tasksByStatus().get('backlog') ?? []"></jhi-backlog-board>
+    } @else {
+      <jhi-board-columns
+        [taskCreateSubject]="taskCreateSubject"
+        [statuses]="statuses"
+        [tasksByStatus]="tasksByStatus()"
+        [onDrop]="onDrop.bind(this)"
+        [getConnectedLists]="getConnectedLists.bind(this)"
+        [getTaskCount]="getTaskCount.bind(this)"
+      ></jhi-board-columns>
+    }
   </div>
 } @else {
   <div class="no-boards">

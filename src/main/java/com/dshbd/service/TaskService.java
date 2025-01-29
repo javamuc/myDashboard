@@ -74,7 +74,7 @@ public class TaskService {
         Optional<Task> task = getTask(id);
         log.info("Task: {}", task);
         if (task.isPresent()) {
-            if (task.get().getStatus().equals("to-do")) {
+            if (task.get().getStatus().equals("backlog")) {
                 taskRepository.deleteById(id);
             } else {
                 throw new IllegalStateException("Task has already been started");
