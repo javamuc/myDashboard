@@ -1,4 +1,4 @@
-import { Component, Input, HostListener, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, Input, HostListener, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Task } from '../task/task.model';
@@ -18,6 +18,8 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() index!: number;
   @ViewChild('taskCard') taskCard!: ElementRef;
   private destroy$ = new Subject<void>();
+  private sidebarIsOpen = signal(false);
+  private taskData = signal<Task | undefined>(undefined);
 
   constructor(private sidebarService: SidebarService) {}
 
@@ -37,11 +39,16 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
       .getIsOpen()
       .pipe(takeUntil(this.destroy$))
       .subscribe(isOpen => {
-        if (!isOpen) {
-          if (this.sidebarService.getTaskDataValue()?.id === this.task.id) {
-            this.taskCard.nativeElement.focus();
-          }
+        if (!isOpen && this.taskData()?.id === this.task.id) {
+          this.taskCard.nativeElement.focus();
         }
+      });
+
+    this.sidebarService
+      .getTaskData()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(task => {
+        this.taskData.set(task);
       });
     // setTimeout(() => {
     //   if (this.index === 0 && this.task.status === 'in-progress') {

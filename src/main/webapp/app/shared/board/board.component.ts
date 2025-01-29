@@ -182,13 +182,17 @@ export class BoardComponent implements OnInit, OnDestroy {
   taskDeleted(task: Task): void {
     this.sidebarService.setIsOpen(false);
     this.task.set(undefined);
-    this.sidebarService.setTaskData(undefined);
     this.activeBoard.update(board => {
       if (!board) return board;
       const tasks = [...board.tasks];
       const index = tasks.findIndex(t => t.id === task.id);
       if (index !== -1) {
         tasks.splice(index, 1);
+      }
+      if (tasks[index]) {
+        this.sidebarService.setTaskData(tasks[index]);
+      } else {
+        this.sidebarService.setTaskData(undefined);
       }
       return { ...board, tasks };
     });
@@ -336,11 +340,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     // Check for CMD+Enter (Mac) or Ctrl+Enter (Windows)
     if (event.key === 'Escape' && this.sidebarOpen()) {
       event.preventDefault();
-      if (
-        this.task() &&
-        this.task()?.createdDate.substring(0, this.task()!.createdDate.lastIndexOf('.') + 1) ===
-          this.task()?.lastModifiedDate.substring(0, this.task()!.lastModifiedDate.lastIndexOf('.') + 1)
-      ) {
+      if (this.taskIsUnedited()) {
         this.deleteTask();
       }
       this.sidebarService.setIsOpen(false);
@@ -389,6 +389,16 @@ export class BoardComponent implements OnInit, OnDestroy {
         }
       });
     }
+  }
+
+  private taskIsUnedited(): boolean {
+    if (!this.task()) return false;
+    return (
+      this.task()?.status === 'backlog' &&
+      this.task()?.title === '' &&
+      this.task()?.createdDate.substring(0, this.task()!.createdDate.lastIndexOf('.') + 1) ===
+        this.task()?.lastModifiedDate.substring(0, this.task()!.lastModifiedDate.lastIndexOf('.') + 1)
+    );
   }
 
   private loadBoards(): void {
