@@ -24,6 +24,7 @@ import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from 
 import { BoardColumnsComponent } from './board-columns/board-columns.component';
 import { debounceTime, takeUntil } from 'rxjs';
 import { Subject } from 'rxjs';
+import { AlertService } from 'app/core/util/alert.service';
 
 type TaskProperty = keyof Task;
 
@@ -115,6 +116,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   private readonly sidebarService = inject(SidebarService);
   private readonly boardService = inject(BoardService);
   private readonly taskService = inject(TaskService);
+  private readonly alertService = inject(AlertService);
   private destroy$ = new Subject<void>();
   private taskUpdateSubject = new Subject<Task>();
 
@@ -307,7 +309,13 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   deleteTask(): void {
     if (!this.task()?.id) return;
-    if (this.task()?.status !== 'to-do') return;
+    if (this.task()?.status !== 'to-do') {
+      this.alertService.addAlert({
+        type: 'warning',
+        message: 'Task has not the status "to-do"',
+      });
+      return;
+    }
 
     this.taskService.delete(this.task()!.id).subscribe(() => {
       this.taskDeleted(this.task()!);
@@ -354,7 +362,11 @@ export class BoardComponent implements OnInit, OnDestroy {
     console.warn('saveTask', task);
     if (task.id) {
       if (task.status === 'done') {
-        throw new Error('Task has already been completed');
+        this.alertService.addAlert({
+          type: 'warning',
+          message: 'Task has already been completed',
+        });
+        return;
       }
       // Persist the task in the database
       this.taskService.update(task).subscribe(savedTask => {

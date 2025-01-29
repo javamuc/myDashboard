@@ -26,6 +26,13 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
     if (tags.length > 0) {
       this.sidebarService.addTags(tags);
     }
+  }
+
+  onFocus(): void {
+    this.sidebarService.setTaskData(this.task);
+  }
+
+  ngAfterViewInit(): void {
     this.sidebarService
       .getIsOpen()
       .pipe(takeUntil(this.destroy$))
@@ -36,18 +43,11 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         }
       });
-  }
-
-  onFocus(): void {
-    this.sidebarService.setTaskData(this.task);
-  }
-
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      if (this.index === 0 && this.task.status === 'in-progress') {
-        this.taskCard.nativeElement.focus();
-      }
-    });
+    // setTimeout(() => {
+    //   if (this.index === 0 && this.task.status === 'in-progress') {
+    //     this.taskCard.nativeElement.focus();
+    //   }
+    // });
   }
 
   ngOnDestroy(): void {
