@@ -181,18 +181,22 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   taskDeleted(task: Task): void {
     this.sidebarService.setIsOpen(false);
-    this.task.set(undefined);
     this.activeBoard.update(board => {
       if (!board) return board;
       const tasks = [...board.tasks];
       const index = tasks.findIndex(t => t.id === task.id);
+      console.warn('taskDeleted in board', index);
       if (index !== -1) {
         tasks.splice(index, 1);
       }
       if (tasks[index]) {
+        console.warn('task found in board after deletion', tasks[index]);
         this.sidebarService.setTaskData(tasks[index]);
+        this.task.set(tasks[index]);
       } else {
+        console.warn('No task found in board after deletion');
         this.sidebarService.setTaskData(undefined);
+        this.task.set(undefined);
       }
       return { ...board, tasks };
     });

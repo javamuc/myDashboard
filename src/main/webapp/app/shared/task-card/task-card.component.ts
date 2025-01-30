@@ -39,9 +39,8 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
       .getIsOpen()
       .pipe(takeUntil(this.destroy$))
       .subscribe(isOpen => {
-        if (!isOpen && this.taskData()?.id === this.task.id) {
-          this.taskCard.nativeElement.focus();
-        }
+        this.sidebarIsOpen.set(isOpen);
+        this.focusTaskCard();
       });
 
     this.sidebarService
@@ -49,6 +48,7 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(task => {
         this.taskData.set(task);
+        this.focusTaskCard();
       });
     // setTimeout(() => {
     //   if (this.index === 0 && this.task.status === 'in-progress') {
@@ -191,6 +191,12 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // For pastel backgrounds, we usually want dark text
     return `hsl(${hue}, 90%, 15%)`;
+  }
+
+  private focusTaskCard(): void {
+    if (!this.sidebarIsOpen() && this.taskData()?.id === this.task.id) {
+      this.taskCard.nativeElement.focus();
+    }
   }
 
   private getTagColorHash(tag: string): number {
