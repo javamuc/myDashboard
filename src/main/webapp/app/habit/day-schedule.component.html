@@ -5,8 +5,8 @@
       <button
         type="button"
         class="btn"
-        [class.btn-primary]="schedule.type === 'ANYTIME'"
-        [class.btn-outline-primary]="schedule.type !== 'ANYTIME'"
+        [class.btn-primary]="schedule.scheduleType === 'ANYTIME'"
+        [class.btn-outline-primary]="schedule.scheduleType !== 'ANYTIME'"
         (click)="setScheduleType('ANYTIME')"
       >
         Anytime
@@ -14,8 +14,8 @@
       <button
         type="button"
         class="btn"
-        [class.btn-primary]="schedule.type === 'SPECIFIC'"
-        [class.btn-outline-primary]="schedule.type !== 'SPECIFIC'"
+        [class.btn-primary]="schedule.scheduleType === 'SPECIFIC'"
+        [class.btn-outline-primary]="schedule.scheduleType !== 'SPECIFIC'"
         (click)="setScheduleType('SPECIFIC')"
       >
         Specific Times
@@ -24,7 +24,7 @@
   </div>
 
   <!-- Anytime Schedule -->
-  <div *ngIf="schedule.type === 'ANYTIME'" class="anytime-schedule">
+  <div *ngIf="schedule.scheduleType === 'ANYTIME'" class="anytime-schedule">
     <div class="form-group">
       <label for="repetitions">Number of repetitions per day</label>
       <input
@@ -39,16 +39,16 @@
   </div>
 
   <!-- Specific Schedule -->
-  <div *ngIf="schedule.type === 'SPECIFIC'" class="specific-schedule">
+  <div *ngIf="schedule.scheduleType === 'SPECIFIC'" class="specific-schedule">
     <div class="time-preferences mb-4">
       <div class="time-preference-grid">
         <div *ngFor="let preference of timePreferences" class="time-preference">
           <button
             type="button"
             class="btn"
-            [class.btn-primary]="schedule.timePreferences?.includes(preference)"
-            [class.btn-outline-primary]="!schedule.timePreferences?.includes(preference)"
-            (click)="toggleTimePreference(preference)"
+            [class.btn-primary]="schedule.timePreference === preference"
+            [class.btn-outline-primary]="schedule.timePreference !== preference"
+            (click)="setTimePreference(preference)"
           >
             {{ formatTimePreference(preference) }}
           </button>
@@ -57,7 +57,7 @@
     </div>
 
     <!-- Specific Times -->
-    <div *ngIf="schedule.timePreferences?.includes('SPECIFIC_TIMES')" class="specific-times">
+    <div *ngIf="schedule.timePreference === 'SPECIFIC_TIMES'" class="specific-times">
       <div *ngFor="let time of schedule.specificTimes; let i = index" class="specific-time mb-2">
         <input type="time" class="form-control" [value]="formatTime(time)" (change)="updateSpecificTime(i, $any($event.target).value)" />
         <button class="btn btn-outline-danger ms-2" (click)="removeSpecificTime(i)">

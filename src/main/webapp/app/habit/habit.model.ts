@@ -1,25 +1,23 @@
-export type WeekDay = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
-
+export type DayOfWeek = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
+export type ScheduleType = 'DAILY' | 'SELECTED_DAYS';
 export type DayScheduleType = 'ANYTIME' | 'SPECIFIC';
 export type TimePreference = 'MORNING' | 'MIDDAY' | 'AFTERNOON' | 'EVENING' | 'SPECIFIC_TIMES';
 
-export interface FixedTime {
+export interface HabitSpecificTime {
+  id?: number;
   hour: number;
   minute: number;
+  dayScheduleId?: number;
 }
 
-export interface DaySchedule {
-  type: DayScheduleType;
+export interface HabitDaySchedule {
+  id?: number;
+  dayOfWeek: DayOfWeek;
+  scheduleType: DayScheduleType;
   repetitions?: number;
-  timePreferences?: TimePreference[];
-  specificTimes?: FixedTime[];
-}
-
-export interface HabitSchedule {
-  type: 'DAILY' | 'SELECTED_DAYS';
-  schedule: {
-    [key in WeekDay]?: DaySchedule;
-  };
+  timePreference?: TimePreference;
+  specificTimes: HabitSpecificTime[];
+  habitId?: number;
 }
 
 export interface Habit {
@@ -27,7 +25,8 @@ export interface Habit {
   name: string;
   description?: string;
   active: boolean;
-  schedule: HabitSchedule;
-  createdDate?: Date;
-  lastModifiedDate?: Date;
+  scheduleType: ScheduleType;
+  daySchedules: HabitDaySchedule[];
+  createdDate?: string;
+  lastModifiedDate?: string;
 }

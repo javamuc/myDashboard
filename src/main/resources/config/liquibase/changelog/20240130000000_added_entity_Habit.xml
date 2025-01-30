@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="20240130000000-1" author="san">
+        <createTable tableName="habit">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(255)"/>
+            <column name="active" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="schedule_type" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+
+        <createTable tableName="habit_day_schedule">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="habit_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="day_of_week" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="schedule_type" type="varchar(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="repetitions" type="integer"/>
+            <column name="time_preference" type="varchar(20)"/>
+        </createTable>
+
+        <createTable tableName="habit_specific_time">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="day_schedule_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="hour_value" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="minute_value" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                baseTableName="habit"
+                                constraintName="fk_habit_user_id"
+                                referencedColumnNames="id"
+                                referencedTableName="jhi_user"/>
+
+        <addForeignKeyConstraint baseColumnNames="habit_id"
+                                baseTableName="habit_day_schedule"
+                                constraintName="fk_day_schedule_habit_id"
+                                referencedColumnNames="id"
+                                referencedTableName="habit"/>
+
+        <addForeignKeyConstraint baseColumnNames="day_schedule_id"
+                                baseTableName="habit_specific_time"
+                                constraintName="fk_specific_time_day_schedule_id"
+                                referencedColumnNames="id"
+                                referencedTableName="habit_day_schedule"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DaySchedule, TimePreference, FixedTime } from './habit.model';
+import { HabitDaySchedule, TimePreference, HabitSpecificTime, DayScheduleType } from './habit.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @Component({
@@ -12,17 +12,18 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
   imports: [CommonModule, FormsModule, FontAwesomeModule],
 })
 export class DayScheduleComponent {
-  @Input() schedule!: DaySchedule;
-  @Output() scheduleChange = new EventEmitter<DaySchedule>();
+  @Input() schedule!: HabitDaySchedule;
+  @Output() scheduleChange = new EventEmitter<HabitDaySchedule>();
 
   readonly timePreferences: TimePreference[] = ['MORNING', 'MIDDAY', 'AFTERNOON', 'EVENING', 'SPECIFIC_TIMES'];
 
-  setScheduleType(type: 'ANYTIME' | 'SPECIFIC'): void {
-    const newSchedule: DaySchedule = {
-      type,
+  setScheduleType(type: DayScheduleType): void {
+    const newSchedule: HabitDaySchedule = {
+      ...this.schedule,
+      scheduleType: type,
       repetitions: type === 'ANYTIME' ? 1 : undefined,
-      timePreferences: type === 'SPECIFIC' ? [] : undefined,
-      specificTimes: undefined,
+      timePreference: type === 'SPECIFIC' ? 'SPECIFIC_TIMES' : undefined,
+      specificTimes: type === 'SPECIFIC' ? [] : [],
     };
     this.scheduleChange.emit(newSchedule);
   }
@@ -34,33 +35,18 @@ export class DayScheduleComponent {
     });
   }
 
-  toggleTimePreference(preference: TimePreference): void {
-    const timePreferences = this.schedule.timePreferences ?? [];
-    const index = timePreferences.indexOf(preference);
-
-    if (index === -1) {
-      timePreferences.push(preference);
-    } else {
-      timePreferences.splice(index, 1);
-    }
-
-    // If SPECIFIC_TIMES is removed, clear the specific times
-    if (preference === 'SPECIFIC_TIMES' && index !== -1) {
-      this.scheduleChange.emit({
-        ...this.schedule,
-        timePreferences,
-        specificTimes: undefined,
-      });
-    } else {
-      this.scheduleChange.emit({
-        ...this.schedule,
-        timePreferences,
-      });
-    }
+  setTimePreference(preference: TimePreference): void {
+    const newSchedule = {
+      ...this.schedule,
+      timePreference: preference,
+      // Clear specific times if switching away from SPECIFIC_TIMES
+      specificTimes: preference === 'SPECIFIC_TIMES' ? this.schedule.specificTimes : [],
+    };
+    this.scheduleChange.emit(newSchedule);
   }
 
   addSpecificTime(): void {
-    const specificTimes = [...(this.schedule.specificTimes ?? []), { hour: 12, minute: 0 }];
+    const specificTimes = [...this.schedule.specificTimes, { hour: 12, minute: 0 }];
     this.scheduleChange.emit({
       ...this.schedule,
       specificTimes,
@@ -69,7 +55,7 @@ export class DayScheduleComponent {
 
   updateSpecificTime(index: number, time: string): void {
     const [hours, minutes] = time.split(':').map(Number);
-    const specificTimes = [...(this.schedule.specificTimes ?? [])];
+    const specificTimes = [...this.schedule.specificTimes];
     specificTimes[index] = { hour: hours, minute: minutes };
     this.scheduleChange.emit({
       ...this.schedule,
@@ -78,7 +64,7 @@ export class DayScheduleComponent {
   }
 
   removeSpecificTime(index: number): void {
-    const specificTimes = [...(this.schedule.specificTimes ?? [])];
+    const specificTimes = [...this.schedule.specificTimes];
     specificTimes.splice(index, 1);
     this.scheduleChange.emit({
       ...this.schedule,
@@ -93,7 +79,7 @@ export class DayScheduleComponent {
       .join(' ');
   }
 
-  formatTime(time: FixedTime): string {
+  formatTime(time: HabitSpecificTime): string {
     return `${time.hour.toString().padStart(2, '0')}:${time.minute.toString().padStart(2, '0')}`;
   }
 }

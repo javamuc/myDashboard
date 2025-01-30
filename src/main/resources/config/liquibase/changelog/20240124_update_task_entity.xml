@@ -20,6 +20,22 @@
 
         <!-- Drop completed column -->
         <dropColumn tableName="task" columnName="completed"/>
-    </changeSet>
 
+      <loadData
+                file="config/liquibase/data/task.csv"
+                separator=","
+                tableName="task"
+                usePreparedStatements="true">
+          <column name="id" type="numeric"/>
+          <column name="title" type="varchar(255)"/>
+          <column name="description" type="varchar(255)"/>
+          <column name="due_date" type="timestamp"/>
+          <column name="priority" type="numeric"/>
+          <column name="status" type="varchar(20)"/>
+          <column name="assignee" type="varchar(100)"/>
+          <column name="created_date" type="timestamp"/>
+          <column name="last_modified_date" type="timestamp"/>
+          <column name="board_id" type="numeric"/>
+      </loadData>
+    </changeSet>
 </databaseChangeLog>

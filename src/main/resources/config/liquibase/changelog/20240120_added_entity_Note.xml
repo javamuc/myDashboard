@@ -36,5 +36,18 @@
                      tableName="note">
             <column name="user_id"/>
         </createIndex>
+
+        <loadData
+                  file="config/liquibase/data/note.csv"
+                  separator=","
+                  tableName="note"
+                  usePreparedStatements="true">
+            <column name="id" type="numeric"/>
+            <column name="title" type="varchar(100)"/>
+            <column name="content" type="varchar(4000)"/>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_date" type="timestamp"/>
+            <column name="user_id" type="numeric"/>
+        </loadData>
     </changeSet>
 </databaseChangeLog>
