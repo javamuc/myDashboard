@@ -65,6 +65,9 @@ export class NotesComponent implements OnInit, OnDestroy {
   loadNotes(): void {
     this.noteService.query().subscribe(notes => {
       this.notes.set(notes);
+      if (notes.length > 0) {
+        this.selectedNote.set(notes[0]);
+      }
       this.updateFilteredNotes();
     });
   }
@@ -74,7 +77,12 @@ export class NotesComponent implements OnInit, OnDestroy {
       title: '',
       content: '',
     };
-    this.selectedNote.set(newNote);
+
+    this.noteService.create(newNote).subscribe(createdNote => {
+      this.selectedNote.set(createdNote);
+      this.notes.update(notes => [...notes, createdNote]);
+      this.updateFilteredNotes();
+    });
   }
 
   onNoteSelected(note: Note): void {
@@ -82,19 +90,8 @@ export class NotesComponent implements OnInit, OnDestroy {
   }
 
   onNoteUpdated(updatedNote: Note): void {
-    if (!updatedNote.id) {
-      this.noteService.create(updatedNote).subscribe(createdNote => {
-        this.selectedNote.update(note => createdNote);
-        this.notes.update(notes => [...notes, createdNote]);
-        this.updateFilteredNotes();
-      });
-    } else {
-      const note = { ...updatedNote };
-      this.notes.update(notes => notes.map(n => (n.id === note.id ? note : n)));
-      this.selectedNote.set(note);
-      this.updateFilteredNotes();
-      this.noteUpdateSubject.next(note);
-    }
+    this.noteUpdateSubject.next(updatedNote);
+    this.updateFilteredNotes();
   }
 
   onSearch(): void {
@@ -147,8 +144,22 @@ export class NotesComponent implements OnInit, OnDestroy {
   private saveNote(note: Note): void {
     if (note.id) {
       this.noteService.update(note).subscribe(savedNote => {
-        this.notes.update(notes => notes.map(n => (n.id === savedNote.id ? savedNote : n)));
-        this.selectedNote.set(savedNote);
+        // Update the note in the notes array
+        this.notes.update(notes =>
+          notes.map(n => {
+            if (n.id === savedNote.id) {
+              return savedNote;
+            }
+            return n;
+          }),
+        );
+
+        // Update the selected note with the saved version
+        if (this.selectedNote()?.id === savedNote.id) {
+          this.selectedNote.set(savedNote);
+        }
+
+        // Update the filtered notes
         this.updateFilteredNotes();
       });
     }
