@@ -1,0 +1,71 @@
+.day-schedule-container {
+  .schedule-type {
+    .btn-group {
+      width: 100%;
+      .btn {
+        flex: 1;
+      }
+    }
+  }
+
+  .anytime-schedule {
+    .form-group {
+      label {
+        color: var(--text-color);
+        margin-bottom: 0.5rem;
+      }
+
+      input[type='number'] {
+        max-width: 200px;
+        background-color: var(--background-primary);
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+
+        &:focus {
+          border-color: var(--primary-color);
+          box-shadow: none;
+        }
+      }
+    }
+  }
+
+  .specific-schedule {
+    .time-preference-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.5rem;
+
+      .time-preference {
+        .btn {
+          width: 100%;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    .specific-times {
+      margin-top: 1rem;
+
+      .specific-time {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        input[type='time'] {
+          max-width: 200px;
+          background-color: var(--background-primary);
+          border: 1px solid var(--border-color);
+          color: var(--text-color);
+          color-scheme: dark;
+
+          &:focus {
+            border-color: var(--primary-color);
+            box-shadow: none;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+.schedule-type {
+  .btn-group {
+    width: 100%;
+    .btn {
+      flex: 1;
+    }
+  }
+}
+
+.week-view {
+  .weekdays {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-start;
+
+    .day-button {
+      background: none;
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 60px;
+      text-transform: uppercase;
+      font-size: 0.875rem;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      &.selected {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+      }
+    }
+  }
+}
+
+.day-schedule {
+  background-color: var(--background-secondary);
+  border-radius: 8px;
+  padding: 1.5rem;
+
+  h4 {
+    color: var(--text-color);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.schedule-options {
+  background-color: var(--background-primary);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}

@@ -1,0 +1,55 @@
+<div class="p-3">
+  <h3>Schedule for {{ habit.name }}</h3>
+
+  <!-- Schedule Type Selection -->
+  <div class="schedule-type mb-4">
+    <div class="btn-group" role="group">
+      <button
+        type="button"
+        class="btn"
+        [class.btn-primary]="habit.schedule.type === 'DAILY'"
+        [class.btn-outline-primary]="habit.schedule.type !== 'DAILY'"
+        (click)="setScheduleType('DAILY')"
+      >
+        Daily
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [class.btn-primary]="habit.schedule.type === 'SELECTED_DAYS'"
+        [class.btn-outline-primary]="habit.schedule.type !== 'SELECTED_DAYS'"
+        (click)="setScheduleType('SELECTED_DAYS')"
+      >
+        Selected Days
+      </button>
+    </div>
+  </div>
+
+  <!-- Selected Days Week View -->
+  <div *ngIf="habit.schedule.type === 'SELECTED_DAYS'" class="week-view mb-4">
+    <div class="weekdays">
+      <button *ngFor="let day of weekDays" type="button" class="day-button" [class.selected]="isDaySelected(day)" (click)="toggleDay(day)">
+        {{ day.slice(0, 3) }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Day Schedule View -->
+  <ng-container *ngIf="habit.schedule.type === 'DAILY' || getSelectedDays().length > 0">
+    <div class="day-schedule" [class.mt-4]="habit.schedule.type === 'SELECTED_DAYS'">
+      <ng-container *ngIf="habit.schedule.type === 'DAILY'; else selectedDaysSchedule">
+        <div class="schedule-options">
+          <h4 class="mb-3">Daily Schedule</h4>
+          <jhi-day-schedule [schedule]="getDailySchedule()" (scheduleChange)="updateDailySchedule($event)"></jhi-day-schedule>
+        </div>
+      </ng-container>
+
+      <ng-template #selectedDaysSchedule>
+        <div *ngFor="let day of getSelectedDays()" class="schedule-options mb-4">
+          <h4 class="mb-3">{{ day }} Schedule</h4>
+          <jhi-day-schedule [schedule]="habit.schedule.schedule[day]!" (scheduleChange)="updateDaySchedule(day, $event)"></jhi-day-schedule>
+        </div>
+      </ng-template>
+    </div>
+  </ng-container>
+</div>

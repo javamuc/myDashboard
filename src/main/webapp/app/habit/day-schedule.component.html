@@ -1,0 +1,73 @@
+<div class="day-schedule-container">
+  <!-- Schedule Type Selection -->
+  <div class="schedule-type mb-4">
+    <div class="btn-group" role="group">
+      <button
+        type="button"
+        class="btn"
+        [class.btn-primary]="schedule.type === 'ANYTIME'"
+        [class.btn-outline-primary]="schedule.type !== 'ANYTIME'"
+        (click)="setScheduleType('ANYTIME')"
+      >
+        Anytime
+      </button>
+      <button
+        type="button"
+        class="btn"
+        [class.btn-primary]="schedule.type === 'SPECIFIC'"
+        [class.btn-outline-primary]="schedule.type !== 'SPECIFIC'"
+        (click)="setScheduleType('SPECIFIC')"
+      >
+        Specific Times
+      </button>
+    </div>
+  </div>
+
+  <!-- Anytime Schedule -->
+  <div *ngIf="schedule.type === 'ANYTIME'" class="anytime-schedule">
+    <div class="form-group">
+      <label for="repetitions">Number of repetitions per day</label>
+      <input
+        type="number"
+        class="form-control"
+        id="repetitions"
+        [value]="schedule.repetitions"
+        (change)="updateRepetitions($any($event.target).value)"
+        min="1"
+      />
+    </div>
+  </div>
+
+  <!-- Specific Schedule -->
+  <div *ngIf="schedule.type === 'SPECIFIC'" class="specific-schedule">
+    <div class="time-preferences mb-4">
+      <div class="time-preference-grid">
+        <div *ngFor="let preference of timePreferences" class="time-preference">
+          <button
+            type="button"
+            class="btn"
+            [class.btn-primary]="schedule.timePreferences?.includes(preference)"
+            [class.btn-outline-primary]="!schedule.timePreferences?.includes(preference)"
+            (click)="toggleTimePreference(preference)"
+          >
+            {{ formatTimePreference(preference) }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Specific Times -->
+    <div *ngIf="schedule.timePreferences?.includes('SPECIFIC_TIMES')" class="specific-times">
+      <div *ngFor="let time of schedule.specificTimes; let i = index" class="specific-time mb-2">
+        <input type="time" class="form-control" [value]="formatTime(time)" (change)="updateSpecificTime(i, $any($event.target).value)" />
+        <button class="btn btn-outline-danger ms-2" (click)="removeSpecificTime(i)">
+          <fa-icon icon="trash"></fa-icon>
+        </button>
+      </div>
+      <button class="btn btn-outline-primary" (click)="addSpecificTime()">
+        <fa-icon icon="plus"></fa-icon>
+        Add Time
+      </button>
+    </div>
+  </div>
+</div>
