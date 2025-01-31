@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="20240325000000-1" author="san">
+        <createTable tableName="habit_record">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="record_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="habit_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="habit_id"
+                                baseTableName="habit_record"
+                                constraintName="fk_habit_record_habit_id"
+                                referencedColumnNames="id"
+                                referencedTableName="habit"/>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                baseTableName="habit_record"
+                                constraintName="fk_habit_record_user_id"
+                                referencedColumnNames="id"
+                                referencedTableName="jhi_user"/>
+
+        <createIndex indexName="idx_habit_record_date"
+                    tableName="habit_record">
+            <column name="record_date"/>
+        </createIndex>
+
+        <createIndex indexName="idx_habit_record_user_date"
+                    tableName="habit_record">
+            <column name="user_id"/>
+            <column name="record_date"/>
+        </createIndex>
+
+        <createIndex indexName="idx_habit_record_habit_user_date"
+                    tableName="habit_record">
+            <column name="habit_id"/>
+            <column name="user_id"/>
+            <column name="record_date"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
