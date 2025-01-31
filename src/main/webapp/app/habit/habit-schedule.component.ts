@@ -53,12 +53,22 @@ export class HabitScheduleComponent {
   }
 
   updateDaySchedule(day: DayOfWeek, updatedSchedule: HabitDaySchedule): void {
-    const newHabit = {
-      ...this.habit,
-      daySchedules: this.habit.daySchedules.map(schedule =>
+    const newHabit = { ...this.habit };
+
+    if (this.habit.scheduleType === 'DAILY') {
+      // For daily habits, update all day schedules with the same settings
+      newHabit.daySchedules = this.weekDays.map(weekDay => ({
+        ...updatedSchedule,
+        dayOfWeek: weekDay,
+        id: this.getDaySchedule(weekDay)?.id, // Preserve existing IDs
+      }));
+    } else {
+      // For selected days, update only the specific day
+      newHabit.daySchedules = this.habit.daySchedules.map(schedule =>
         schedule.dayOfWeek === day ? { ...updatedSchedule, dayOfWeek: day } : schedule,
-      ),
-    };
+      );
+    }
+
     this.habitChange.emit(newHabit);
   }
 
