@@ -5,25 +5,46 @@
 
       <!-- Active Habits List -->
       <div class="list-group">
-        <div *ngFor="let habit of activeHabits()" class="list-group-item" (click)="recordHabitCompletion(habit, $event)" role="button">
+        <div
+          *ngFor="let progress of habitProgress()"
+          class="list-group-item"
+          [class.disabled]="!progress.canAddRecord"
+          (click)="recordHabitCompletion(progress, $event)"
+          role="button"
+        >
           <div class="d-flex justify-content-between align-items-center">
             <div>
-              <h5 class="mb-1">{{ habit.name }}</h5>
-              <small *ngIf="habit.description" class="text-muted">{{ habit.description }}</small>
+              <h5 class="mb-1">{{ progress.habit.name }}</h5>
+              <small *ngIf="progress.habit.description" class="text-muted">{{ progress.habit.description }}</small>
             </div>
 
             <!-- Schedule Information -->
             <div class="schedule-info">
-              <ng-container [ngSwitch]="habit.scheduleType">
+              <ng-container [ngSwitch]="progress.habit.scheduleType">
                 <span *ngSwitchCase="'DAILY'" class="badge bg-primary">Daily</span>
                 <span *ngSwitchCase="'SELECTED_DAYS'" class="badge bg-info">Selected Days</span>
               </ng-container>
             </div>
           </div>
 
+          <!-- Progress Bar -->
+          <div class="progress-section mt-2">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <small class="text-muted">Progress: {{ progress.completedCount }}/{{ progress.targetCount }}</small>
+              <small class="text-muted">{{ progress.progress | number: '1.0-0' }}%</small>
+            </div>
+            <ngb-progressbar
+              [type]="progress.progress === 100 ? 'success' : 'primary'"
+              [value]="progress.progress"
+              [striped]="true"
+              [animated]="progress.progress < 100"
+              height="10px"
+            ></ngb-progressbar>
+          </div>
+
           <!-- Day Schedules -->
           <div class="day-schedules mt-2">
-            <div *ngFor="let schedule of habit.daySchedules" class="schedule-item">
+            <div *ngFor="let schedule of progress.habit.daySchedules" class="schedule-item">
               <small class="text-muted">{{ schedule.dayOfWeek }}</small>
               <ng-container [ngSwitch]="schedule.scheduleType">
                 <span *ngSwitchCase="'ANYTIME'"> {{ schedule.repetitions }} time(s) </span>
@@ -39,7 +60,7 @@
       </div>
 
       <!-- Empty State -->
-      <div *ngIf="activeHabits().length === 0" class="text-center mt-4">
+      <div *ngIf="habitProgress().length === 0" class="text-center mt-4">
         <p class="text-muted">No active habits found.</p>
       </div>
     </div>

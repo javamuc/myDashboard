@@ -55,8 +55,8 @@ export class HabitService {
     return this.http.post<HabitRecord>(this.habitRecordUrl, record);
   }
 
-  getHabitRecords(habitId: number, date: string): Observable<HabitRecord[]> {
-    return this.http.get<HabitRecord[]>(`${this.habitRecordUrl}/habit/${habitId}/date/${date}`);
+  getHabitRecords(date: string): Observable<HabitRecord[]> {
+    return this.http.get<HabitRecord[]>(`${this.habitRecordUrl}/date/${date}`);
   }
 
   private convertDateFromServer(habit: Habit): Habit {
