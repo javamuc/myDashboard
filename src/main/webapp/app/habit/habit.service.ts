@@ -3,17 +3,19 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { Habit, HabitDaySchedule, HabitSpecificTime } from './habit.model';
+import { Habit, HabitDaySchedule, HabitSpecificTime, HabitRecord } from './habit.model';
 
 @Injectable({ providedIn: 'root' })
 export class HabitService {
   private resourceUrl: string;
+  private habitRecordUrl: string;
 
   constructor(
     private http: HttpClient,
     private applicationConfigService: ApplicationConfigService,
   ) {
     this.resourceUrl = this.applicationConfigService.getEndpointFor('api/habits');
+    this.habitRecordUrl = this.applicationConfigService.getEndpointFor('api/habit-records');
   }
 
   create(habit: Habit): Observable<Habit> {
@@ -42,6 +44,19 @@ export class HabitService {
 
   delete(id: number): Observable<unknown> {
     return this.http.delete<unknown>(`${this.resourceUrl}/${id}`);
+  }
+
+  // Habit Record methods
+  createRecord(habitId: number): Observable<HabitRecord> {
+    const record: HabitRecord = {
+      habitId,
+      recordDate: new Date().toISOString().split('T')[0], // Today's date in YYYY-MM-DD format
+    };
+    return this.http.post<HabitRecord>(this.habitRecordUrl, record);
+  }
+
+  getHabitRecords(habitId: number, date: string): Observable<HabitRecord[]> {
+    return this.http.get<HabitRecord[]>(`${this.habitRecordUrl}/habit/${habitId}/date/${date}`);
   }
 
   private convertDateFromServer(habit: Habit): Habit {

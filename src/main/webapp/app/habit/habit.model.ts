@@ -18,6 +18,13 @@ export interface HabitDaySchedule {
   habitId?: number;
 }
 
+export interface HabitRecord {
+  id?: number;
+  habitId: number;
+  recordDate: string;
+  createdDate?: string;
+}
+
 export interface Habit {
   id?: number;
   name: string;

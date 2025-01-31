@@ -31,4 +31,17 @@ export class HabitTrackerComponent implements OnInit {
         this.activeHabits.set(habits);
       });
   }
+
+  recordHabitCompletion(habit: Habit, event: Event): void {
+    event.preventDefault();
+    if (habit.id) {
+      this.habitService
+        .createRecord(habit.id)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
+          // Optionally refresh the habits list or update UI
+          this.loadActiveHabits();
+        });
+    }
+  }
 }
