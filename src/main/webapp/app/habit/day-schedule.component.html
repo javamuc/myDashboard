@@ -1,4 +1,4 @@
-<div class="day-schedule-container">
+<div class="day-schedule p-3">
   <!-- Schedule Type Selection -->
   <div class="schedule-type mb-4">
     <div class="btn-group" role="group">
@@ -18,7 +18,7 @@
         [class.btn-outline-primary]="schedule.scheduleType !== 'SPECIFIC'"
         (click)="setScheduleType('SPECIFIC')"
       >
-        Specific Times
+        Specific Time
       </button>
     </div>
   </div>
@@ -26,7 +26,7 @@
   <!-- Anytime Schedule -->
   <div *ngIf="schedule.scheduleType === 'ANYTIME'" class="anytime-schedule">
     <div class="form-group">
-      <label for="repetitions">Number of repetitions per day</label>
+      <label for="repetitions" class="form-label">Number of times per day</label>
       <input
         type="number"
         class="form-control"
@@ -58,16 +58,7 @@
 
     <!-- Specific Times -->
     <div *ngIf="schedule.timePreference === 'SPECIFIC_TIMES'" class="specific-times">
-      <div *ngFor="let time of schedule.specificTimes; let i = index" class="specific-time mb-2">
-        <input type="time" class="form-control" [value]="formatTime(time)" (change)="updateSpecificTime(i, $any($event.target).value)" />
-        <button class="btn btn-outline-danger ms-2" (click)="removeSpecificTime(i)">
-          <fa-icon icon="trash"></fa-icon>
-        </button>
-      </div>
-      <button class="btn btn-outline-primary" (click)="addSpecificTime()">
-        <fa-icon icon="plus"></fa-icon>
-        Add Time
-      </button>
+      <jhi-time-selector [selectedTimes]="schedule.specificTimes" (selectedTimesChange)="updateSpecificTimes($event)"></jhi-time-selector>
     </div>
   </div>
 </div>

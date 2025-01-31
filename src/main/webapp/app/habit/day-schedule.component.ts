@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HabitDaySchedule, TimePreference, HabitSpecificTime, DayScheduleType } from './habit.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { TimeSelectorComponent } from './time-selector.component';
 
 @Component({
   selector: 'jhi-day-schedule',
   templateUrl: './day-schedule.component.html',
   styleUrl: './day-schedule.component.scss',
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, TimeSelectorComponent],
 })
 export class DayScheduleComponent {
   @Input() schedule!: HabitDaySchedule;
@@ -45,30 +46,10 @@ export class DayScheduleComponent {
     this.scheduleChange.emit(newSchedule);
   }
 
-  addSpecificTime(): void {
-    const specificTimes = [...this.schedule.specificTimes, { hour: 12, minute: 0 }];
+  updateSpecificTimes(times: HabitSpecificTime[]): void {
     this.scheduleChange.emit({
       ...this.schedule,
-      specificTimes,
-    });
-  }
-
-  updateSpecificTime(index: number, time: string): void {
-    const [hours, minutes] = time.split(':').map(Number);
-    const specificTimes = [...this.schedule.specificTimes];
-    specificTimes[index] = { hour: hours, minute: minutes };
-    this.scheduleChange.emit({
-      ...this.schedule,
-      specificTimes,
-    });
-  }
-
-  removeSpecificTime(index: number): void {
-    const specificTimes = [...this.schedule.specificTimes];
-    specificTimes.splice(index, 1);
-    this.scheduleChange.emit({
-      ...this.schedule,
-      specificTimes,
+      specificTimes: times,
     });
   }
 
@@ -77,9 +58,5 @@ export class DayScheduleComponent {
       .split('_')
       .map(word => word.charAt(0) + word.slice(1).toLowerCase())
       .join(' ');
-  }
-
-  formatTime(time: HabitSpecificTime): string {
-    return `${time.hour.toString().padStart(2, '0')}:${time.minute.toString().padStart(2, '0')}`;
   }
 }

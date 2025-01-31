@@ -1,0 +1,20 @@
+<div class="time-selector">
+  <div class="piano">
+    <div
+      *ngFor="let key of timeKeys"
+      class="key"
+      [class.half-hour]="key.isHalfHour"
+      [class.selected]="key.isSelected"
+      (click)="toggleTime(key)"
+    >
+      <span class="time"> {{ key.hour.toString().padStart(2, '0') }}:{{ key.minute.toString().padStart(2, '0') }} </span>
+    </div>
+  </div>
+
+  <!-- Selected Times Summary -->
+  <div class="selected-times mt-3">
+    <div *ngFor="let time of selectedTimes" class="badge bg-primary me-2">
+      {{ time.hour.toString().padStart(2, '0') }}:{{ time.minute.toString().padStart(2, '0') }}
+    </div>
+  </div>
+</div>
