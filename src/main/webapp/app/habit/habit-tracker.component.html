@@ -1,0 +1,52 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <h2 class="mb-4">Today's Habits</h2>
+
+      <!-- Active Habits List -->
+      <div class="list-group">
+        <div *ngFor="let habit of activeHabits()" class="list-group-item">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="mb-1">{{ habit.name }}</h5>
+              <small *ngIf="habit.description" class="text-muted">{{ habit.description }}</small>
+            </div>
+
+            <!-- Schedule Information -->
+            <div class="schedule-info">
+              <ng-container [ngSwitch]="habit.scheduleType">
+                <span *ngSwitchCase="'DAILY'" class="badge bg-primary">Daily</span>
+                <span *ngSwitchCase="'SELECTED_DAYS'" class="badge bg-info">Selected Days</span>
+              </ng-container>
+            </div>
+          </div>
+
+          <!-- Day Schedules -->
+          <div class="day-schedules mt-2">
+            <div *ngFor="let schedule of habit.daySchedules" class="schedule-item">
+              <small class="text-muted">{{ schedule.dayOfWeek }}</small>
+              <ng-container [ngSwitch]="schedule.scheduleType">
+                <span *ngSwitchCase="'ANYTIME'"> {{ schedule.repetitions }} time(s) </span>
+                <span *ngSwitchCase="'SPECIFIC'">
+                  <ng-container [ngSwitch]="schedule.timePreference">
+                    <span *ngSwitchCase="'SPECIFIC_TIMES'">
+                      <span *ngFor="let time of schedule.specificTimes" class="badge bg-secondary me-1">
+                        {{ time.hour.toString().padStart(2, '0') }}:{{ time.minute.toString().padStart(2, '0') }}
+                      </span>
+                    </span>
+                    <span *ngSwitchDefault class="badge bg-secondary">{{ schedule.timePreference }}</span>
+                  </ng-container>
+                </span>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="activeHabits().length === 0" class="text-center mt-4">
+        <p class="text-muted">No active habits found.</p>
+      </div>
+    </div>
+  </div>
+</div>

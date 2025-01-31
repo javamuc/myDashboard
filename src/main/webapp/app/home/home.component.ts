@@ -17,6 +17,7 @@ import { PomodoroComponent } from '../shared/pomodoro/pomodoro.component';
 import StockPickerComponent from '../shared/shared.module';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { HabitManagementComponent } from '../habit/habit-management.component';
+import { HabitTrackerComponent } from '../habit/habit-tracker.component';
 @Component({
   selector: 'jhi-home',
   templateUrl: './home.component.html',
@@ -33,6 +34,7 @@ import { HabitManagementComponent } from '../habit/habit-management.component';
     StockPickerComponent,
     DashboardComponent,
     HabitManagementComponent,
+    HabitTrackerComponent,
   ],
 })
 export default class HomeComponent implements OnInit, OnDestroy {
