@@ -4,14 +4,6 @@
   </div>
 
   <div class="dashboard-content">
-    <!-- Recent Ideas Section -->
-    <jhi-idea-list
-      [ideas]="recentIdeas"
-      [loading]="loading"
-      title="Recent Ideas"
-      emptyStateMessage="No ideas yet. Click the lightbulb icon in the navbar to capture your first idea!"
-    ></jhi-idea-list>
-
     <!-- Recent Tasks Section -->
     <jhi-task-list
       [tasks]="recentTasks"
@@ -19,5 +11,13 @@
       title="In-Progress Tasks"
       emptyStateMessage="No tasks yet. Go to the board to create your first task!"
     ></jhi-task-list>
+
+    <!-- Recent Ideas Section -->
+    <jhi-idea-list
+      [ideas]="recentIdeas"
+      [loading]="loading"
+      title="Recent Ideas"
+      emptyStateMessage="No ideas yet. Click the lightbulb icon in the navbar to capture your first idea!"
+    ></jhi-idea-list>
   </div>
 </div>
