@@ -153,3 +153,4 @@ coverage/
 .nyc_output/
 .vscode/
 h2db/
+src/main/resources/.h2.server.properties
