@@ -6,6 +6,7 @@ import { Habit, HabitSpecificTime } from './habit.model';
 import { HabitService } from './habit.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgbProgressbarModule } from '@ng-bootstrap/ng-bootstrap';
+import { interval, timer } from 'rxjs';
 
 interface HabitProgress {
   habit: Habit;
@@ -25,11 +26,13 @@ interface HabitProgress {
 export class HabitTrackerComponent implements OnInit {
   habitProgress = signal<HabitProgress[]>([]);
   private destroyRef = inject(DestroyRef);
+  private readonly THIRTY_MINUTES = 30 * 60 * 1000; // 30 minutes in milliseconds
 
   constructor(private habitService: HabitService) {}
 
   ngOnInit(): void {
     this.loadHabitsAndRecords();
+    this.setupAutoRefresh();
   }
 
   loadHabitsAndRecords(): void {
@@ -68,6 +71,29 @@ export class HabitTrackerComponent implements OnInit {
           this.loadHabitsAndRecords();
         });
     }
+  }
+
+  private setupAutoRefresh(): void {
+    // Calculate time until next 30-minute mark
+    const now = new Date();
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+    const milliseconds = now.getMilliseconds();
+
+    // Calculate delay until next 30-minute mark
+    const nextMinute = minutes <= 29 ? 30 : 60;
+    const delay = ((nextMinute - minutes) * 60 - seconds) * 1000 - milliseconds;
+
+    // Start timer with initial delay, then repeat every 30 minutes
+    timer(delay)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.loadHabitsAndRecords();
+        // Set up recurring updates every 30 minutes
+        interval(this.THIRTY_MINUTES)
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe(() => this.loadHabitsAndRecords());
+      });
   }
 
   private calculateTargetCount(habit: Habit): number {
