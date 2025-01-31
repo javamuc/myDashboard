@@ -40,25 +40,6 @@
 
   <!-- Specific Schedule -->
   <div *ngIf="schedule.scheduleType === 'SPECIFIC'" class="specific-schedule">
-    <div class="time-preferences mb-4">
-      <div class="time-preference-grid">
-        <div *ngFor="let preference of timePreferences" class="time-preference">
-          <button
-            type="button"
-            class="btn"
-            [class.btn-primary]="schedule.timePreference === preference"
-            [class.btn-outline-primary]="schedule.timePreference !== preference"
-            (click)="setTimePreference(preference)"
-          >
-            {{ formatTimePreference(preference) }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Specific Times -->
-    <div *ngIf="schedule.timePreference === 'SPECIFIC_TIMES'" class="specific-times">
-      <jhi-time-selector [selectedTimes]="schedule.specificTimes" (selectedTimesChange)="updateSpecificTimes($event)"></jhi-time-selector>
-    </div>
+    <jhi-time-selector [selectedTimes]="schedule.specificTimes" (selectedTimesChange)="updateSpecificTimes($event)"></jhi-time-selector>
   </div>
 </div>

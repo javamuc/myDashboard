@@ -1,7 +1,6 @@
 export type DayOfWeek = 'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
 export type ScheduleType = 'DAILY' | 'SELECTED_DAYS';
 export type DayScheduleType = 'ANYTIME' | 'SPECIFIC';
-export type TimePreference = 'MORNING' | 'MIDDAY' | 'AFTERNOON' | 'EVENING' | 'SPECIFIC_TIMES';
 
 export interface HabitSpecificTime {
   id?: number;
@@ -15,7 +14,6 @@ export interface HabitDaySchedule {
   dayOfWeek: DayOfWeek;
   scheduleType: DayScheduleType;
   repetitions?: number;
-  timePreference?: TimePreference;
   specificTimes: HabitSpecificTime[];
   habitId?: number;
 }
