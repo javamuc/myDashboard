@@ -13,6 +13,7 @@
         [cdkDropListData]="tasksByStatus.get(status) ?? []"
         [cdkDropListConnectedTo]="getConnectedLists(status)"
         (cdkDropListDropped)="onDrop($event, status)"
+        [cdkDropListSortingDisabled]="status === 'done'"
         tabindex="-1"
       >
         @for (task of tasksByStatus.get(status) ?? []; track task.id; let index = $index) {
