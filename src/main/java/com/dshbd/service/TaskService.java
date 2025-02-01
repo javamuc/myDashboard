@@ -95,6 +95,7 @@ public class TaskService {
                 taskToUpdate.setStatus(taskDTO.getStatus());
                 taskToUpdate.setPriority(taskDTO.getPriority());
                 taskToUpdate.setAssignee(taskDTO.getAssignee());
+                taskToUpdate.setPosition(taskDTO.getPosition());
                 return taskRepository.save(taskToUpdate);
             } else {
                 throw new IllegalStateException("Task has already been completed");

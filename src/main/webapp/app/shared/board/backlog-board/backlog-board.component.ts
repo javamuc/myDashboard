@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject, HostListener, ViewChildren, QueryList, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TaskService } from '../../task/task.service';
 import { Task } from '../../task/task.model';
@@ -6,6 +6,7 @@ import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-
 import { TaskCardComponent } from '../../task-card/task-card.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Subject, takeUntil } from 'rxjs';
+import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
 
 @Component({
   selector: 'jhi-backlog-board',
@@ -18,11 +19,24 @@ export class BacklogBoardComponent implements OnInit {
   loading = false;
   @Input() taskCreateSubject!: Subject<Task>;
   @Input() backlogTasks!: Task[];
+  @ViewChildren('taskItem') taskItems!: QueryList<ElementRef>;
+  @ViewChild('backlogContent') backlogContent!: ElementRef;
   private readonly taskService = inject(TaskService);
+  private readonly sidebarService = inject(SidebarService);
   private destroy$ = new Subject<void>();
+  private activeTask?: Task;
 
   ngOnInit(): void {
     this.loadBacklogTasks(); // Load tasks initially
+
+    // Subscribe to active task changes
+    this.sidebarService
+      .getTaskData()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(task => {
+        this.activeTask = task;
+      });
+
     this.taskCreateSubject.pipe(takeUntil(this.destroy$)).subscribe(task => {
       // Set the position to be at the start of the list (0)
       task.position = 0;
@@ -35,7 +49,46 @@ export class BacklogBoardComponent implements OnInit {
       this.backlogTasks = [task, ...this.backlogTasks];
       // Update all positions in the backend
       this.updateTaskPositions();
+      // Scroll to the new task after it's rendered
+      setTimeout(() => this.scrollToTask(0), 0);
     });
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent): void {
+    // Only handle if there's an active task
+    if (!this.activeTask || this.activeTask.status !== 'backlog') {
+      return;
+    }
+
+    const taskIndex = this.backlogTasks.findIndex(t => t.id === this.activeTask!.id);
+    if (taskIndex === -1) {
+      return;
+    }
+
+    // Handle different key combinations
+    if (event.metaKey || event.ctrlKey) {
+      // CMD/CTRL key is pressed
+      if (event.shiftKey) {
+        // SHIFT key is also pressed
+        if (event.key === 'ArrowUp') {
+          event.preventDefault();
+          this.moveTaskToTop(taskIndex);
+        } else if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          this.moveTaskToBottom(taskIndex);
+        }
+      } else {
+        // Only CMD/CTRL is pressed
+        if (event.key === 'ArrowUp' && taskIndex > 0) {
+          event.preventDefault();
+          this.moveTaskUp(taskIndex);
+        } else if (event.key === 'ArrowDown' && taskIndex < this.backlogTasks.length - 1) {
+          event.preventDefault();
+          this.moveTaskDown(taskIndex);
+        }
+      }
+    }
   }
 
   onDrop(event: CdkDragDrop<Task[]>): void {
@@ -43,6 +96,8 @@ export class BacklogBoardComponent implements OnInit {
       // Reordering within backlog
       moveItemInArray(this.backlogTasks, event.previousIndex, event.currentIndex);
       this.updateTaskPositions();
+      // Scroll to the dropped task
+      setTimeout(() => this.scrollToTask(event.currentIndex), 0);
     } else {
       // Moving from another list to backlog
       const task = event.item.data;
@@ -57,12 +112,65 @@ export class BacklogBoardComponent implements OnInit {
       });
       this.taskService.update(task).subscribe(() => {
         this.loadBacklogTasks();
+        // Scroll to the new task after it's loaded
+        setTimeout(() => this.scrollToTask(event.currentIndex), 100);
       });
     }
   }
 
   getConnectedLists(): string[] {
     return ['to-do-list', 'in-progress-list', 'done-list'];
+  }
+
+  private moveTaskUp(index: number): void {
+    if (index > 0) {
+      moveItemInArray(this.backlogTasks, index, index - 1);
+      this.updateTaskPositions();
+      setTimeout(() => this.scrollToTask(index - 1), 0);
+    }
+  }
+
+  private moveTaskDown(index: number): void {
+    if (index < this.backlogTasks.length - 1) {
+      moveItemInArray(this.backlogTasks, index, index + 1);
+      this.updateTaskPositions();
+      setTimeout(() => this.scrollToTask(index + 1), 0);
+    }
+  }
+
+  private moveTaskToTop(index: number): void {
+    if (index > 0) {
+      moveItemInArray(this.backlogTasks, index, 0);
+      this.updateTaskPositions();
+      setTimeout(() => this.scrollToTask(0), 0);
+    }
+  }
+
+  private moveTaskToBottom(index: number): void {
+    if (index < this.backlogTasks.length - 1) {
+      moveItemInArray(this.backlogTasks, index, this.backlogTasks.length - 1);
+      this.updateTaskPositions();
+      setTimeout(() => this.scrollToTask(this.backlogTasks.length - 1), 0);
+    }
+  }
+
+  private scrollToTask(index: number): void {
+    const taskElements = this.taskItems.toArray();
+    if (taskElements[index]) {
+      const taskElement = taskElements[index].nativeElement;
+      const container = this.backlogContent.nativeElement;
+      const taskTop = taskElement.offsetTop;
+      const containerHeight = container.clientHeight;
+      const taskHeight = taskElement.clientHeight;
+
+      // Calculate the ideal scroll position to center the task
+      const idealScrollTop = taskTop - (containerHeight - taskHeight) / 2;
+
+      container.scrollTo({
+        top: idealScrollTop,
+        behavior: 'smooth',
+      });
+    }
   }
 
   private loadBacklogTasks(): void {

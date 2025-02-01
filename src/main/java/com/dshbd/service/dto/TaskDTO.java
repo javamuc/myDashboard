@@ -27,9 +27,9 @@ public class TaskDTO implements Serializable {
     private Instant lastModifiedDate;
 
     @NotNull
-    private Long boardId;
+    private long boardId;
 
-    private Integer position;
+    private int position = 0;
 
     // Getters and Setters
     public Long getId() {
@@ -112,11 +112,11 @@ public class TaskDTO implements Serializable {
         this.boardId = boardId;
     }
 
-    public Integer getPosition() {
+    public int getPosition() {
         return position;
     }
 
-    public void setPosition(Integer position) {
+    public void setPosition(int position) {
         this.position = position;
     }
 }
