@@ -15,5 +15,13 @@ When you generate code, you follow the style guide of the rest of the code, use 
 All private methods should be at the end of the file.
 The package name is com.dshbd.
 When you generate an angular component, always use seperate files for the template and the styling.
-Add private methods at the end of the file.
+The order of methods in a component should be:
+- ngOnInit
+- ngOnChanges
+- ngAfterViewInit
+- ngAfterViewChecked
+- ngOnDestroy
+- public methods
+- protected methods
+- private methods
 Please start all your responses with the following header: banana emoji.
