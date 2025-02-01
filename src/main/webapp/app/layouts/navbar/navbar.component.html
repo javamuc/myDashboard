@@ -141,8 +141,8 @@
           <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="account-menu" data-cy="accountMenu">
             @if (!accountRef?.imageUrl) {
               <span>
-                <fa-icon icon="user"></fa-icon>
-                <span jhiTranslate="global.menu.account.main">Account</span>
+                <fa-icon icon="wrench"></fa-icon>
+                <span jhiTranslate="global.menu.account.settings">Settings</span>
               </span>
             } @else {
               <span>
@@ -158,10 +158,10 @@
                   routerLink="/account/settings"
                   routerLinkActive="active"
                   (click)="collapseNavbar()"
-                  data-cy="settings"
+                  data-cy="account"
                 >
-                  <fa-icon icon="wrench" [fixedWidth]="true"></fa-icon>
-                  <span jhiTranslate="global.menu.account.settings">Settings</span>
+                  <fa-icon icon="user" [fixedWidth]="true"></fa-icon>
+                  <span jhiTranslate="global.menu.account.main">Account</span>
                 </a>
               </li>
               <li>

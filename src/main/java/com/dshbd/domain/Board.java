@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "board")
@@ -21,8 +22,18 @@ public class Board implements Serializable {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "started", nullable = false)
+    private boolean started = false;
+
+    @Column(name = "to_do_limit", nullable = false)
+    private Integer toDoLimit = 5;
+
+    @Column(name = "progress_limit", nullable = false)
+    private Integer progressLimit = 2;
+
+    @CreationTimestamp
     @Column(name = "created_date")
-    private Instant createdDate = Instant.now();
+    private Instant createdDate;
 
     private Long ownerId;
 
@@ -49,6 +60,30 @@ public class Board implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public void setStarted(boolean started) {
+        this.started = started;
+    }
+
+    public Integer getToDoLimit() {
+        return toDoLimit;
+    }
+
+    public void setToDoLimit(Integer toDoLimit) {
+        this.toDoLimit = toDoLimit;
+    }
+
+    public Integer getProgressLimit() {
+        return progressLimit;
+    }
+
+    public void setProgressLimit(Integer progressLimit) {
+        this.progressLimit = progressLimit;
     }
 
     public Instant getCreatedDate() {
