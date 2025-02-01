@@ -23,6 +23,7 @@ export interface NewTask {
   status: TaskStatus;
   assignee?: string;
   boardId: number | undefined;
+  position: number;
 }
 
 export interface TaskVM {

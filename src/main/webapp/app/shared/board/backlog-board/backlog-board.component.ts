@@ -16,11 +16,19 @@ import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
   imports: [CommonModule, TaskCardComponent, FontAwesomeModule, DragDropModule],
 })
 export class BacklogBoardComponent implements OnInit {
-  loading = false;
-  @Input() taskCreateSubject!: Subject<Task>;
-  @Input() backlogTasks!: Task[];
   @ViewChildren('taskItem') taskItems!: QueryList<ElementRef>;
   @ViewChild('backlogContent') backlogContent!: ElementRef;
+
+  loading = false;
+  @Input() taskCreateSubject!: Subject<Task>;
+  @Input() set backlogTasks(tasks: Task[]) {
+    // Sort tasks by position whenever they change
+    this._backlogTasks = [...tasks].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+  }
+  get backlogTasks(): Task[] {
+    return this._backlogTasks;
+  }
+  private _backlogTasks: Task[] = [];
   private readonly taskService = inject(TaskService);
   private readonly sidebarService = inject(SidebarService);
   private destroy$ = new Subject<void>();
@@ -101,17 +109,31 @@ export class BacklogBoardComponent implements OnInit {
     } else {
       // Moving from another list to backlog
       const task = event.item.data;
-      // Insert at the specific position
-      task.position = event.currentIndex;
-      // Shift positions of other tasks
+
+      // Calculate the new position for the task
+      const newPosition = event.currentIndex;
+
+      // Update positions of existing tasks
       this.backlogTasks.forEach((t, index) => {
-        if (index >= event.currentIndex) {
+        if (index >= newPosition) {
           t.position = (t.position ?? 0) + 1;
         }
       });
+
+      // Set the position for the new task
+      task.position = newPosition;
+
+      // Add the task to the backlog
+      this.backlogTasks.splice(newPosition, 0, task);
+
+      // Update the task's status
       this.sidebarService.changeTaskStatus(task, 'backlog');
-      // Scroll to the new task after it's loaded
-      setTimeout(() => this.scrollToTask(event.currentIndex), 100);
+
+      // Update all positions in the backend
+      this.updateTaskPositions();
+
+      // Scroll to the new task
+      setTimeout(() => this.scrollToTask(newPosition), 100);
     }
   }
 

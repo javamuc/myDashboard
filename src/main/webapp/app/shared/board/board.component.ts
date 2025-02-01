@@ -292,6 +292,7 @@ export class BoardComponent implements OnInit, OnDestroy {
       status: 'backlog',
       boardId: board.id,
       priority: 1,
+      position: 0,
       assignee: '',
     };
     this.taskService.create(task).subscribe(createdTask => {
