@@ -226,10 +226,16 @@ export class BoardComponent implements OnInit, OnDestroy {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
+      const task = event.item.data;
+
+      // Check if we can change the status before moving the task
+      if (!this.canChangeStatus(task, newStatus)) {
+        return;
+      }
+
       transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
 
       // Update the task's status using the centralized method
-      const task = event.container.data[event.currentIndex];
       this.sidebarService.changeTaskStatus(task, newStatus);
     }
   }
@@ -394,10 +400,12 @@ export class BoardComponent implements OnInit, OnDestroy {
       if (boards.length > 0) {
         const firstBoard = boards[0];
         this.taskService.getBoardTasks(firstBoard.id!).subscribe(tasks => {
-          this.activeBoard.set({
+          const board = {
             ...firstBoard,
             tasks,
-          });
+          };
+          this.activeBoard.set(board);
+          this.sidebarService.setActiveBoard(board);
         });
       }
     });
@@ -405,5 +413,31 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   private updateStatus(task: Task, newStatus: TaskStatus): void {
     this.saveTask(task, true);
+  }
+
+  // Add a new method to handle status changes
+  private canChangeStatus(task: Task, newStatus: TaskStatus): boolean {
+    const board = this.activeBoard();
+    if (!board) return false;
+
+    const tasksInTargetStatus = board.tasks.filter(t => t.status === newStatus).length;
+
+    if (newStatus === 'in-progress' && tasksInTargetStatus >= board.progressLimit) {
+      this.alertService.addAlert({
+        type: 'warning',
+        message: `Cannot move task to In Progress: Board limit of ${board.progressLimit} tasks reached`,
+      });
+      return false;
+    }
+
+    if (newStatus === 'to-do' && tasksInTargetStatus >= board.toDoLimit) {
+      this.alertService.addAlert({
+        type: 'warning',
+        message: `Cannot move task to To Do: Board limit of ${board.toDoLimit} tasks reached`,
+      });
+      return false;
+    }
+
+    return true;
   }
 }

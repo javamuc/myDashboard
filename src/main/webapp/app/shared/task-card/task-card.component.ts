@@ -1,10 +1,12 @@
-import { Component, Input, HostListener, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy, signal } from '@angular/core';
+import { Component, Input, HostListener, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { Task } from '../task/task.model';
+import { Task, TaskStatus } from '../task/task.model';
 import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { AlertService } from 'app/core/util/alert.service';
+import { Board } from '../board/board.model';
 
 @Component({
   selector: 'jhi-task-card',
@@ -20,6 +22,8 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private sidebarIsOpen = signal(false);
   private taskData = signal<Task | undefined>(undefined);
+  private activeBoard = signal<Board | undefined>(undefined);
+  private readonly alertService = inject(AlertService);
 
   constructor(private sidebarService: SidebarService) {}
 
@@ -28,6 +32,14 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
     if (tags.length > 0) {
       this.sidebarService.addTags(tags);
     }
+
+    // Subscribe to active board changes
+    this.sidebarService
+      .getActiveBoard()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(board => {
+        this.activeBoard.set(board);
+      });
   }
 
   ngAfterViewInit(): void {
@@ -83,23 +95,33 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
       switch (event.key) {
         case 'ArrowLeft': {
           event.preventDefault();
+          let newStatus: TaskStatus | undefined;
           if (this.task.status === 'in-progress') {
-            this.sidebarService.changeTaskStatus(this.task, 'to-do');
+            newStatus = 'to-do';
           } else if (this.task.status === 'done') {
-            this.sidebarService.changeTaskStatus(this.task, 'in-progress');
+            newStatus = 'in-progress';
           } else if (this.task.status === 'to-do') {
-            this.sidebarService.changeTaskStatus(this.task, 'backlog');
+            newStatus = 'backlog';
+          }
+
+          if (newStatus && this.canChangeStatus(newStatus)) {
+            this.sidebarService.changeTaskStatus(this.task, newStatus);
           }
           break;
         }
         case 'ArrowRight': {
           event.preventDefault();
+          let newStatus: TaskStatus | undefined;
           if (this.task.status === 'to-do') {
-            this.sidebarService.changeTaskStatus(this.task, 'in-progress');
+            newStatus = 'in-progress';
           } else if (this.task.status === 'in-progress') {
-            this.sidebarService.changeTaskStatus(this.task, 'done');
+            newStatus = 'done';
           } else if (this.task.status === 'backlog') {
-            this.sidebarService.changeTaskStatus(this.task, 'to-do');
+            newStatus = 'to-do';
+          }
+
+          if (newStatus && this.canChangeStatus(newStatus)) {
+            this.sidebarService.changeTaskStatus(this.task, newStatus);
           }
           break;
         }
@@ -206,5 +228,30 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
       hash = cleanTag.charCodeAt(i) + ((hash << 5) - hash);
     }
     return hash;
+  }
+
+  private canChangeStatus(newStatus: TaskStatus): boolean {
+    const board = this.activeBoard();
+    if (!board) return false;
+
+    const tasksInTargetStatus = board.tasks.filter(t => t.status === newStatus).length;
+
+    if (newStatus === 'in-progress' && tasksInTargetStatus >= board.progressLimit) {
+      this.alertService.addAlert({
+        type: 'warning',
+        message: `Cannot move task to In Progress: Board limit of ${board.progressLimit} tasks reached`,
+      });
+      return false;
+    }
+
+    if (newStatus === 'to-do' && tasksInTargetStatus >= board.toDoLimit) {
+      this.alertService.addAlert({
+        type: 'warning',
+        message: `Cannot move task to To Do: Board limit of ${board.toDoLimit} tasks reached`,
+      });
+      return false;
+    }
+
+    return true;
   }
 }

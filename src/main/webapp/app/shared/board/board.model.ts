@@ -8,6 +8,9 @@ export interface Board {
   lastModifiedDate?: string;
   description?: string;
   ownerId?: number;
+  started?: boolean;
+  toDoLimit: number;
+  progressLimit: number;
 }
 
 export interface BoardFilter {
