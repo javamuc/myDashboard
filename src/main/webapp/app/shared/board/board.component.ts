@@ -357,13 +357,13 @@ export class BoardComponent implements OnInit, OnDestroy {
   private saveTask(task: Task, updateBoard = false): void {
     console.warn('saveTask', task);
     if (task.id) {
-      if (task.status === 'done') {
-        this.alertService.addAlert({
-          type: 'warning',
-          message: 'Task has already been completed',
-        });
-        return;
-      }
+      // if (task.status === 'done') {
+      //   this.alertService.addAlert({
+      //     type: 'warning',
+      //     message: 'Task has already been completed',
+      //   });
+      //   return;
+      // }
       // Persist the task in the database
       this.taskService.update(task).subscribe(savedTask => {
         if (this.task() && this.task()?.id === savedTask.id) {
@@ -426,7 +426,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     if (newStatus === 'in-progress' && tasksInTargetStatus >= board.progressLimit) {
       this.alertService.addAlert({
         type: 'warning',
-        message: `Cannot move task to In Progress: Board limit of ${board.progressLimit} tasks reached`,
+        message: `Board limit of ${board.progressLimit} tasks reached`,
       });
       return false;
     }
@@ -434,7 +434,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     if (newStatus === 'to-do' && tasksInTargetStatus >= board.toDoLimit) {
       this.alertService.addAlert({
         type: 'warning',
-        message: `Cannot move task to To Do: Board limit of ${board.toDoLimit} tasks reached`,
+        message: `Board limit of ${board.toDoLimit} tasks reached`,
       });
       return false;
     }

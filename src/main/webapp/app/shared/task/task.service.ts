@@ -19,6 +19,10 @@ export class TaskService {
     return this.http.get<TaskVM[]>(`${this.resourceUrl}/status/${status}`);
   }
 
+  getBoardTasksByStatus(boardId: number, status: TaskStatus): Observable<Task[]> {
+    return this.http.get<Task[]>(`${this.applicationConfigService.getEndpointFor('api/boards')}/${boardId}/tasks/status?status=${status}`);
+  }
+
   create(task: NewTask): Observable<Task> {
     return this.http.post<Task>(this.resourceUrl, task);
   }

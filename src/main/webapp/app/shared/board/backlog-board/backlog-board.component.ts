@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject, HostListener, ViewChildren, QueryList, ElementRef, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, inject, HostListener, ViewChildren, QueryList, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TaskService } from '../../task/task.service';
 import { Task } from '../../task/task.model';
@@ -7,6 +7,7 @@ import { TaskCardComponent } from '../../task-card/task-card.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Subject, takeUntil } from 'rxjs';
 import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
+import { Board } from '../../board/board.model';
 
 @Component({
   selector: 'jhi-backlog-board',
@@ -15,7 +16,7 @@ import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
   standalone: true,
   imports: [CommonModule, TaskCardComponent, FontAwesomeModule, DragDropModule],
 })
-export class BacklogBoardComponent implements OnInit {
+export class BacklogBoardComponent implements OnInit, OnDestroy {
   @ViewChildren('taskItem') taskItems!: QueryList<ElementRef>;
   @ViewChild('backlogContent') backlogContent!: ElementRef;
 
@@ -33,9 +34,19 @@ export class BacklogBoardComponent implements OnInit {
   private readonly sidebarService = inject(SidebarService);
   private destroy$ = new Subject<void>();
   private activeTask?: Task;
+  private activeBoard?: Board;
 
   ngOnInit(): void {
-    this.loadBacklogTasks(); // Load tasks initially
+    // Subscribe to active board changes
+    this.sidebarService
+      .getActiveBoard()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(board => {
+        this.activeBoard = board;
+        if (board?.id) {
+          this.loadBacklogTasks(board.id);
+        }
+      });
 
     // Subscribe to active task changes
     this.sidebarService
@@ -60,6 +71,11 @@ export class BacklogBoardComponent implements OnInit {
       // Scroll to the new task after it's rendered
       setTimeout(() => this.scrollToTask(0), 0);
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   @HostListener('document:keydown', ['$event'])
@@ -192,10 +208,10 @@ export class BacklogBoardComponent implements OnInit {
     }
   }
 
-  private loadBacklogTasks(): void {
+  private loadBacklogTasks(boardId: number): void {
     this.loading = true;
-    this.taskService.findTasksByStatus('backlog').subscribe(taskVMs => {
-      this.backlogTasks = taskVMs.map(vm => vm.task).sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+    this.taskService.getBoardTasksByStatus(boardId, 'backlog').subscribe(tasks => {
+      this.backlogTasks = tasks.sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
       this.loading = false;
     });
   }
