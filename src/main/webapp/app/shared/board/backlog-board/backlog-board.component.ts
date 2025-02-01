@@ -43,7 +43,7 @@ export class BacklogBoardComponent implements OnInit {
       // Shift existing tasks' positions
       this.backlogTasks = this.backlogTasks.map(t => ({
         ...t,
-        position: ((t.position ?? 0) as number) + 1,
+        position: (t.position ?? 0) + 1,
       }));
       // Add the new task at the beginning
       this.backlogTasks = [task, ...this.backlogTasks];
@@ -107,7 +107,7 @@ export class BacklogBoardComponent implements OnInit {
       // Shift positions of other tasks
       this.backlogTasks.forEach((t, index) => {
         if (index >= event.currentIndex) {
-          t.position = ((t.position ?? 0) as number) + 1;
+          t.position = (t.position ?? 0) + 1;
         }
       });
       this.taskService.update(task).subscribe(() => {
