@@ -83,31 +83,23 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
       switch (event.key) {
         case 'ArrowLeft': {
           event.preventDefault();
-          console.warn('ArrowLeft with command key');
           if (this.task.status === 'in-progress') {
-            this.task.status = 'to-do';
-            this.sidebarService.requestTaskStatusUpdate(this.task);
+            this.sidebarService.changeTaskStatus(this.task, 'to-do');
           } else if (this.task.status === 'done') {
-            this.task.status = 'in-progress';
-            this.sidebarService.requestTaskStatusUpdate(this.task);
+            this.sidebarService.changeTaskStatus(this.task, 'in-progress');
           } else if (this.task.status === 'to-do') {
-            this.task.status = 'backlog';
-            this.sidebarService.requestTaskStatusUpdate(this.task);
+            this.sidebarService.changeTaskStatus(this.task, 'backlog');
           }
           break;
         }
         case 'ArrowRight': {
           event.preventDefault();
-          console.warn('ArrowRight with command key');
           if (this.task.status === 'to-do') {
-            this.task.status = 'in-progress';
-            this.sidebarService.requestTaskStatusUpdate(this.task);
+            this.sidebarService.changeTaskStatus(this.task, 'in-progress');
           } else if (this.task.status === 'in-progress') {
-            this.task.status = 'done';
-            this.sidebarService.requestTaskStatusUpdate(this.task);
+            this.sidebarService.changeTaskStatus(this.task, 'done');
           } else if (this.task.status === 'backlog') {
-            this.task.status = 'to-do';
-            this.sidebarService.requestTaskStatusUpdate(this.task);
+            this.sidebarService.changeTaskStatus(this.task, 'to-do');
           }
           break;
         }

@@ -228,26 +228,9 @@ export class BoardComponent implements OnInit, OnDestroy {
     } else {
       transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
 
-      // Update the task's status in the database
+      // Update the task's status using the centralized method
       const task = event.container.data[event.currentIndex];
-      const updatedTask: Task = {
-        ...task,
-        status: newStatus,
-        lastModifiedDate: new Date().toISOString(),
-      };
-
-      this.taskService.update(updatedTask).subscribe(savedTask => {
-        // Update the task in the board's tasks array
-        this.activeBoard.update(board => {
-          if (!board) return board;
-          const tasks = [...board.tasks];
-          const index = tasks.findIndex(t => t.id === savedTask.id);
-          if (index !== -1) {
-            tasks[index] = savedTask;
-          }
-          return { ...board, tasks };
-        });
-      });
+      this.sidebarService.changeTaskStatus(task, newStatus);
     }
   }
 

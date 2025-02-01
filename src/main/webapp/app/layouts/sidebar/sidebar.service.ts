@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { Task } from 'app/shared/task/task.model';
+import { Task, TaskStatus } from 'app/shared/task/task.model';
 
 @Injectable({ providedIn: 'root' })
 export class SidebarService {
@@ -92,5 +92,14 @@ export class SidebarService {
 
   getTaskStatusUpdateRequests(): Observable<Task> {
     return this.taskStatusUpdateRequested.asObservable();
+  }
+
+  changeTaskStatus(task: Task, newStatus: TaskStatus): void {
+    const updatedTask: Task = {
+      ...task,
+      status: newStatus,
+      lastModifiedDate: new Date().toISOString(),
+    };
+    this.taskStatusUpdateRequested.next(updatedTask);
   }
 }

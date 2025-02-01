@@ -101,7 +101,6 @@ export class BacklogBoardComponent implements OnInit {
     } else {
       // Moving from another list to backlog
       const task = event.item.data;
-      task.status = 'backlog';
       // Insert at the specific position
       task.position = event.currentIndex;
       // Shift positions of other tasks
@@ -110,11 +109,9 @@ export class BacklogBoardComponent implements OnInit {
           t.position = (t.position ?? 0) + 1;
         }
       });
-      this.taskService.update(task).subscribe(() => {
-        this.loadBacklogTasks();
-        // Scroll to the new task after it's loaded
-        setTimeout(() => this.scrollToTask(event.currentIndex), 100);
-      });
+      this.sidebarService.changeTaskStatus(task, 'backlog');
+      // Scroll to the new task after it's loaded
+      setTimeout(() => this.scrollToTask(event.currentIndex), 100);
     }
   }
 
