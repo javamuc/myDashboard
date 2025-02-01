@@ -8,13 +8,13 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TaskDescriptionComponent } from './task-description/task-description.component';
 
 @Component({
-  selector: 'jhi-task',
-  templateUrl: './task.component.html',
-  styleUrls: ['./task.component.scss'],
+  selector: 'jhi-task-editor',
+  templateUrl: './task-editor.component.html',
+  styleUrls: ['./task-editor.component.scss'],
   standalone: true,
   imports: [CommonModule, FormsModule, FontAwesomeModule, TaskDescriptionComponent],
 })
-export class TaskComponent implements OnInit, OnDestroy, AfterViewInit {
+export class TaskEditorComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('titleInput') titleInput!: ElementRef<HTMLInputElement>;
 
   readonly statuses: TaskStatus[] = ['to-do', 'in-progress', 'done'];

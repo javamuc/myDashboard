@@ -12,7 +12,6 @@ import { BoardComponent } from 'app/shared/board/board.component';
 import { Board } from 'app/shared/board/board.model';
 import { LoginService } from 'app/login/login.service';
 import { HomeService, type HomeComponent as HomeComponentType } from './home.service';
-import { TaskComponent } from '../shared/task/task.component';
 import { PomodoroComponent } from '../shared/pomodoro/pomodoro.component';
 import StockPickerComponent from '../shared/shared.module';
 import { DashboardComponent } from '../dashboard/dashboard.component';
@@ -29,7 +28,6 @@ import { HabitTrackerComponent } from '../habit/habit-tracker.component';
     NotesComponent,
     WeatherComponent,
     BoardComponent,
-    TaskComponent,
     PomodoroComponent,
     StockPickerComponent,
     DashboardComponent,

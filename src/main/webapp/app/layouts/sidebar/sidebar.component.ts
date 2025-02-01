@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TaskComponent } from 'app/shared/task/task.component';
+import { TaskEditorComponent } from 'app/shared/task/task-editor.component';
 import { NoteEditorComponent } from 'app/notes/note-editor/note-editor.component';
 import { slideInOut } from './sidebar.animations';
 
@@ -9,7 +9,7 @@ import { slideInOut } from './sidebar.animations';
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss'],
   standalone: true,
-  imports: [CommonModule, TaskComponent, NoteEditorComponent],
+  imports: [CommonModule, TaskEditorComponent, NoteEditorComponent],
   animations: [slideInOut],
 })
 export class SidebarComponent {

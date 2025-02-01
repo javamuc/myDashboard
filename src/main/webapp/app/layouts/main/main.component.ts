@@ -5,7 +5,7 @@ import dayjs from 'dayjs/esm';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { AsyncPipe } from '@angular/common';
 import { SidebarService } from '../sidebar/sidebar.service';
-import { TaskComponent } from '../../shared/task/task.component';
+import { TaskEditorComponent } from '../../shared/task/task-editor.component';
 import { Task } from '../../shared/task/task.model';
 import { BoardService } from '../../shared/board/board.service';
 
@@ -20,7 +20,7 @@ import { Observable } from 'rxjs';
   selector: 'jhi-main',
   templateUrl: './main.component.html',
   providers: [AppPageTitleStrategy],
-  imports: [RouterOutlet, FooterComponent, PageRibbonComponent, SidebarComponent, AsyncPipe, TaskComponent, NoteEditorComponent],
+  imports: [RouterOutlet, FooterComponent, PageRibbonComponent, SidebarComponent, AsyncPipe, TaskEditorComponent, NoteEditorComponent],
   standalone: true,
 })
 export default class MainComponent implements OnInit {
