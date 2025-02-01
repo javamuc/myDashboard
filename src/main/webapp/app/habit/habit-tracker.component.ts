@@ -2,7 +2,7 @@ import { Component, OnInit, signal, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { Habit, HabitSpecificTime } from './habit.model';
+import { Habit, HabitDaySchedule, HabitSpecificTime } from './habit.model';
 import { HabitService } from './habit.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgbProgressbarModule } from '@ng-bootstrap/ng-bootstrap';
@@ -10,6 +10,7 @@ import { interval, timer } from 'rxjs';
 
 interface HabitProgress {
   habit: Habit;
+  todaySchedule: HabitDaySchedule | null;
   completedCount: number;
   targetCount: number;
   progress: number;
@@ -46,14 +47,17 @@ export class HabitTrackerComponent implements OnInit {
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe(records => {
             const progress = habits.map(habit => {
+              const todaySchedule = this.getTodaySchedule(habit);
               const habitRecords = records.filter(record => record.habitId === habit.id);
-              const targetCount = this.calculateTargetCount(habit);
+              const targetCount = this.calculateTargetCount(todaySchedule);
+              const completedCount = habitRecords.length;
               return {
                 habit,
-                completedCount: habitRecords.length,
+                todaySchedule,
+                completedCount,
                 targetCount,
-                progress: (habitRecords.length / targetCount) * 100,
-                canAddRecord: habitRecords.length < targetCount,
+                progress: targetCount > 0 ? (completedCount / targetCount) * 100 : 0,
+                canAddRecord: completedCount < targetCount,
               };
             });
             this.habitProgress.set(progress);
@@ -71,6 +75,12 @@ export class HabitTrackerComponent implements OnInit {
           this.loadHabitsAndRecords();
         });
     }
+  }
+
+  private getTodaySchedule(habit: Habit): HabitDaySchedule | null {
+    const today = new Date().getDay();
+    const dayIndex = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+    return habit.daySchedules.find(s => s.dayOfWeek === dayIndex[today]) ?? null;
   }
 
   private setupAutoRefresh(): void {
@@ -96,13 +106,7 @@ export class HabitTrackerComponent implements OnInit {
       });
   }
 
-  private calculateTargetCount(habit: Habit): number {
-    const schedule = habit.daySchedules.find(s => {
-      const today = new Date().getDay();
-      const dayIndex = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-      return s.dayOfWeek === dayIndex[today];
-    });
-
+  private calculateTargetCount(schedule: HabitDaySchedule | null): number {
     if (!schedule) {
       return 0;
     }
@@ -115,10 +119,19 @@ export class HabitTrackerComponent implements OnInit {
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
-    return schedule.specificTimes.filter(time => this.hasTimePassed(time, currentHour, currentMinute)).length;
+    const passedTimes = schedule.specificTimes.filter(time => this.hasTimePassed(time, currentHour, currentMinute));
+    return passedTimes.length;
   }
 
   private hasTimePassed(time: HabitSpecificTime, currentHour: number, currentMinute: number): boolean {
+    if (
+      typeof time.hour !== 'number' ||
+      typeof time.minute !== 'number' ||
+      typeof currentHour !== 'number' ||
+      typeof currentMinute !== 'number'
+    ) {
+      return false;
+    }
     return time.hour < currentHour || (time.hour === currentHour && time.minute <= currentMinute);
   }
 }

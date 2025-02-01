@@ -42,14 +42,13 @@
             ></ngb-progressbar>
           </div>
 
-          <!-- Day Schedules -->
-          <div class="day-schedules mt-2">
-            <div *ngFor="let schedule of progress.habit.daySchedules" class="schedule-item">
-              <small class="text-muted">{{ schedule.dayOfWeek }}</small>
-              <ng-container [ngSwitch]="schedule.scheduleType">
-                <span *ngSwitchCase="'ANYTIME'"> {{ schedule.repetitions }} time(s) </span>
+          <!-- Today's Schedule -->
+          <div class="day-schedules mt-2" *ngIf="progress.todaySchedule">
+            <div class="schedule-item">
+              <ng-container [ngSwitch]="progress.todaySchedule.scheduleType">
+                <span *ngSwitchCase="'ANYTIME'"> {{ progress.todaySchedule.repetitions }} time(s) today </span>
                 <span *ngSwitchCase="'SPECIFIC'">
-                  <span *ngFor="let time of schedule.specificTimes" class="badge bg-secondary me-1">
+                  <span *ngFor="let time of progress.todaySchedule.specificTimes" class="badge bg-secondary me-1">
                     {{ time.hour.toString().padStart(2, '0') }}:{{ time.minute.toString().padStart(2, '0') }}
                   </span>
                 </span>
@@ -61,7 +60,7 @@
 
       <!-- Empty State -->
       <div *ngIf="habitProgress().length === 0" class="text-center mt-4">
-        <p class="text-muted">No active habits found.</p>
+        <p class="text-muted">No active habits found for today.</p>
       </div>
     </div>
   </div>

@@ -88,6 +88,9 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
           } else if (this.task.status === 'done') {
             this.task.status = 'in-progress';
             this.sidebarService.requestTaskStatusUpdate(this.task);
+          } else if (this.task.status === 'to-do') {
+            this.task.status = 'backlog';
+            this.sidebarService.requestTaskStatusUpdate(this.task);
           }
           break;
         }
@@ -99,6 +102,9 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
             this.sidebarService.requestTaskStatusUpdate(this.task);
           } else if (this.task.status === 'in-progress') {
             this.task.status = 'done';
+            this.sidebarService.requestTaskStatusUpdate(this.task);
+          } else if (this.task.status === 'backlog') {
+            this.task.status = 'to-do';
             this.sidebarService.requestTaskStatusUpdate(this.task);
           }
           break;
