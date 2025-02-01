@@ -30,10 +30,6 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  onFocus(): void {
-    this.sidebarService.setTaskData(this.task);
-  }
-
   ngAfterViewInit(): void {
     this.sidebarService
       .getIsOpen()
@@ -61,15 +57,21 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
   @HostListener('keydown.enter', ['$event'])
   @HostListener('click', ['$event'])
   openTask(event: Event): void {
     event.stopPropagation();
-    this.sidebarService.setTaskData(this.task);
-    this.sidebarService.setBoardId(this.task.boardId);
-    this.sidebarService.setActiveComponent('task');
-    this.sidebarService.setIsOpen(true);
+    console.warn('openTask', this.taskData()?.id, this.task.id);
+    // If this task is already selected, open the sidebar
+    if (this.taskData()?.id === this.task.id) {
+      this.sidebarService.setActiveComponent('task');
+      this.sidebarService.setIsOpen(true);
+    }
+    // Otherwise just select the task
+    else {
+      this.sidebarService.setTaskData(this.task);
+      this.sidebarService.setBoardId(this.task.boardId);
+    }
   }
 
   @HostListener('keydown', ['$event'])
