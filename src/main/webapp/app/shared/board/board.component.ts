@@ -324,20 +324,23 @@ export class BoardComponent implements OnInit, OnDestroy {
     if (event.key === 'Enter' && (event.metaKey || event.ctrlKey) && event.type === 'keydown') {
       event.preventDefault();
       this.createNewTask(event);
+      return;
     }
     if (event.key === 'Backspace' && event.shiftKey && (event.metaKey || event.ctrlKey)) {
       console.warn('delete task in board component');
       event.preventDefault();
       this.deleteTask();
+      return;
     }
 
     // Check for CMD+Enter (Mac) or Ctrl+Enter (Windows)
-    if (event.key === 'Escape' && this.sidebarOpen()) {
+    if ((event.key === 'Escape' || event.key === 'Enter') && this.sidebarOpen()) {
       event.preventDefault();
       if (this.taskIsUnedited()) {
         this.deleteTask();
       }
       this.sidebarService.setIsOpen(false);
+      return;
     }
     // Only trigger if no input/textarea is focused (except for Escape key)
     const isInputFocused = event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;
