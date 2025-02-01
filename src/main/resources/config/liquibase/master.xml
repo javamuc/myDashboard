@@ -31,4 +31,5 @@
     <include file="config/liquibase/changelog/20240130000000_added_entity_Habit.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240325000000_added_entity_HabitRecord.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240326000000_add_limits_to_board.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240326000001_add_position_to_task.xml" relativeToChangelogFile="false"/>
 </databaseChangeLog>

@@ -48,6 +48,9 @@ public class Task implements Serializable {
     @Column(name = "board_id", nullable = false)
     private Long boardId;
 
+    @Column(name = "position")
+    private Integer position;
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -127,6 +130,14 @@ public class Task implements Serializable {
 
     public void setBoardId(Long boardId) {
         this.boardId = boardId;
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 
     @Override

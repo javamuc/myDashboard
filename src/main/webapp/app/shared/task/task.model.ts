@@ -13,6 +13,7 @@ export interface Task {
   createdDate: string;
   lastModifiedDate: string;
   boardId: number;
+  position?: number;
 }
 export interface NewTask {
   title: string;

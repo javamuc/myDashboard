@@ -4,10 +4,17 @@
     <span class="task-count">{{ backlogTasks.length }}</span>
   </div>
 
-  <div class="backlog-content" cdkDropList id="backlog-list">
+  <div
+    class="backlog-content"
+    cdkDropList
+    id="backlog-list"
+    [cdkDropListData]="backlogTasks"
+    [cdkDropListConnectedTo]="getConnectedLists()"
+    (cdkDropListDropped)="onDrop($event)"
+  >
     <div *ngIf="loading" class="loading">Loading...</div>
     <div *ngIf="!loading && backlogTasks.length === 0" class="empty-state">No tasks in backlog. Type 'n' to create one.</div>
-    <div *ngFor="let task of backlogTasks; let index = index" cdkDrag>
+    <div *ngFor="let task of backlogTasks; let index = index" cdkDrag [cdkDragData]="task">
       <jhi-task-card [task]="task" [index]="index"></jhi-task-card>
     </div>
   </div>
