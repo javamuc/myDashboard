@@ -47,7 +47,7 @@ public class HabitDTO implements Serializable {
         this.description = habit.getDescription();
         this.active = habit.isActive();
         this.scheduleType = habit.getScheduleType();
-        this.userId = habit.getUser().getId();
+        this.userId = habit.getUserId();
         this.createdBy = habit.getCreatedBy();
         this.createdDate = habit.getCreatedDate();
         this.lastModifiedBy = habit.getLastModifiedBy();

@@ -371,18 +371,18 @@ export class BoardComponent implements OnInit, OnDestroy {
       this.taskService.update(task).subscribe(savedTask => {
         if (this.task() && this.task()?.id === savedTask.id) {
           this.task()!.lastModifiedDate = savedTask.lastModifiedDate;
+        }
 
-          if (updateBoard) {
-            this.activeBoard.update(board => {
-              if (!board) return board;
-              const tasks = [...board.tasks];
-              const index = tasks.findIndex(t => t.id === savedTask.id);
-              if (index !== -1) {
-                tasks[index] = savedTask;
-              }
-              return { ...board, tasks };
-            });
-          }
+        if (updateBoard) {
+          this.activeBoard.update(board => {
+            if (!board) return board;
+            const tasks = [...board.tasks];
+            const index = tasks.findIndex(t => t.id === savedTask.id);
+            if (index !== -1) {
+              tasks[index] = savedTask;
+            }
+            return { ...board, tasks };
+          });
         }
       });
     }

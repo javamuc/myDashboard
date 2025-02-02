@@ -41,10 +41,8 @@ public class Habit extends AbstractAuditingEntity<Long> implements Serializable 
     @Enumerated(EnumType.STRING)
     private ScheduleType scheduleType = ScheduleType.DAILY;
 
-    @ManyToOne(optional = false)
-    @NotNull
-    @JsonIgnoreProperties(value = { "habits" }, allowSetters = true)
-    private User user;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
     @OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties(value = { "habit", "specificTimes" }, allowSetters = true)
@@ -104,12 +102,12 @@ public class Habit extends AbstractAuditingEntity<Long> implements Serializable 
         this.scheduleType = scheduleType;
     }
 
-    public User getUser() {
-        return user;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public Set<HabitDaySchedule> getDaySchedules() {

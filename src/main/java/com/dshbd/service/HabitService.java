@@ -81,7 +81,11 @@ public class HabitService {
         return userService
             .getUserWithAuthorities()
             .map(user ->
-                habitRepository.findByUserOrderByCreatedDateDesc(user).stream().map(habitMapper::toDto).collect(Collectors.toList())
+                habitRepository
+                    .findByUserIdOrderByCreatedDateDesc(user.getId())
+                    .stream()
+                    .map(habitMapper::toDto)
+                    .collect(Collectors.toList())
             )
             .orElseThrow(() -> new IllegalStateException("User not found"));
     }
@@ -99,7 +103,7 @@ public class HabitService {
             .getUserWithAuthorities()
             .map(user ->
                 habitRepository
-                    .findByUserAndActiveIsTrueOrderByCreatedDateDesc(user)
+                    .findByUserIdAndActiveIsTrueOrderByCreatedDateDesc(user.getId())
                     .stream()
                     .filter(habit -> habit.getDaySchedules().stream().anyMatch(schedule -> schedule.getDayOfWeek().equals(today)))
                     .map(habitMapper::toDto)
@@ -142,7 +146,7 @@ public class HabitService {
         log.debug("Request to get Habit : {}", id);
         return userService
             .getUserWithAuthorities()
-            .flatMap(user -> habitRepository.findById(id).filter(habit -> habit.getUser().equals(user)).map(habitMapper::toDto));
+            .flatMap(user -> habitRepository.findById(id).filter(habit -> habit.getUserId().equals(user.getId())).map(habitMapper::toDto));
     }
 
     /**
@@ -152,6 +156,6 @@ public class HabitService {
      */
     public void delete(Long id) {
         log.debug("Request to delete Habit : {}", id);
-        userService.getUserWithAuthorities().ifPresent(user -> habitRepository.deleteByIdAndUser(id, user));
+        userService.getUserWithAuthorities().ifPresent(user -> habitRepository.setActiveForHabit(false, id, user.getId()));
     }
 }

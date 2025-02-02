@@ -27,7 +27,7 @@ public class HabitMapper {
         habit.setDescription(habitDTO.getDescription());
         habit.setActive(habitDTO.isActive());
         habit.setScheduleType(habitDTO.getScheduleType());
-        habit.setUser(user);
+        habit.setUserId(user.getId());
 
         habitDTO
             .getDaySchedules()
