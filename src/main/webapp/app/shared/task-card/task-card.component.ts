@@ -190,6 +190,15 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.task.description.match(hashtagRegex) ?? [];
   }
 
+  hasContentBesidesHashtags(): boolean {
+    if (!this.task.description) {
+      return false;
+    }
+    // Remove all hashtags from the description
+    const contentWithoutTags = this.task.description.replace(/#[\w_-]+/g, '').trim();
+    return contentWithoutTags.length > 0;
+  }
+
   getTagColor(tag: string): string {
     // Remove the # from the tag
     const cleanTag = tag.slice(1);

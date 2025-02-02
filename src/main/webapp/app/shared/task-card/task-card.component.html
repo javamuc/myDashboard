@@ -10,7 +10,7 @@
   <div class="task-header">
     <h3>
       {{ task.title }}
-      @if (task.description) {
+      @if (hasContentBesidesHashtags()) {
         <fa-icon icon="align-left" class="task-description-icon"></fa-icon>
       }
     </h3>
