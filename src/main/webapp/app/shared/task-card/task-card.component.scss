@@ -13,13 +13,13 @@
 
   &:hover {
     transform: translateY(-2px);
-    background-color: #34495e;
+    background-color: #222222;
   }
 
   &:focus {
     outline-color: var(--primary);
     transform: translateY(-2px);
-    background-color: #34495e;
+    background-color: #1c1e2e;
   }
 
   &:focus:not(:focus-visible) {
