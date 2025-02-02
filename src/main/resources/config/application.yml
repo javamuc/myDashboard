@@ -223,6 +223,4 @@ jhipster:
 # https://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
-application:
-  finnhub:
-    api-key: ${FINNHHUB_API}
+# application:

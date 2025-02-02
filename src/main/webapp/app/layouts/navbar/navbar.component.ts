@@ -91,9 +91,6 @@ export default class NavbarComponent implements OnInit {
         this.switchToNotes();
       } else if (event.key === '4') {
         event.preventDefault();
-        this.switchToStocks();
-      } else if (event.key === '5') {
-        event.preventDefault();
         this.switchToHabits();
       }
     }
@@ -113,10 +110,6 @@ export default class NavbarComponent implements OnInit {
 
   switchToNotes(): void {
     this.homeService.setActiveComponent('notes');
-  }
-
-  switchToStocks(): void {
-    this.homeService.setActiveComponent('stocks');
   }
 
   switchToHabits(): void {
