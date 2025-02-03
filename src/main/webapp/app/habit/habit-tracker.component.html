@@ -13,6 +13,19 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <h5 class="mb-1">{{ progress.habit.name }}</h5>
+              <!-- Today's Schedule -->
+              <div class="day-schedules mt-2" *ngIf="progress.todaySchedule">
+                <div class="schedule-item">
+                  <ng-container [ngSwitch]="progress.todaySchedule.scheduleType">
+                    <span *ngSwitchCase="'ANYTIME'"> {{ progress.todaySchedule.repetitions }} time(s) today </span>
+                    <span *ngSwitchCase="'SPECIFIC'">
+                      <span *ngFor="let time of progress.todaySchedule.specificTimes" class="badge bg-secondary me-1">
+                        {{ time.hour.toString().padStart(2, '0') }}:{{ time.minute.toString().padStart(2, '0') }}
+                      </span>
+                    </span>
+                  </ng-container>
+                </div>
+              </div>
               <small *ngIf="progress.habit.description" class="text-muted">{{ progress.habit.description }}</small>
             </div>
 
@@ -38,20 +51,6 @@
               [animated]="progress.progress < 100"
               height="10px"
             ></ngb-progressbar>
-          </div>
-
-          <!-- Today's Schedule -->
-          <div class="day-schedules mt-2" *ngIf="progress.todaySchedule">
-            <div class="schedule-item">
-              <ng-container [ngSwitch]="progress.todaySchedule.scheduleType">
-                <span *ngSwitchCase="'ANYTIME'"> {{ progress.todaySchedule.repetitions }} time(s) today </span>
-                <span *ngSwitchCase="'SPECIFIC'">
-                  <span *ngFor="let time of progress.todaySchedule.specificTimes" class="badge bg-secondary me-1">
-                    {{ time.hour.toString().padStart(2, '0') }}:{{ time.minute.toString().padStart(2, '0') }}
-                  </span>
-                </span>
-              </ng-container>
-            </div>
           </div>
         </div>
       </div>
