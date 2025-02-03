@@ -78,8 +78,8 @@ export default class NavbarComponent implements OnInit {
   handleKeyboardEvent(event: KeyboardEvent): void {
     // Only trigger if no input/textarea is focused
     const isInputFocused = event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;
-
-    if (!isInputFocused) {
+    // And both command and shift are not pressed
+    if (!isInputFocused && !event.metaKey && !event.shiftKey) {
       if (event.key === '1') {
         event.preventDefault();
         this.switchToHome();
