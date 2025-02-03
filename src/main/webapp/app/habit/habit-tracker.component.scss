@@ -1,7 +1,15 @@
+.container-fluid {
+  padding: 0; // Remove default padding to align with other components
+  margin-bottom: 1rem; // Add spacing to the next component
+}
+
+.list-group {
+  margin: 0; // Remove any default margins
+}
+
 .list-group-item {
   cursor: pointer;
   transition: all 0.2s ease;
-  border-left: 4px solid transparent;
 
   &:hover:not(.disabled) {
     background-color: var(--bs-gray-100);
@@ -37,13 +45,14 @@
       align-items: center;
       gap: 0.5rem;
       margin-bottom: 0.25rem;
+      font-size: 0.75rem;
 
       &:last-child {
         margin-bottom: 0;
       }
 
       .badge {
-        font-size: 0.75rem;
+        font-size: 0.5rem;
         padding: 0.35em 0.65em;
       }
     }
