@@ -90,8 +90,26 @@ export class NotesComponent implements OnInit, OnDestroy {
   }
 
   onNoteUpdated(updatedNote: Note): void {
-    this.noteUpdateSubject.next(updatedNote);
+    // Update the note in the notes array immediately
+    this.notes.update(notes =>
+      notes.map(note => {
+        if (note.id === updatedNote.id) {
+          return { ...updatedNote };
+        }
+        return note;
+      }),
+    );
+
+    // Update the selected note to reflect changes immediately
+    if (this.selectedNote()?.id === updatedNote.id) {
+      this.selectedNote.set({ ...updatedNote });
+    }
+
+    // Update filtered notes to reflect changes
     this.updateFilteredNotes();
+
+    // Debounce the actual save operation
+    this.noteUpdateSubject.next(updatedNote);
   }
 
   onSearch(): void {
@@ -144,22 +162,21 @@ export class NotesComponent implements OnInit, OnDestroy {
   private saveNote(note: Note): void {
     if (note.id) {
       this.noteService.update(note).subscribe(savedNote => {
-        // Update the note in the notes array
+        // Update the note in the notes array with the server response
         this.notes.update(notes =>
           notes.map(n => {
             if (n.id === savedNote.id) {
-              return savedNote;
+              return { ...savedNote };
             }
             return n;
           }),
         );
 
-        // Update the selected note with the saved version
+        // Update the selected note if it's the current one
         if (this.selectedNote()?.id === savedNote.id) {
-          this.selectedNote.set(savedNote);
+          this.selectedNote.set({ ...savedNote });
         }
 
-        // Update the filtered notes
         this.updateFilteredNotes();
       });
     }

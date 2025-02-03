@@ -23,6 +23,9 @@ export class NoteListComponent {
   }
 
   getPreviewText(content: string): string {
+    if (!content) {
+      return '';
+    }
     return content.length > 100 ? content.substring(0, 100) + '...' : content;
   }
 }
