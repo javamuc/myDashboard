@@ -2,7 +2,21 @@
   <div class="board-container">
     <div class="board-header">
       <div class="board-controls">
-        <h5>{{ board.title }}</h5>
+        <div class="board-selector dropdown">
+          <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {{ activeBoard()?.title }}
+          </button>
+          <ul class="dropdown-menu">
+            @for (board of boards(); track board.id) {
+              <li>
+                <button class="dropdown-item" [class.active]="board.id === activeBoard()?.id" (click)="onBoardSelect(board)">
+                  {{ board.title }}
+                </button>
+              </li>
+            }
+          </ul>
+        </div>
+
         <div class="search-container">
           <fa-icon icon="search" class="search-icon"></fa-icon>
           <input #searchInput type="text" class="search-input" placeholder="Search tasks..." (input)="onSearchInput($event)" />

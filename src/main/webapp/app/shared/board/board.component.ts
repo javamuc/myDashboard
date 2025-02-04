@@ -26,6 +26,7 @@ import { debounceTime, takeUntil } from 'rxjs';
 import { Subject } from 'rxjs';
 import { AlertService } from 'app/core/util/alert.service';
 import { BacklogBoardComponent } from './backlog-board/backlog-board.component';
+import { CookieService } from '../cookie/cookie.service';
 
 type TaskProperty = keyof Task;
 
@@ -62,7 +63,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     const board = this.activeBoard();
     if (!board) return [];
 
-    let tasks = [...board.tasks];
+    let tasks = board.tasks ? [...board.tasks] : [];
 
     // Apply search term filter
     if (this.boardView().searchTerm) {
@@ -121,6 +122,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   private readonly boardService = inject(BoardService);
   private readonly taskService = inject(TaskService);
   private readonly alertService = inject(AlertService);
+  private readonly cookieService = inject(CookieService);
   private destroy$ = new Subject<void>();
   private taskUpdateSubject = new Subject<Task>();
 
@@ -339,6 +341,19 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.sidebarService.clearTagFilter();
   }
 
+  onBoardSelect(board: Board): void {
+    this.activeBoard.set(board);
+    if (board.id) {
+      this.cookieService.setLastBoardId(board.id);
+      this.taskService.getBoardTasks(board.id).subscribe(tasks => {
+        this.activeBoard.set({
+          ...board,
+          tasks,
+        });
+      });
+    }
+  }
+
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
     if (event.key === 'Enter' && (event.metaKey || event.ctrlKey) && event.type === 'keydown') {
@@ -420,17 +435,24 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   private loadBoards(): void {
     this.boardService.query().subscribe(boards => {
+      // Filter out archived boards
       this.boards.set(boards);
+
       if (boards.length > 0) {
-        const firstBoard = boards[0];
-        this.taskService.getBoardTasks(firstBoard.id!).subscribe(tasks => {
-          const board = {
-            ...firstBoard,
-            tasks,
-          };
-          this.activeBoard.set(board);
-          this.sidebarService.setActiveBoard(board);
-        });
+        // Try to get the last selected board from cookie
+        const lastBoardId = this.cookieService.getLastBoardId();
+        let boardToLoad: Board | undefined;
+
+        if (lastBoardId) {
+          boardToLoad = boards.find(b => b.id === lastBoardId);
+        }
+
+        // If no board found from cookie, use the oldest board
+        if (!boardToLoad) {
+          boardToLoad = boards.sort((a, b) => new Date(a.createdDate!).getTime() - new Date(b.createdDate!).getTime())[0];
+        }
+
+        this.onBoardSelect(boardToLoad);
       }
     });
   }
