@@ -161,7 +161,7 @@ class BoardServiceTest {
         when(boardRepository.save(any(Board.class))).thenReturn(board);
 
         // Act
-        Board result = boardService.updateBoard(boardDTO);
+        Board result = boardService.updateBoard(board.getId(), boardDTO);
 
         // Assert
         assertThat(result).isNotNull();
@@ -177,7 +177,7 @@ class BoardServiceTest {
         when(boardRepository.findByIdAndOwnerId(board.getId(), user.getId())).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThatThrownBy(() -> boardService.updateBoard(boardDTO))
+        assertThatThrownBy(() -> boardService.updateBoard(board.getId(), boardDTO))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("Board could not be found");
         verify(boardRepository, never()).save(any(Board.class));
