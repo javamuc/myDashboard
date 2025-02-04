@@ -16,6 +16,8 @@ public class BoardDTO implements Serializable {
 
     private int progressLimit;
 
+    private boolean autoPull;
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -55,5 +57,13 @@ public class BoardDTO implements Serializable {
 
     public void setProgressLimit(int progressLimit) {
         this.progressLimit = progressLimit;
+    }
+
+    public boolean isAutoPull() {
+        return autoPull;
+    }
+
+    public void setAutoPull(boolean autoPull) {
+        this.autoPull = autoPull;
     }
 }

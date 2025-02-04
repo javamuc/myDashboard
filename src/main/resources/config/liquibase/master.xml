@@ -34,4 +34,5 @@
     <include file="config/liquibase/changelog/20240326000001_add_position_to_task.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240327000000_drop_exchange_table.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240328000000_update_task_description_length.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240328000001_add_columns_to_board.xml" relativeToChangelogFile="false"/>
 </databaseChangeLog>

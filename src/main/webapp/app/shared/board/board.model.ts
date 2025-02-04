@@ -12,6 +12,7 @@ export interface Board {
   toDoLimit: number;
   progressLimit: number;
   archived: boolean;
+  autoPull: boolean;
 }
 
 export interface BoardFilter {

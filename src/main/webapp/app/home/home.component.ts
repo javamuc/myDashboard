@@ -46,6 +46,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
     toDoLimit: 5,
     progressLimit: 2,
     archived: false,
+    autoPull: false,
   });
   activeComponent = signal<HomeComponentType>('dashboard');
 

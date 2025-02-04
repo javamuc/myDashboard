@@ -58,8 +58,10 @@ export class BoardSettingsComponent implements OnInit, OnDestroy {
     const newBoard = {
       title: this.newBoardTitle.trim(),
       archived: false,
+      autoPull: false,
       toDoLimit: 0,
       progressLimit: 0,
+      started: false,
       tasks: [],
     } as Board;
 

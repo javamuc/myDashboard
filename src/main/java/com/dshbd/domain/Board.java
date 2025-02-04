@@ -37,6 +37,12 @@ public class Board implements Serializable {
 
     private Long ownerId;
 
+    @Column(name = "archived", nullable = false)
+    private boolean archived = false;
+
+    @Column(name = "auto_pull", nullable = false)
+    private boolean autoPull = false;
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -100,5 +106,21 @@ public class Board implements Serializable {
 
     public void setOwnerId(Long ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
+    }
+
+    public boolean isAutoPull() {
+        return autoPull;
+    }
+
+    public void setAutoPull(boolean autoPull) {
+        this.autoPull = autoPull;
     }
 }

@@ -106,3 +106,32 @@ form {
     }
   }
 }
+
+.form-check.form-switch {
+  padding-left: 3rem;
+
+  .form-check-input {
+    width: 3rem;
+    margin-left: -3rem;
+    cursor: pointer;
+
+    &:checked {
+      background-color: var(--bs-primary);
+      border-color: var(--bs-primary);
+    }
+
+    &:focus {
+      border-color: var(--bs-primary);
+      box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.25);
+    }
+  }
+
+  .form-check-label {
+    cursor: pointer;
+
+    small {
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+  }
+}

@@ -64,7 +64,6 @@
                 <label for="title" class="form-label">Title</label>
                 <input type="text" class="form-control" id="title" [(ngModel)]="selectedBoard.title" name="title" required />
               </div>
-
               <!-- Column Limits -->
               <div class="mb-3">
                 <label class="form-label">Column Limits</label>
@@ -91,6 +90,19 @@
                       min="0"
                     />
                   </div>
+                </div>
+              </div>
+
+              <!-- Auto Pull -->
+              <div class="mb-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="autoPull" [(ngModel)]="selectedBoard.autoPull" name="autoPull" />
+                  <label class="form-check-label" for="autoPull">
+                    Auto Pull
+                    <small class="text-muted d-block">
+                      When enabled, tasks will automatically be pulled from the backlog when there's space in the To Do column
+                    </small>
+                  </label>
                 </div>
               </div>
 
