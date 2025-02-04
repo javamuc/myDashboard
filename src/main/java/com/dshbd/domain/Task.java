@@ -20,7 +20,7 @@ public class Task implements Serializable {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "description")
+    @Column(name = "description", length = 4096)
     private String description;
 
     @Column(name = "due_date")

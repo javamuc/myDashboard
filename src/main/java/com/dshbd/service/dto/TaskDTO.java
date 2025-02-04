@@ -1,6 +1,7 @@
 package com.dshbd.service.dto;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -11,6 +12,7 @@ public class TaskDTO implements Serializable {
     @NotNull
     private String title;
 
+    @Size(max = 4096)
     private String description;
 
     private Instant dueDate;

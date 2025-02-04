@@ -12,6 +12,7 @@ export class SidebarService {
   private readonly taskDataSubject = new BehaviorSubject<Task | undefined>(undefined);
   private readonly tagsSubject = new BehaviorSubject<Set<string>>(new Set<string>());
   private readonly activeBoardSubject = new BehaviorSubject<Board | undefined>(undefined);
+  private readonly tagFilterSubject = new BehaviorSubject<string | undefined>(undefined);
 
   private taskDeleteRequested = new Subject<Task>();
   private taskUpdateRequested = new Subject<Task>();
@@ -127,5 +128,17 @@ export class SidebarService {
       lastModifiedDate: new Date().toISOString(),
     };
     this.taskStatusUpdateRequested.next(updatedTask);
+  }
+
+  addTagFilter(tag: string): void {
+    this.tagFilterSubject.next(tag);
+  }
+
+  getTagFilter(): Observable<string | undefined> {
+    return this.tagFilterSubject.asObservable();
+  }
+
+  clearTagFilter(): void {
+    this.tagFilterSubject.next(undefined);
   }
 }

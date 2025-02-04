@@ -216,6 +216,11 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
     return `hsl(${hue}, 70%, 85%)`;
   }
 
+  onTagClick(tag: string, event: Event): void {
+    event.stopPropagation(); // Prevent task from opening
+    this.sidebarService.addTagFilter(tag);
+  }
+
   getTagTextColor(tag: string): string {
     // Get the background color
     const hue = Math.abs(this.getTagColorHash(tag) % 360);

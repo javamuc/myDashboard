@@ -3,14 +3,14 @@
     <div class="board-header">
       <div class="board-controls">
         <h5>{{ board.title }}</h5>
-        <div class="search-box">
-          <input
-            #searchInput
-            type="text"
-            placeholder="Search tasks..."
-            (input)="onSearchInput($event)"
-            (keydown.escape)="searchInput.blur()"
-          />
+        <div class="search-container">
+          <fa-icon icon="search" class="search-icon"></fa-icon>
+          <input #searchInput type="text" class="search-input" placeholder="Search tasks..." (input)="onSearchInput($event)" />
+          @if (boardView().searchTerm) {
+            <button class="clear-search" (click)="clearSearch()">
+              <fa-icon icon="times"></fa-icon>
+            </button>
+          }
         </div>
 
         <div class="filter-sort">

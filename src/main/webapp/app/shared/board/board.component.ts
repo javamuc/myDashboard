@@ -73,7 +73,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     this.boardView().filters.forEach(filter => {
       tasks = tasks.filter(task => {
         const taskValue = task[filter.property];
-        return taskValue === filter.value;
+        return taskValue?.toString().toLowerCase().includes(filter.value.toString().toLowerCase());
       });
     });
 
@@ -172,6 +172,20 @@ export class BoardComponent implements OnInit, OnDestroy {
           });
         }
       });
+
+    // Subscribe to tag filter changes
+    this.sidebarService
+      .getTagFilter()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(tag => {
+        if (tag) {
+          // const searchTerm = this.boardView().searchTerm ?? '';
+          // this.setSearchTerm(`${tag} ${searchTerm}`.trim());
+          // this.searchInput.nativeElement.value = this.boardView().searchTerm ?? '';
+          // this.searchInput.nativeElement.focus();
+          this.boardView.update(view => ({ ...view, filters: [{ property: 'description', value: tag }] }));
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -241,8 +255,8 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   onSearchInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.setSearchTerm(input.value);
+    const searchTerm = (event.target as HTMLInputElement).value;
+    this.setSearchTerm(searchTerm);
   }
 
   addFilter(property: TaskProperty, value: any): void {
@@ -319,6 +333,12 @@ export class BoardComponent implements OnInit, OnDestroy {
     });
   }
 
+  clearSearch(): void {
+    this.setSearchTerm('');
+    this.searchInput.nativeElement.value = '';
+    this.sidebarService.clearTagFilter();
+  }
+
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
     if (event.key === 'Enter' && (event.metaKey || event.ctrlKey) && event.type === 'keydown') {
@@ -334,7 +354,7 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
 
     // Check for CMD+Enter (Mac) or Ctrl+Enter (Windows)
-    if ((event.key === 'Escape' || event.key === 'Enter') && this.sidebarOpen()) {
+    if (event.key === 'Escape' && this.sidebarOpen()) {
       event.preventDefault();
       if (this.taskIsUnedited()) {
         this.deleteTask();

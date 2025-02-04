@@ -21,7 +21,12 @@
   @if (getHashtags().length > 0) {
     <div class="task-tags">
       @for (tag of getHashtags(); track $index) {
-        <span class="tag" [style.background-color]="getTagColor(tag)" [style.color]="getTagTextColor(tag)">
+        <span
+          class="tag"
+          [style.background-color]="getTagColor(tag)"
+          [style.color]="getTagTextColor(tag)"
+          (click)="onTagClick(tag, $event)"
+        >
           {{ tag }}
         </span>
       }

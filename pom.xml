@@ -322,11 +322,6 @@
             <version>${testng.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.github.oscerd</groupId>
-            <artifactId>finnhub-java-client</artifactId>
-            <version>0.3.0</version>
-        </dependency>
     </dependencies>
 
     <build>
