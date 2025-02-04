@@ -10,6 +10,7 @@ import {
   ViewChild,
   ElementRef,
   OnChanges,
+  DestroyRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -27,6 +28,7 @@ import { Subject } from 'rxjs';
 import { AlertService } from 'app/core/util/alert.service';
 import { BacklogBoardComponent } from './backlog-board/backlog-board.component';
 import { CookieService } from '../cookie/cookie.service';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
 type TaskProperty = keyof Task;
 
@@ -35,7 +37,16 @@ type TaskProperty = keyof Task;
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, SharedModule, FontAwesomeModule, DragDropModule, BoardColumnsComponent, BacklogBoardComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    SharedModule,
+    FontAwesomeModule,
+    DragDropModule,
+    BoardColumnsComponent,
+    BacklogBoardComponent,
+    NgbDropdownModule,
+  ],
 })
 export class BoardComponent implements OnInit, OnDestroy {
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
@@ -126,7 +137,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private taskUpdateSubject = new Subject<Task>();
 
-  constructor() {
+  constructor(private destroyRef: DestroyRef) {
     this.taskUpdateSubject.pipe(debounceTime(300)).subscribe(task => {
       this.saveTask(task);
     });

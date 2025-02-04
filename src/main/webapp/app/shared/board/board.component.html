@@ -2,14 +2,14 @@
   <div class="board-container">
     <div class="board-header">
       <div class="board-controls">
-        <div class="board-selector dropdown">
-          <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <div class="board-selector" ngbDropdown>
+          <button class="btn btn-link dropdown-toggle" ngbDropdownToggle>
             {{ activeBoard()?.title }}
           </button>
-          <ul class="dropdown-menu">
+          <ul ngbDropdownMenu>
             @for (board of boards(); track board.id) {
               <li>
-                <button class="dropdown-item" [class.active]="board.id === activeBoard()?.id" (click)="onBoardSelect(board)">
+                <button ngbDropdownItem [class.active]="board.id === activeBoard()?.id" (click)="onBoardSelect(board)">
                   {{ board.title }}
                 </button>
               </li>
