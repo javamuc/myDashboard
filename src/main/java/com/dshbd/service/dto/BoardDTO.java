@@ -18,6 +18,8 @@ public class BoardDTO implements Serializable {
 
     private boolean autoPull;
 
+    private boolean started;
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -65,5 +67,13 @@ public class BoardDTO implements Serializable {
 
     public void setAutoPull(boolean autoPull) {
         this.autoPull = autoPull;
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public void setStarted(boolean started) {
+        this.started = started;
     }
 }

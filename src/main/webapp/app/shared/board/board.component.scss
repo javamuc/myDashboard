@@ -143,6 +143,22 @@
         background-color: #2980b9;
       }
     }
+
+    .start-board-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      background-color: #0cc012;
+      border: none;
+      color: #ffffff;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #0a930d;
+      }
+    }
   }
 
   .active-filters {

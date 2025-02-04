@@ -30,7 +30,7 @@
         <div class="filter-sort">
           <div class="dropdown">
             <button (click)="filterMenuOpen.set(!filterMenuOpen())" [class.active]="filterMenuOpen()">
-              <fa-icon [icon]="['fas', 'filter']"></fa-icon>
+              <fa-icon icon="filter"></fa-icon>
               Filter
             </button>
             @if (filterMenuOpen()) {
@@ -44,7 +44,7 @@
 
           <div class="dropdown">
             <button (click)="sortMenuOpen.set(!sortMenuOpen())" [class.active]="sortMenuOpen()">
-              <fa-icon [icon]="['fas', 'sort']"></fa-icon>
+              <fa-icon icon="sort"></fa-icon>
               Sort
             </button>
             @if (sortMenuOpen()) {
@@ -52,7 +52,8 @@
                 <div class="dropdown-item" *ngFor="let property of taskProperties" (click)="setSort(property)">
                   {{ property }}
                   @if (boardView().sort?.property === property) {
-                    <fa-icon [icon]="['fas', boardView().sort?.direction === 'asc' ? 'arrow-up' : 'arrow-down']"></fa-icon>
+                    <fa-icon icon="arrow-up" *ngIf="boardView().sort?.direction === 'asc'"></fa-icon>
+                    <fa-icon icon="arrow-down" *ngIf="boardView().sort?.direction === 'desc'"></fa-icon>
                   }
                 </div>
               </div>
@@ -61,8 +62,13 @@
         </div>
 
         <button class="new-task-btn" (click)="createNewTask($event)">
-          <fa-icon [icon]="['fas', 'plus']"></fa-icon>
+          <fa-icon icon="plus"></fa-icon>
           New
+        </button>
+
+        <button class="start-board-btn" (click)="startBoard($event)" *ngIf="activeBoard() && !activeBoard()?.started">
+          <fa-icon icon="play"></fa-icon>
+          Start Board
         </button>
       </div>
 
@@ -70,13 +76,13 @@
         <div class="active-filters">
           <div class="filter-tag" *ngFor="let filter of boardView().filters; let i = index">
             {{ filter.property }}: {{ filter.value }}
-            <fa-icon [icon]="['fas', 'times']" (click)="removeFilter(i)"></fa-icon>
+            <fa-icon icon="times" (click)="removeFilter(i)"></fa-icon>
           </div>
         </div>
       }
     </div>
 
-    @if (showBacklog()) {
+    @if (showBacklog() || !activeBoard()?.started) {
       <jhi-backlog-board [taskCreateSubject]="taskCreateSubject" [backlogTasks]="tasksByStatus().get('backlog') ?? []"></jhi-backlog-board>
     } @else {
       <jhi-board-columns

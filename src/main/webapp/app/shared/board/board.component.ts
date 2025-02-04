@@ -365,6 +365,13 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
   }
 
+  startBoard($event: MouseEvent): void {
+    $event.stopPropagation();
+    this.boardService.update({ ...this.activeBoard()!, started: true }).subscribe(board => {
+      this.onBoardSelect(board);
+    });
+  }
+
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
     if (event.key === 'Enter' && (event.metaKey || event.ctrlKey) && event.type === 'keydown') {
