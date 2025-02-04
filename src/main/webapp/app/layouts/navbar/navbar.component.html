@@ -149,6 +149,18 @@
               <li>
                 <a
                   class="dropdown-item"
+                  routerLink="/board/settings"
+                  routerLinkActive="active"
+                  (click)="collapseNavbar()"
+                  data-cy="account"
+                >
+                  <fa-icon icon="user" [fixedWidth]="true"></fa-icon>
+                  <span jhiTranslate="board.settings.title">Boards</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
                   routerLink="/account/settings"
                   routerLinkActive="active"
                   (click)="collapseNavbar()"

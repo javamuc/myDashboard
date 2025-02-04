@@ -12,6 +12,10 @@ public class BoardDTO implements Serializable {
 
     private String description;
 
+    private int toDoLimit;
+
+    private int progressLimit;
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -35,5 +39,21 @@ public class BoardDTO implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getToDoLimit() {
+        return toDoLimit;
+    }
+
+    public void setToDoLimit(int toDoLimit) {
+        this.toDoLimit = toDoLimit;
+    }
+
+    public int getProgressLimit() {
+        return progressLimit;
+    }
+
+    public void setProgressLimit(int progressLimit) {
+        this.progressLimit = progressLimit;
     }
 }

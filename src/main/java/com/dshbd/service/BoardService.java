@@ -69,15 +69,17 @@ public class BoardService {
         boardRepository.deleteById(id);
     }
 
-    public Board updateBoard(BoardDTO boardDTO) {
+    public Board updateBoard(Long id, BoardDTO boardDTO) {
         return boardRepository
             .findByIdAndOwnerId(
-                boardDTO.getId(),
+                id,
                 userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId()
             )
             .map(board -> {
                 board.setTitle(boardDTO.getTitle());
                 board.setDescription(boardDTO.getDescription());
+                board.setToDoLimit(boardDTO.getToDoLimit());
+                board.setProgressLimit(boardDTO.getProgressLimit());
                 return boardRepository.save(board);
             })
             .orElseThrow(() -> new IllegalStateException("Board could not be found"));

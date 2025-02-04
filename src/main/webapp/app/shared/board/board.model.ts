@@ -11,6 +11,7 @@ export interface Board {
   started?: boolean;
   toDoLimit: number;
   progressLimit: number;
+  archived: boolean;
 }
 
 export interface BoardFilter {

@@ -45,6 +45,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
     lastModifiedDate: new Date().toISOString(),
     toDoLimit: 5,
     progressLimit: 2,
+    archived: false,
   });
   activeComponent = signal<HomeComponentType>('dashboard');
 

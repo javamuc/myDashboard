@@ -1,0 +1,114 @@
+<div class="container-fluid">
+  <div class="row">
+    <!-- Board List -->
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h2>
+            <fa-icon icon="columns"></fa-icon>
+            <span>Boards</span>
+          </h2>
+        </div>
+        <div class="card-body">
+          <!-- Create New Board -->
+          <div class="new-board-form mb-4">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="New board title..."
+                [(ngModel)]="newBoardTitle"
+                (keyup.enter)="createBoard()"
+              />
+              <button class="btn btn-primary" (click)="createBoard()">
+                <fa-icon icon="plus"></fa-icon>
+                Add
+              </button>
+            </div>
+          </div>
+
+          <!-- Board List -->
+          <div class="board-list">
+            @for (board of boards; track board.id) {
+              <div
+                class="board-item"
+                [class.active]="selectedBoard?.id === board.id"
+                [class.archived]="board.archived"
+                (click)="selectBoard(board)"
+              >
+                <span class="board-title">{{ board.title }}</span>
+                <button class="btn btn-sm btn-link" (click)="toggleArchiveBoard(board); $event.stopPropagation()">
+                  <fa-icon [icon]="board.archived ? 'box-archive' : 'archive'"></fa-icon>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Board Edit -->
+    <div class="col-md-8">
+      @if (isEditing && selectedBoard) {
+        <div class="card">
+          <div class="card-header">
+            <h2>
+              <fa-icon icon="edit"></fa-icon>
+              <span>Edit Board: {{ selectedBoard.title }}</span>
+            </h2>
+          </div>
+          <div class="card-body">
+            <form (ngSubmit)="updateBoard()">
+              <!-- Title -->
+              <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="title" [(ngModel)]="selectedBoard.title" name="title" required />
+              </div>
+
+              <!-- Column Limits -->
+              <div class="mb-3">
+                <label class="form-label">Column Limits</label>
+                <div class="row g-3">
+                  <div class="col-md-4">
+                    <label for="todoLimit" class="form-label">To Do</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="todoLimit"
+                      [(ngModel)]="selectedBoard.toDoLimit"
+                      name="todoLimit"
+                      min="0"
+                    />
+                  </div>
+                  <div class="col-md-4">
+                    <label for="progressLimit" class="form-label">In Progress</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="progressLimit"
+                      [(ngModel)]="selectedBoard.progressLimit"
+                      name="progressLimit"
+                      min="0"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                  <fa-icon icon="save"></fa-icon>
+                  Save Changes
+                </button>
+                <button type="button" class="btn btn-secondary" (click)="cancelEdit()">
+                  <fa-icon icon="times"></fa-icon>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>

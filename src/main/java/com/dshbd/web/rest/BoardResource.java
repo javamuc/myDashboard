@@ -38,13 +38,13 @@ public class BoardResource {
         return ResponseEntity.created(new URI("/api/boards/" + result.getId())).body(result);
     }
 
-    @PutMapping("/boards")
-    public ResponseEntity<Board> updateBoard(@Valid @RequestBody BoardDTO boardDTO) {
+    @PutMapping("/boards/{id}")
+    public ResponseEntity<Board> updateBoard(@PathVariable Long id, @Valid @RequestBody BoardDTO boardDTO) {
         log.debug("REST request to update Board : {}", boardDTO);
         if (boardDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        Board result = boardService.updateBoard(boardDTO);
+        Board result = boardService.updateBoard(id, boardDTO);
         return ResponseEntity.ok().body(result);
     }
 

@@ -17,6 +17,14 @@ const routes: Routes = [
     outlet: 'navbar',
   },
   {
+    path: 'board',
+    loadChildren: () => import('./board/board.route').then(r => r.BOARD_ROUTE),
+    canActivate: [UserRouteAccessService],
+    data: {
+      authorities: [Authority.USER],
+    },
+  },
+  {
     path: 'admin',
     data: {
       authorities: [Authority.ADMIN],
