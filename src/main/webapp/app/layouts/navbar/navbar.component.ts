@@ -89,9 +89,6 @@ export default class NavbarComponent implements OnInit {
       } else if (event.key === '3') {
         event.preventDefault();
         this.switchToNotes();
-      } else if (event.key === '4') {
-        event.preventDefault();
-        this.switchToHabits();
       }
     }
   }
@@ -100,20 +97,12 @@ export default class NavbarComponent implements OnInit {
     this.homeService.setActiveComponent('dashboard');
   }
 
-  switchToTasks(): void {
-    this.homeService.setActiveComponent('task');
-  }
-
   switchToBoard(): void {
     this.homeService.setActiveComponent('board');
   }
 
   switchToNotes(): void {
     this.homeService.setActiveComponent('notes');
-  }
-
-  switchToHabits(): void {
-    this.homeService.setActiveComponent('habit');
   }
 
   changeLanguage(languageKey: string): void {

@@ -4,7 +4,6 @@ import { Subject, takeUntil } from 'rxjs';
 
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
-import { Account } from 'app/core/auth/account.model';
 import { ClockComponent } from '../shared/clock/clock.component';
 import { NotesComponent } from '../notes/notes.component';
 import { WeatherComponent } from 'app/shared/weather/weather.component';

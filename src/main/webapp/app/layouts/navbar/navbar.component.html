@@ -22,7 +22,7 @@
         <li class="nav-item">
           <button class="btn btn-link nav-link" (click)="switchToHome()" [class.active]="isActive('dashboard')">
             <fa-icon icon="home"></fa-icon>
-            <span>Home (1)</span>
+            <span>Dashboard (1)</span>
           </button>
         </li>
         <li class="nav-item">
@@ -35,12 +35,6 @@
           <button class="btn btn-link nav-link" (click)="switchToNotes()" [class.active]="isActive('notes')">
             <fa-icon icon="sticky-note"></fa-icon>
             <span>Notes (3)</span>
-          </button>
-        </li>
-        <li class="nav-item">
-          <button class="btn btn-link nav-link" (click)="switchToHabits()" [class.active]="isActive('habit')">
-            <fa-icon icon="calendar-check"></fa-icon>
-            <span>Habits (4)</span>
           </button>
         </li>
         <li>
@@ -152,10 +146,22 @@
                   routerLink="/board/settings"
                   routerLinkActive="active"
                   (click)="collapseNavbar()"
-                  data-cy="account"
+                  data-cy="boardSettings"
                 >
-                  <fa-icon icon="user" [fixedWidth]="true"></fa-icon>
+                  <fa-icon icon="columns" [fixedWidth]="true"></fa-icon>
                   <span jhiTranslate="board.settings.title">Boards</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  routerLink="/habit/settings"
+                  routerLinkActive="active"
+                  (click)="collapseNavbar()"
+                  data-cy="habitSettings"
+                >
+                  <fa-icon icon="calendar-check" [fixedWidth]="true"></fa-icon>
+                  <span jhiTranslate="habit.settings.title">Habits</span>
                 </a>
               </li>
               <li>

@@ -25,6 +25,14 @@ const routes: Routes = [
     },
   },
   {
+    path: 'habit',
+    loadChildren: () => import('./habit/habit.routes').then(r => r.HABIT_ROUTE),
+    canActivate: [UserRouteAccessService],
+    data: {
+      authorities: [Authority.USER],
+    },
+  },
+  {
     path: 'admin',
     data: {
       authorities: [Authority.ADMIN],
