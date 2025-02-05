@@ -9,6 +9,7 @@ import com.dshbd.domain.Board;
 import com.dshbd.domain.User;
 import com.dshbd.repository.BoardRepository;
 import com.dshbd.service.dto.BoardDTO;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -86,7 +87,7 @@ class BoardServiceTest {
         // Arrange
         List<Board> boards = Arrays.asList(board);
         when(userService.getUserWithAuthorities()).thenReturn(Optional.of(user));
-        when(boardRepository.findByOwnerId(user.getId())).thenReturn(boards);
+        when(boardRepository.findByOwnerIdAndArchived(user.getId(), false)).thenReturn(boards);
 
         // Act
         List<Board> result = boardService.getCurrentUserBoards();
@@ -94,7 +95,7 @@ class BoardServiceTest {
         // Assert
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getTitle()).isEqualTo(board.getTitle());
-        verify(boardRepository).findByOwnerId(user.getId());
+        verify(boardRepository).findByOwnerIdAndArchived(user.getId(), false);
         verify(boardRepository, never()).save(any(Board.class));
     }
 
@@ -102,7 +103,7 @@ class BoardServiceTest {
     void getCurrentUserBoards_CreatesDefaultBoard() {
         // Arrange
         when(userService.getUserWithAuthorities()).thenReturn(Optional.of(user));
-        when(boardRepository.findByOwnerId(user.getId())).thenReturn(Arrays.asList());
+        when(boardRepository.findByOwnerIdAndArchived(user.getId(), false)).thenReturn(new ArrayList<Board>());
         when(boardRepository.save(any(Board.class))).thenReturn(board);
 
         // Act
@@ -110,7 +111,7 @@ class BoardServiceTest {
 
         // Assert
         assertThat(result).hasSize(1);
-        verify(boardRepository).findByOwnerId(user.getId());
+        verify(boardRepository).findByOwnerIdAndArchived(user.getId(), false);
         verify(boardRepository).save(any(Board.class));
         verify(boardRepository).flush();
     }
@@ -146,11 +147,14 @@ class BoardServiceTest {
 
     @Test
     void deleteBoard_Success() {
+        when(userService.getUserWithAuthorities()).thenReturn(Optional.of(user));
+        when(boardRepository.findByIdAndOwnerId(board.getId(), user.getId())).thenReturn(Optional.of(board));
         // Act
         boardService.deleteBoard(board.getId());
 
         // Assert
-        verify(boardRepository).deleteById(board.getId());
+        verify(boardRepository, never()).deleteById(board.getId());
+        verify(boardRepository).save(board);
     }
 
     @Test

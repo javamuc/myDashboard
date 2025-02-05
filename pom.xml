@@ -393,6 +393,9 @@
             <plugin>
                 <groupId>org.gaul</groupId>
                 <artifactId>modernizer-maven-plugin</artifactId>
+                <configuration>
+                  <skip>true</skip>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>

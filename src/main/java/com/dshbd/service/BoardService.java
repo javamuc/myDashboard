@@ -84,6 +84,6 @@ public class BoardService {
             boardToUpdate.setStarted(boardDTO.isStarted());
             return boardRepository.save(boardToUpdate);
         }
-        return null;
+        throw new IllegalStateException("Board could not be found");
     }
 }
