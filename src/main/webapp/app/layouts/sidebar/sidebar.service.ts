@@ -8,7 +8,6 @@ import { Board } from 'app/shared/board/board.model';
 export class SidebarService {
   private readonly boardIdSubject = new BehaviorSubject<number | undefined>(undefined);
   private readonly isOpenSubject = new BehaviorSubject<boolean>(false);
-  private readonly activeComponentSubject = new BehaviorSubject<'task' | 'note' | null>(null);
   private readonly taskDataSubject = new BehaviorSubject<Task | undefined>(undefined);
   private readonly tagsSubject = new BehaviorSubject<Set<string>>(new Set<string>());
   private readonly activeBoardSubject = new BehaviorSubject<Board | undefined>(undefined);
@@ -26,14 +25,6 @@ export class SidebarService {
 
   setIsOpen(isOpen: boolean): void {
     this.isOpenSubject.next(isOpen);
-  }
-
-  getActiveComponent(): Observable<'task' | 'note' | null> {
-    return this.activeComponentSubject.asObservable();
-  }
-
-  setActiveComponent(component: 'task' | 'note' | null): void {
-    this.activeComponentSubject.next(component);
   }
 
   getTaskData(): Observable<Task | undefined> {

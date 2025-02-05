@@ -212,7 +212,6 @@ export class BoardComponent implements OnInit, OnDestroy {
       if (!board) return board;
       const tasks = [...board.tasks];
       const index = tasks.findIndex(t => t.id === task.id);
-      console.warn('taskDeleted in board', index);
       if (index !== -1) {
         tasks.splice(index, 1);
       }
@@ -238,8 +237,6 @@ export class BoardComponent implements OnInit, OnDestroy {
     });
 
     this.sidebarService.setTaskData(task);
-    console.warn('taskCreated in board', task);
-    this.sidebarService.setActiveComponent('task');
     this.sidebarService.setIsOpen(true);
     this.taskCreateSubject.next(task);
   }
@@ -353,14 +350,15 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   onBoardSelect(board: Board): void {
-    this.activeBoard.set(board);
     if (board.id) {
       this.cookieService.setLastBoardId(board.id);
       this.taskService.getBoardTasks(board.id).subscribe(tasks => {
-        this.activeBoard.set({
+        const boardWithTasks = {
           ...board,
           tasks,
-        });
+        };
+        this.activeBoard.set(boardWithTasks);
+        this.sidebarService.setActiveBoard(boardWithTasks);
       });
     }
   }

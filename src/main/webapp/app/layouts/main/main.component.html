@@ -18,16 +18,7 @@
 </div>
 
 @if ((isOpen() | async) ?? false) {
-  <jhi-sidebar [isOpen]="(isOpen() | async) ?? false" [activeComponent]="activeComponent() | async" (isOpenChange)="onSidebarClose()">
-    <!-- @switch (activeComponent() | async) {
-      @case ('task') {
-        <jhi-task-editor></jhi-task-editor>
-      }
-      @case ('note') {
-        <jhi-note-editor></jhi-note-editor>
-      }
-    } -->
-  </jhi-sidebar>
+  <jhi-sidebar [isOpen]="(isOpen() | async) ?? false" (isOpenChange)="onSidebarClose()"></jhi-sidebar>
 }
 
 <jhi-footer></jhi-footer>

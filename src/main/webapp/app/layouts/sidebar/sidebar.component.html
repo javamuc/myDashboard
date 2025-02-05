@@ -1,6 +1,3 @@
 <div [@slideInOut]="isOpen ? 'open' : 'closed'" class="sidebar" [class.open]="isOpen">
-  <ng-container [ngSwitch]="activeComponent">
-    <jhi-task-editor *ngSwitchCase="'task'"></jhi-task-editor>
-    <jhi-note-editor *ngSwitchCase="'note'"></jhi-note-editor>
-  </ng-container>
+  <jhi-task-editor></jhi-task-editor>
 </div>

@@ -42,7 +42,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public List<Board> getCurrentUserBoards() {
         Long userId = userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId();
-        List<Board> boards = boardRepository.findByOwnerId(userId);
+        List<Board> boards = boardRepository.findByOwnerIdAndArchived(userId, false);
 
         if (boards.isEmpty()) {
             log.debug("No boards found for user {}, creating default board", userId);

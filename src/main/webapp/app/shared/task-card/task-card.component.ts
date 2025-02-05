@@ -73,10 +73,8 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener('click', ['$event'])
   openTask(event: Event): void {
     event.stopPropagation();
-    console.warn('openTask', this.taskData()?.id, this.task.id);
     // If this task is already selected, open the sidebar
     if (this.taskData()?.id === this.task.id) {
-      this.sidebarService.setActiveComponent('task');
       this.sidebarService.setIsOpen(true);
     }
     // Otherwise just select the task
@@ -103,9 +101,9 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
           } else if (this.task.status === 'to-do') {
             newStatus = 'backlog';
           }
-
-          if (newStatus && this.canChangeStatus(newStatus)) {
-            this.sidebarService.changeTaskStatus(this.task, newStatus);
+          const canChangeStatus = newStatus && this.canChangeStatus(newStatus);
+          if (canChangeStatus) {
+            this.sidebarService.changeTaskStatus(this.task, newStatus!);
           }
           break;
         }
@@ -246,8 +244,13 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private canChangeStatus(newStatus: TaskStatus): boolean {
     const board = this.activeBoard();
-    if (!board) return false;
-
+    if (!board) {
+      this.alertService.addAlert({
+        type: 'warning',
+        message: 'No board found',
+      });
+      return false;
+    }
     const tasksInTargetStatus = board.tasks.filter(t => t.status === newStatus).length;
 
     if (newStatus === 'in-progress' && tasksInTargetStatus >= board.progressLimit) {
