@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -20,12 +20,21 @@ export class BoardSettingsComponent implements OnInit, OnDestroy {
   selectedBoard: Board | null = null;
   newBoardTitle = '';
   isEditing = false;
+  showArchived = signal(false);
   private destroy$ = new Subject<void>();
 
   constructor(
     private boardService: BoardService,
     private alertService: AlertService,
   ) {}
+
+  get filteredBoards(): Board[] {
+    return this.boards.filter(board => board.archived === this.showArchived());
+  }
+
+  toggleShowArchived(): void {
+    this.showArchived.set(!this.showArchived());
+  }
 
   ngOnInit(): void {
     this.loadBoards();

@@ -20,6 +20,8 @@ public class BoardDTO implements Serializable {
 
     private boolean started;
 
+    private boolean archived;
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -75,5 +77,13 @@ public class BoardDTO implements Serializable {
 
     public void setStarted(boolean started) {
         this.started = started;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 }

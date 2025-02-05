@@ -38,15 +38,15 @@ export class BacklogBoardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Subscribe to active board changes
-    this.sidebarService
-      .getActiveBoard()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(board => {
-        this.activeBoard = board;
-        if (board?.id) {
-          this.loadBacklogTasks(board.id);
-        }
-      });
+    // this.sidebarService
+    //   .getActiveBoard()
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe(board => {
+    //     this.activeBoard = board;
+    //     if (board?.id) {
+    //       this.loadBacklogTasks(board.id);
+    //     }
+    //   });
 
     // Subscribe to active task changes
     this.sidebarService
@@ -208,13 +208,13 @@ export class BacklogBoardComponent implements OnInit, OnDestroy {
     }
   }
 
-  private loadBacklogTasks(boardId: number): void {
-    this.loading = true;
-    this.taskService.getBoardTasksByStatus(boardId, 'backlog').subscribe(tasks => {
-      this.backlogTasks = tasks.sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
-      this.loading = false;
-    });
-  }
+  // private loadBacklogTasks(boardId: number): void {
+  //   this.loading = true;
+  //   this.taskService.getBoardTasksByStatus(boardId, 'backlog').subscribe(tasks => {
+  //     this.backlogTasks = tasks.sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+  //     this.loading = false;
+  //   });
+  // }
 
   private updateTaskPositions(): void {
     // Update all task positions based on their current order

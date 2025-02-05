@@ -82,6 +82,7 @@ public class BoardService {
             boardToUpdate.setProgressLimit(boardDTO.getProgressLimit());
             boardToUpdate.setAutoPull(boardDTO.isAutoPull());
             boardToUpdate.setStarted(boardDTO.isStarted());
+            boardToUpdate.setArchived(boardDTO.isArchived());
             return boardRepository.save(boardToUpdate);
         }
         throw new IllegalStateException("Board could not be found");

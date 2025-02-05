@@ -59,11 +59,20 @@ public class IdeaService {
     @Transactional(readOnly = true)
     public Optional<Idea> findOne(Long id) {
         log.debug("Request to get Idea : {}", id);
-        return ideaRepository.findById(id);
+        return ideaRepository.findByIdAndOwnerId(
+            id,
+            userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId()
+        );
     }
 
     public void delete(Long id) {
         log.debug("Request to delete Idea : {}", id);
-        ideaRepository.deleteById(id);
+        int deletedCount = ideaRepository.deleteByIdAndOwnerId(
+            id,
+            userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId()
+        );
+        if (deletedCount == 0) {
+            log.error("Idea with id {} not found", id);
+        }
     }
 }
