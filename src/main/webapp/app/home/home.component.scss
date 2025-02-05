@@ -9,6 +9,13 @@ Main page styles
   height: auto;
 }
 
+.left-sidebar {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  gap: 1rem;
+}
+
 .row {
   min-height: calc(100vh - 100px);
 }

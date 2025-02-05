@@ -22,7 +22,6 @@ public class HabitRecordService {
     private final Logger log = LoggerFactory.getLogger(HabitRecordService.class);
 
     private final HabitRecordRepository habitRecordRepository;
-    private final HabitRepository habitRepository;
     private final UserRepository userRepository;
     private final HabitRecordMapper habitRecordMapper;
 
@@ -33,7 +32,6 @@ public class HabitRecordService {
         HabitRecordMapper habitRecordMapper
     ) {
         this.habitRecordRepository = habitRecordRepository;
-        this.habitRepository = habitRepository;
         this.userRepository = userRepository;
         this.habitRecordMapper = habitRecordMapper;
     }

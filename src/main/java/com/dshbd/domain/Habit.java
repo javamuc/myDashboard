@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +15,7 @@ import org.hibernate.annotations.UpdateTimestamp;
  */
 @Entity
 @Table(name = "habit")
-public class Habit extends AbstractAuditingEntity<Long> implements Serializable {
+public class Habit extends AbstractAuditingEntity<Long> {
 
     private static final long serialVersionUID = 1L;
 

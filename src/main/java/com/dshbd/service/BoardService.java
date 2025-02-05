@@ -66,24 +66,24 @@ public class BoardService {
     }
 
     public void deleteBoard(Long id) {
-        boardRepository.deleteById(id);
+        getBoard(id).ifPresent(board -> {
+            board.setArchived(true);
+            boardRepository.save(board);
+        });
     }
 
     public Board updateBoard(Long id, BoardDTO boardDTO) {
-        return boardRepository
-            .findByIdAndOwnerId(
-                id,
-                userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId()
-            )
-            .map(board -> {
-                board.setTitle(boardDTO.getTitle());
-                board.setDescription(boardDTO.getDescription());
-                board.setToDoLimit(boardDTO.getToDoLimit());
-                board.setProgressLimit(boardDTO.getProgressLimit());
-                board.setAutoPull(boardDTO.isAutoPull());
-                board.setStarted(boardDTO.isStarted());
-                return boardRepository.save(board);
-            })
-            .orElseThrow(() -> new IllegalStateException("Board could not be found"));
+        Optional<Board> board = getBoard(id);
+        if (board.isPresent()) {
+            Board boardToUpdate = board.get();
+            boardToUpdate.setTitle(boardDTO.getTitle());
+            boardToUpdate.setDescription(boardDTO.getDescription());
+            boardToUpdate.setToDoLimit(boardDTO.getToDoLimit());
+            boardToUpdate.setProgressLimit(boardDTO.getProgressLimit());
+            boardToUpdate.setAutoPull(boardDTO.isAutoPull());
+            boardToUpdate.setStarted(boardDTO.isStarted());
+            return boardRepository.save(boardToUpdate);
+        }
+        return null;
     }
 }

@@ -14,7 +14,6 @@ import { HomeService, type HomeComponent as HomeComponentType } from './home.ser
 import { PomodoroComponent } from '../shared/pomodoro/pomodoro.component';
 import StockPickerComponent from '../shared/shared.module';
 import { DashboardComponent } from '../dashboard/dashboard.component';
-import { HabitManagementComponent } from '../habit/habit-management.component';
 import { HabitTrackerComponent } from '../habit/habit-tracker.component';
 @Component({
   selector: 'jhi-home',
@@ -30,7 +29,6 @@ import { HabitTrackerComponent } from '../habit/habit-tracker.component';
     PomodoroComponent,
     StockPickerComponent,
     DashboardComponent,
-    HabitManagementComponent,
     HabitTrackerComponent,
   ],
 })

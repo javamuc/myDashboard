@@ -17,6 +17,7 @@ public class PostgreSqlTestContainer implements SqlTestContainer {
     public void destroy() {
         if (null != postgreSQLContainer && postgreSQLContainer.isRunning()) {
             postgreSQLContainer.stop();
+            postgreSQLContainer.close();
         }
     }
 

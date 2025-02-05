@@ -29,7 +29,7 @@ export class HabitManagementComponent implements OnInit {
 
   loadHabits(): void {
     this.habitService
-      .query()
+      .queryActive()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(habits => {
         this.habits.set(habits);
