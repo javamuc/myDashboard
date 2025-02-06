@@ -1,115 +1,71 @@
 package com.dshbd.web.rest;
 
-import com.dshbd.domain.Note;
-import com.dshbd.domain.User;
-import com.dshbd.repository.NoteRepository;
-import com.dshbd.repository.UserRepository;
-import com.dshbd.security.SecurityUtils;
+import com.dshbd.service.NoteService;
+import com.dshbd.service.dto.NoteDTO;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.jhipster.web.util.ResponseUtil;
 
 @RestController
 @RequestMapping("/api")
 public class NoteResource {
 
     private final Logger log = LoggerFactory.getLogger(NoteResource.class);
-    private final NoteRepository noteRepository;
-    private final UserRepository userRepository;
 
-    public NoteResource(NoteRepository noteRepository, UserRepository userRepository) {
-        this.noteRepository = noteRepository;
-        this.userRepository = userRepository;
+    private static final String ENTITY_NAME = "note";
+
+    private final NoteService noteService;
+
+    public NoteResource(NoteService noteService) {
+        this.noteService = noteService;
     }
 
     @GetMapping("/notes")
-    public ResponseEntity<List<Note>> getAllNotes() {
+    public ResponseEntity<List<NoteDTO>> getAllNotes() {
         log.debug("REST request to get all Notes for current user");
-        Optional<String> userLogin = SecurityUtils.getCurrentUserLogin();
-        if (userLogin.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        Optional<User> user = userRepository.findOneByLogin(userLogin.get());
-        if (user.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(noteRepository.findByUserIdOrderByLastModifiedDateDesc(user.get().getId()));
+        List<NoteDTO> notes = noteService.findAllByCurrentUser();
+        return ResponseEntity.ok(notes);
     }
 
     @GetMapping("/notes/{id}")
-    public ResponseEntity<Note> getNote(@PathVariable Long id) {
+    public ResponseEntity<NoteDTO> getNote(@PathVariable Long id) {
         log.debug("REST request to get Note : {}", id);
-        Optional<Note> note = noteRepository.findById(id);
-        return note.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return ResponseUtil.wrapOrNotFound(noteService.findOne(id));
     }
 
     @PostMapping("/notes")
-    public ResponseEntity<Note> createNote(@Valid @RequestBody NoteVM noteVM) throws URISyntaxException {
+    public ResponseEntity<NoteDTO> createNote(@Valid @RequestBody NoteVM noteVM) throws URISyntaxException {
         log.debug("REST request to save Note : {}", noteVM);
 
-        Optional<String> userLogin = SecurityUtils.getCurrentUserLogin();
-        if (userLogin.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
+        NoteDTO noteDTO = new NoteDTO();
+        noteDTO.setTitle(noteVM.getTitle());
+        noteDTO.setContent(noteVM.getContent());
 
-        Optional<User> user = userRepository.findOneByLogin(userLogin.get());
-        if (user.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        Note note = new Note();
-        note.setTitle(noteVM.getTitle());
-        note.setContent(noteVM.getContent());
-        note.setUser(user.get());
-        Note result = noteRepository.save(note);
+        NoteDTO result = noteService.save(noteDTO);
         return ResponseEntity.created(new URI("/api/notes/" + result.getId())).body(result);
     }
 
     @PutMapping("/notes/{id}")
-    public ResponseEntity<Note> updateNote(@PathVariable Long id, @Valid @RequestBody Note note) {
-        log.debug("REST request to update Note : {}", note);
-        if (note.getId() == null || !note.getId().equals(id)) {
+    public ResponseEntity<NoteDTO> updateNote(@PathVariable Long id, @Valid @RequestBody NoteDTO noteDTO) {
+        log.debug("REST request to update Note : {}", noteDTO);
+        if (noteDTO.getId() == null || !noteDTO.getId().equals(id)) {
             return ResponseEntity.badRequest().build();
         }
 
-        Optional<Note> existingNote = noteRepository.findById(id);
-        if (existingNote.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        // Check if the note belongs to the current user
-        if (!existingNote.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().get())) {
-            return ResponseEntity.status(403).build();
-        }
-        existingNote.get().setLastModifiedDate(Instant.now());
-        existingNote.get().setTitle(note.getTitle());
-        existingNote.get().setContent(note.getContent());
-        Note result = noteRepository.save(existingNote.get());
+        NoteDTO result = noteService.save(noteDTO);
         return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/notes/{id}")
     public ResponseEntity<Void> deleteNote(@PathVariable Long id) {
         log.debug("REST request to delete Note : {}", id);
-        Optional<Note> existingNote = noteRepository.findById(id);
-        if (existingNote.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        // Check if the note belongs to the current user
-        if (!existingNote.get().getUser().getLogin().equals(SecurityUtils.getCurrentUserLogin().get())) {
-            return ResponseEntity.status(403).build();
-        }
-
-        noteRepository.deleteById(id);
+        noteService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
