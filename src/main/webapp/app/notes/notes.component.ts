@@ -79,8 +79,8 @@ export class NotesComponent implements OnInit, OnDestroy {
     };
 
     this.noteService.create(newNote).subscribe(createdNote => {
-      this.selectedNote.set(createdNote);
       this.notes.update(notes => [...notes, createdNote]);
+      this.selectedNote.set(createdNote);
       this.updateFilteredNotes();
     });
   }
@@ -91,20 +91,17 @@ export class NotesComponent implements OnInit, OnDestroy {
 
   onNoteUpdated(updatedNote: Note): void {
     // Update the note in the notes array immediately
-    // this.notes.update(notes =>
-    //   notes.map(note => {
-    //     if (note.id === updatedNote.id) {
-    //       note.lastModified = updatedNote.lastModified;
-    //       return note;
-    //     }
-    //     return note;
-    //   }),
-    // );
-
-    // Update the selected note to reflect changes immediately
-    // if (this.selectedNote()?.id === updatedNote.id) {
-    //   this.selectedNote().lastModified = updatedNote.lastModified;
-    // }
+    this.notes.update(notes =>
+      notes.map(note => {
+        if (note.id === updatedNote.id) {
+          note.title = updatedNote.title;
+          note.content = updatedNote.content;
+          note.lastModifiedDate = updatedNote.lastModifiedDate;
+          return note;
+        }
+        return note;
+      }),
+    );
 
     // Update filtered notes to reflect changes
     this.updateFilteredNotes();
@@ -173,11 +170,6 @@ export class NotesComponent implements OnInit, OnDestroy {
             return n;
           }),
         );
-
-        // Update the selected note if it's the current one
-        // if (this.selectedNote()?.id === savedNote.id) {
-        //   this.selectedNote.update(n => ({ ...n, lastModifiedDate: savedNote.lastModifiedDate }));
-        // }
 
         this.updateFilteredNotes();
       });
