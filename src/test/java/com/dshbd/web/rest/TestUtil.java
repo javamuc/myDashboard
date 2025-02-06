@@ -2,16 +2,26 @@ package com.dshbd.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.dshbd.domain.Authority;
+import com.dshbd.domain.User;
+import com.dshbd.security.AuthoritiesConstants;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -26,6 +36,46 @@ import org.springframework.format.support.FormattingConversionService;
  * Utility class for testing REST controllers.
  */
 public final class TestUtil {
+
+    private static final ObjectMapper mapper = createObjectMapper();
+
+    private static ObjectMapper createObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        mapper.registerModule(new JavaTimeModule());
+        return mapper;
+    }
+
+    public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
+        return mapper.writeValueAsBytes(object);
+    }
+
+    public static User createUser(EntityManager em, String login, String firstName, String lastName, String email, String password) {
+        User user = new User();
+        user.setLogin(login);
+        user.setPassword(password);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
+        user.setActivated(true);
+        Set<Authority> authorities = new HashSet<>();
+        Authority authority = new Authority();
+        authority.setName(AuthoritiesConstants.USER);
+        authorities.add(authority);
+        user.setAuthorities(authorities);
+        em.persist(user);
+        em.flush();
+        return user;
+    }
+
+    public static Long findId(String json) {
+        try {
+            return mapper.readTree(json).get("id").asLong();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to extract ID from JSON", e);
+        }
+    }
 
     /**
      * Create a byte array with a specific size filled with specified data.

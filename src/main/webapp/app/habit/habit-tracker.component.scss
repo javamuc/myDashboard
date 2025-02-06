@@ -11,9 +11,9 @@
   transition: all 0.2s ease;
 
   &:hover:not(.disabled) {
-    background-color: var(--bs-gray-100);
-    border-left-color: var(--bs-primary);
-    transform: translateX(4px);
+    // transform: translateY(-2px);
+    background-color: #222222;
+    transform: translateY(-2px);
   }
 
   &.disabled {

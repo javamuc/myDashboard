@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
-import { Note } from './note.model';
+import { NewNote, Note } from './note.model';
 
 @Injectable({ providedIn: 'root' })
 export class NoteService {
@@ -16,7 +16,7 @@ export class NoteService {
     this.resourceUrl = this.applicationConfigService.getEndpointFor('api/notes');
   }
 
-  create(note: Note): Observable<Note> {
+  create(note: NewNote): Observable<Note> {
     return this.http.post<Note>(this.resourceUrl, note).pipe(map(n => this.convertDateFromServer(n)));
   }
 
@@ -39,8 +39,8 @@ export class NoteService {
   private convertDateFromServer(note: Note): Note {
     return {
       ...note,
-      lastModified: note.lastModifiedDate ? new Date(note.lastModifiedDate) : undefined,
-      created: note.createdDate ? new Date(note.createdDate) : undefined,
+      lastModifiedDate: note.lastModifiedDate,
+      createdDate: note.createdDate,
     };
   }
 }

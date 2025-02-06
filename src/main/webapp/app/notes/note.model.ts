@@ -1,10 +1,13 @@
 export interface Note {
-  id?: number;
+  id: number;
   title: string;
   content: string;
-  lastModified?: Date;
-  created?: Date;
-  lastModifiedDate?: string;
-  createdDate?: string;
-  user?: any;
+  lastModifiedDate: string;
+  createdDate: string;
+  user_id: number;
+}
+
+export interface NewNote extends Omit<Note, 'id' | 'lastModifiedDate' | 'createdDate' | 'user_id'> {
+  title: string;
+  content: string;
 }

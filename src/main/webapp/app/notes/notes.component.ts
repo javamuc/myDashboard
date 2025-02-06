@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, HostListener, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Note } from './note.model';
+import { NewNote, Note } from './note.model';
 import { NoteListComponent } from './note-list/note-list.component';
 import { NoteEditorComponent } from './note-editor/note-editor.component';
 import { NoteService } from './note.service';
@@ -73,7 +73,7 @@ export class NotesComponent implements OnInit, OnDestroy {
   }
 
   createNewNote(): void {
-    const newNote: Note = {
+    const newNote: NewNote = {
       title: '',
       content: '',
     };
@@ -152,8 +152,8 @@ export class NotesComponent implements OnInit, OnDestroy {
     const filteredAndSortedNotes = this.notes()
       .filter(note => note.title.toLowerCase().includes(query) || note.content.toLowerCase().includes(query))
       .sort((a, b) => {
-        const dateA = a.lastModified ? new Date(a.lastModified).getTime() : 0;
-        const dateB = b.lastModified ? new Date(b.lastModified).getTime() : 0;
+        const dateA = a.lastModifiedDate ? new Date(a.lastModifiedDate).getTime() : 0;
+        const dateB = b.lastModifiedDate ? new Date(b.lastModifiedDate).getTime() : 0;
         return dateB - dateA; // Descending order (newest first)
       });
 
@@ -167,7 +167,7 @@ export class NotesComponent implements OnInit, OnDestroy {
         this.notes.update(notes =>
           notes.map(n => {
             if (n.id === savedNote.id) {
-              n.lastModified = savedNote.lastModified;
+              n.lastModifiedDate = savedNote.lastModifiedDate;
               return n;
             }
             return n;
@@ -176,10 +176,10 @@ export class NotesComponent implements OnInit, OnDestroy {
 
         // Update the selected note if it's the current one
         // if (this.selectedNote()?.id === savedNote.id) {
-        //   this.selectedNote.set({ ...savedNote });
+        //   this.selectedNote.update(n => ({ ...n, lastModifiedDate: savedNote.lastModifiedDate }));
         // }
 
-        // this.updateFilteredNotes();
+        this.updateFilteredNotes();
       });
     }
   }

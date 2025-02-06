@@ -9,7 +9,7 @@
       placeholder="Note title"
       (keydown.escape)="titleInput.blur()"
     />
-    <div class="last-modified">Last modified: {{ note.lastModified | date: 'medium' }}</div>
+    <div class="last-modified">Last modified: {{ note.lastModifiedDate | date: 'medium' }}</div>
   </div>
   <div class="editor-content">
     <textarea
