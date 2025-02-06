@@ -7,6 +7,7 @@ import com.dshbd.repository.UserRepository;
 import com.dshbd.security.SecurityUtils;
 import com.dshbd.service.dto.NoteDTO;
 import com.dshbd.service.mapper.NoteMapper;
+import com.dshbd.web.rest.NoteVM;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -31,16 +32,18 @@ public class NoteService {
         this.noteMapper = noteMapper;
     }
 
-    public Note createNote(NoteDTO noteDTO) {
+    public NoteDTO createNote(NoteVM noteVM) {
         Note note = new Note();
-        note.setTitle(noteDTO.getTitle());
-        note.setContent(noteDTO.getContent());
+        note.setTitle(noteVM.getTitle());
+        note.setContent(noteVM.getContent());
         Optional<User> currentUser = getCurrentUser();
         if (currentUser.isEmpty()) {
             throw new IllegalStateException("Current user not found");
         }
         note.setUserId(currentUser.get().getId());
-        return noteRepository.save(note);
+        Note savedNote = noteRepository.saveAndFlush(note);
+        log.debug("Saved Note: {}", savedNote);
+        return noteMapper.toDto(savedNote);
     }
 
     public NoteDTO save(NoteDTO noteDTO) {
@@ -50,9 +53,24 @@ public class NoteService {
             throw new IllegalStateException("Current user not found");
         }
 
-        Note note = noteMapper.toEntity(noteDTO);
-        note.setUserId(currentUser.get().getId());
-        return noteMapper.toDto(noteRepository.save(note));
+        Note note;
+        if (noteDTO.getId() != null) {
+            // Update existing note
+            Optional<Note> existingNote = noteRepository.findById(noteDTO.getId());
+            if (existingNote.isEmpty() || !existingNote.get().getUserId().equals(currentUser.get().getId())) {
+                throw new IllegalStateException("Note not found or not owned by current user");
+            }
+            note = existingNote.get();
+            note.setTitle(noteDTO.getTitle());
+            note.setContent(noteDTO.getContent());
+        } else {
+            // Create new note
+            note = noteMapper.toEntity(noteDTO);
+            note.setUserId(currentUser.get().getId());
+        }
+
+        note = noteRepository.save(note);
+        return noteMapper.toDto(note);
     }
 
     @Transactional(readOnly = true)

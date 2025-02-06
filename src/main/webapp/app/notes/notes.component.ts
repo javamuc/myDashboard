@@ -124,7 +124,7 @@ export class NotesComponent implements OnInit, OnDestroy {
     const currentNotes = this.filteredNotes();
     const currentIndex = currentNotes.findIndex(note => note.id === noteToDelete.id);
 
-    this.noteService.delete(noteToDelete.id!).subscribe(() => {
+    this.noteService.delete(noteToDelete.id).subscribe(() => {
       // Remove the note from the lists
       this.notes.update(notes => notes.filter(note => note.id !== noteToDelete.id));
       this.updateFilteredNotes();

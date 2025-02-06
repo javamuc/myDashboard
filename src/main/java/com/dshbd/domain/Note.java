@@ -1,6 +1,5 @@
 package com.dshbd.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -28,12 +27,12 @@ public class Note implements Serializable {
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "created_date", nullable = false)
     @CreationTimestamp
+    @Column(name = "created_date", updatable = false)
     private Instant createdDate;
 
-    @Column(name = "last_modified_date", nullable = false)
     @UpdateTimestamp
+    @Column(name = "last_modified_date")
     private Instant lastModifiedDate;
 
     @Column(name = "user_id", nullable = false)
@@ -97,5 +96,27 @@ public class Note implements Serializable {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return (
+            "Note{" +
+            "id=" +
+            id +
+            ", title='" +
+            title +
+            '\'' +
+            ", content='" +
+            content +
+            '\'' +
+            ", createdDate=" +
+            createdDate +
+            ", lastModifiedDate=" +
+            lastModifiedDate +
+            ", userId=" +
+            userId +
+            '}'
+        );
     }
 }

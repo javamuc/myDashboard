@@ -11,27 +11,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class IdeaService {
+public class IdeaService extends BaseService<Idea, Long> {
 
     private final Logger log = LoggerFactory.getLogger(IdeaService.class);
 
     private final IdeaRepository ideaRepository;
-    private final UserService userService;
 
     public IdeaService(IdeaRepository ideaRepository, UserService userService) {
+        super(userService);
         this.ideaRepository = ideaRepository;
-        this.userService = userService;
     }
 
     public Idea save(Idea idea) {
+        idea.setOwnerId(getUserId());
         log.debug("Request to save Idea : {}", idea);
-        return userService
-            .getUserWithAuthorities()
-            .map(user -> {
-                idea.setOwnerId(user.getId());
-                return ideaRepository.save(idea);
-            })
-            .orElseThrow(() -> new IllegalStateException("User could not be found"));
+        return ideaRepository.save(idea);
     }
 
     public Optional<Idea> partialUpdate(Idea idea) {
@@ -51,26 +45,18 @@ public class IdeaService {
     @Transactional(readOnly = true)
     public List<Idea> findAll() {
         log.debug("Request to get all Ideas");
-        return ideaRepository.findByOwnerId(
-            userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId()
-        );
+        return ideaRepository.findByOwnerId(getUserId());
     }
 
     @Transactional(readOnly = true)
     public Optional<Idea> findOne(Long id) {
         log.debug("Request to get Idea : {}", id);
-        return ideaRepository.findByIdAndOwnerId(
-            id,
-            userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId()
-        );
+        return ideaRepository.findByIdAndOwnerId(id, getUserId());
     }
 
     public void delete(Long id) {
         log.debug("Request to delete Idea : {}", id);
-        int deletedCount = ideaRepository.deleteByIdAndOwnerId(
-            id,
-            userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId()
-        );
+        int deletedCount = ideaRepository.deleteByIdAndOwnerId(id, getUserId());
         if (deletedCount == 0) {
             log.error("Idea with id {} not found", id);
         }
