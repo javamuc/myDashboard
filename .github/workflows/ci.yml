@@ -44,7 +44,7 @@ jobs:
           ./mvnw package -Pprod -DskipTests
 
       - name: Upload JAR artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: myDashboard
           path: target/*.jar
