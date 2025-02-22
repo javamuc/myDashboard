@@ -189,6 +189,18 @@
                 </a>
               </li>
               <li>
+                <a
+                  class="dropdown-item"
+                  routerLink="/account/data"
+                  routerLinkActive="active"
+                  (click)="collapseNavbar()"
+                  data-cy="importExportItem"
+                >
+                  <fa-icon icon="file-import" [fixedWidth]="true"></fa-icon>
+                  <span jhiTranslate="global.menu.account.importExport">Import/Export</span>
+                </a>
+              </li>
+              <li>
                 <a class="dropdown-item" (click)="logout()" id="logout" data-cy="logout">
                   <fa-icon icon="sign-out-alt" [fixedWidth]="true"></fa-icon>
                   <span jhiTranslate="global.menu.account.logout">Sign out</span>

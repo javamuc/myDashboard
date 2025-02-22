@@ -1,0 +1,39 @@
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="text-center mb-0">Data Import/Export</h2>
+        </div>
+        <div class="card-body">
+          <div class="row mb-4">
+            <div class="col-12">
+              <h3>Export Data</h3>
+              <p class="text-muted">Download all your data in JSON format</p>
+              <button class="btn btn-primary" (click)="downloadData()">
+                <fa-icon icon="download" class="me-2"></fa-icon>
+                Export Data
+              </button>
+            </div>
+          </div>
+
+          <hr />
+
+          <div class="row mt-4">
+            <div class="col-12">
+              <h3>Import Data</h3>
+              <p class="text-muted">Upload a previously exported data file</p>
+              <div class="import-section">
+                <input type="file" class="form-control" id="dataFile" accept=".json" (change)="handleFileUpload($event)" />
+                <small class="form-text text-muted mt-2">
+                  <fa-icon icon="info-circle" class="me-1"></fa-icon>
+                  Only .json files are supported
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

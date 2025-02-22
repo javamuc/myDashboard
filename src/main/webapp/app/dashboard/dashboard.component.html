@@ -1,23 +1,25 @@
 <div class="dashboard-container">
-  <div class="dashboard-header">
-    <h1>Dashboard</h1>
-  </div>
-
   <div class="dashboard-content">
-    <!-- Recent Tasks Section -->
-    <jhi-task-list
-      [tasks]="recentTasks"
-      [loading]="loading"
-      title="In-Progress Tasks"
-      emptyStateMessage="No tasks yet. Go to the board to create your first task!"
-    ></jhi-task-list>
+    <!-- Recent Tasks -->
+    <div class="mb-4">
+      <jhi-task-list
+        [status]="'in-progress'"
+        [limit]="5"
+        [sortBy]="'lastModifiedDate'"
+        [title]="'In Progress Tasks'"
+        [emptyStateMessage]="'No tasks in progress. Start working on something!'"
+      ></jhi-task-list>
+    </div>
 
-    <!-- Recent Ideas Section -->
-    <jhi-idea-list
-      [ideas]="recentIdeas"
-      [loading]="loading"
-      title="Recent Ideas"
-      emptyStateMessage="No ideas yet. Click the lightbulb icon in the navbar to capture your first idea!"
-    ></jhi-idea-list>
+    <!-- Recent Ideas -->
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Recent Ideas</h5>
+        <a routerLink="/ideas" class="btn btn-primary btn-sm">View All</a>
+      </div>
+      <div class="card-body">
+        <jhi-idea-list [ideas]="recentIdeas" [loading]="loading"></jhi-idea-list>
+      </div>
+    </div>
   </div>
 </div>

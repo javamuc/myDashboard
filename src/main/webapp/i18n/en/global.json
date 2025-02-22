@@ -17,7 +17,8 @@
         "sessions": "Sessions",
         "login": "Sign in",
         "logout": "Sign out",
-        "register": "Register"
+        "register": "Register",
+        "importExport": "Import/Export"
       },
       "admin": {
         "main": "Administration",
