@@ -1,10 +1,16 @@
 package com.dshbd.service;
 
 import com.dshbd.domain.Board;
+import com.dshbd.domain.Habit;
+import com.dshbd.domain.HabitDaySchedule;
+import com.dshbd.domain.HabitSpecificTime;
 import com.dshbd.domain.Idea;
 import com.dshbd.domain.Note;
 import com.dshbd.domain.Task;
 import com.dshbd.repository.BoardRepository;
+import com.dshbd.repository.HabitDayScheduleRepository;
+import com.dshbd.repository.HabitRepository;
+import com.dshbd.repository.HabitSpecificTimeRepository;
 import com.dshbd.repository.IdeaRepository;
 import com.dshbd.repository.NoteRepository;
 import com.dshbd.repository.TaskRepository;
@@ -23,12 +29,18 @@ public class ImportService extends BaseService {
     private final NoteRepository noteRepository;
     private final BoardRepository boardRepository;
     private final TaskRepository taskRepository;
+    private final HabitRepository habitRepository;
+    private final HabitDayScheduleRepository habitDayScheduleRepository;
+    private final HabitSpecificTimeRepository habitSpecificTimeRepository;
 
     public ImportService(
         IdeaRepository ideaRepository,
         NoteRepository noteRepository,
         BoardRepository boardRepository,
         TaskRepository taskRepository,
+        HabitRepository habitRepository,
+        HabitDayScheduleRepository habitDayScheduleRepository,
+        HabitSpecificTimeRepository habitSpecificTimeRepository,
         UserService userService
     ) {
         super(userService);
@@ -36,6 +48,9 @@ public class ImportService extends BaseService {
         this.noteRepository = noteRepository;
         this.boardRepository = boardRepository;
         this.taskRepository = taskRepository;
+        this.habitRepository = habitRepository;
+        this.habitDayScheduleRepository = habitDayScheduleRepository;
+        this.habitSpecificTimeRepository = habitSpecificTimeRepository;
     }
 
     @Transactional
@@ -109,6 +124,51 @@ public class ImportService extends BaseService {
                                 task.setPosition(taskDTO.getPosition());
                                 task.setBoardId(savedBoard.getId());
                                 taskRepository.save(task);
+                            });
+                    }
+                });
+        }
+
+        // Import habits and their schedules
+        if (importData.getData().getHabits() != null) {
+            importData
+                .getData()
+                .getHabits()
+                .forEach(habitDTO -> {
+                    Habit habit = new Habit();
+                    habit.setName(habitDTO.getName());
+                    habit.setDescription(habitDTO.getDescription());
+                    habit.setActive(habitDTO.isActive());
+                    habit.setScheduleType(Habit.ScheduleType.valueOf(habitDTO.getScheduleType()));
+                    habit.setUserId(userId);
+                    habit.setCreatedDate(habitDTO.getCreatedDate());
+                    habit.setLastModifiedDate(habitDTO.getLastModifiedDate());
+                    Habit savedHabit = habitRepository.save(habit);
+
+                    // Import day schedules
+                    if (habitDTO.getDaySchedules() != null) {
+                        habitDTO
+                            .getDaySchedules()
+                            .forEach(scheduleDTO -> {
+                                HabitDaySchedule daySchedule = new HabitDaySchedule();
+                                daySchedule.setDayOfWeek(HabitDaySchedule.DayOfWeek.valueOf(scheduleDTO.getDayOfWeek()));
+                                daySchedule.setScheduleType(HabitDaySchedule.ScheduleType.valueOf(scheduleDTO.getScheduleType()));
+                                daySchedule.setRepetitions(scheduleDTO.getRepetitions());
+                                daySchedule.setHabit(savedHabit);
+                                HabitDaySchedule savedSchedule = habitDayScheduleRepository.save(daySchedule);
+
+                                // Import specific times
+                                if (scheduleDTO.getSpecificTimes() != null) {
+                                    scheduleDTO
+                                        .getSpecificTimes()
+                                        .forEach(timeDTO -> {
+                                            HabitSpecificTime specificTime = new HabitSpecificTime();
+                                            specificTime.setHour(timeDTO.getHour());
+                                            specificTime.setMinute(timeDTO.getMinute());
+                                            specificTime.setDaySchedule(savedSchedule);
+                                            habitSpecificTimeRepository.save(specificTime);
+                                        });
+                                }
                             });
                     }
                 });

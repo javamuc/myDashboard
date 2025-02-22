@@ -4,10 +4,12 @@ import { IdeaService } from 'app/shared/idea/idea.service';
 import { NoteService } from 'app/notes/note.service';
 import { BoardService } from 'app/shared/board/board.service';
 import { TaskService } from 'app/shared/task/task.service';
+import { HabitService } from 'app/habit/habit.service';
 import { Board } from 'app/shared/board/board.model';
 import { Task, TaskStatus } from 'app/shared/task/task.model';
 import { Note } from 'app/notes/note.model';
 import { Idea } from 'app/shared/idea/idea.model';
+import { Habit, HabitDaySchedule, HabitSpecificTime, DayOfWeek, DayScheduleType, ScheduleType } from 'app/habit/habit.model';
 import { HttpClient } from '@angular/common/http';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 
@@ -48,6 +50,28 @@ interface ExportableIdea extends Omit<Idea, 'id' | 'ownerId'> {
   lastUpdatedDate?: string;
 }
 
+interface ExportableHabitSpecificTime extends Omit<HabitSpecificTime, 'id' | 'dayScheduleId'> {
+  hour: number;
+  minute: number;
+}
+
+interface ExportableHabitDaySchedule extends Omit<HabitDaySchedule, 'id' | 'habitId'> {
+  dayOfWeek: DayOfWeek;
+  scheduleType: DayScheduleType;
+  repetitions?: number;
+  specificTimes: ExportableHabitSpecificTime[];
+}
+
+interface ExportableHabit extends Omit<Habit, 'id' | 'userId'> {
+  name: string;
+  description?: string;
+  active: boolean;
+  scheduleType: ScheduleType;
+  daySchedules: ExportableHabitDaySchedule[];
+  createdDate?: string;
+  lastModifiedDate?: string;
+}
+
 export interface ExportData {
   version: string;
   exportDate: string;
@@ -55,6 +79,7 @@ export interface ExportData {
     ideas: ExportableIdea[];
     notes: ExportableNote[];
     boards: ExportableBoard[];
+    habits: ExportableHabit[];
   };
 }
 
@@ -68,6 +93,7 @@ export class DataService {
     private noteService: NoteService,
     private boardService: BoardService,
     private taskService: TaskService,
+    private habitService: HabitService,
     private http: HttpClient,
     applicationConfigService: ApplicationConfigService,
   ) {
@@ -76,11 +102,12 @@ export class DataService {
 
   async exportData(): Promise<ExportData> {
     try {
-      const { ideas, notes, boards } = await firstValueFrom(
+      const { ideas, notes, boards, habits } = await firstValueFrom(
         forkJoin({
           ideas: this.ideaService.query(),
           notes: this.noteService.query(),
           boards: this.boardService.query(),
+          habits: this.habitService.query(),
         }),
       );
 
@@ -128,23 +155,28 @@ export class DataService {
             lastModifiedDate: note.lastModifiedDate,
           })),
           boards: boardsWithTasks,
+          habits: habits.map(habit => ({
+            name: habit.name,
+            description: habit.description,
+            active: habit.active,
+            scheduleType: habit.scheduleType,
+            daySchedules: habit.daySchedules.map(schedule => ({
+              dayOfWeek: schedule.dayOfWeek,
+              scheduleType: schedule.scheduleType,
+              repetitions: schedule.repetitions,
+              specificTimes: schedule.specificTimes.map(time => ({
+                hour: time.hour,
+                minute: time.minute,
+              })),
+            })),
+            createdDate: habit.createdDate,
+            lastModifiedDate: habit.lastModifiedDate,
+          })),
         },
       };
     } catch (error) {
       throw new Error(`Failed to export data: ${error instanceof Error ? error.message : String(error)}`);
     }
-  }
-
-  downloadJson(data: any, filename: string): void {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
   }
 
   async importData(file: File): Promise<void> {
@@ -162,6 +194,18 @@ export class DataService {
     }
   }
 
+  downloadJson(data: any, filename: string): void {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
+
   private validateImportData(data: unknown): asserts data is ExportData {
     if (!data || typeof data !== 'object') {
       throw new Error('Invalid import data format');
@@ -173,7 +217,12 @@ export class DataService {
       throw new Error('Import data is missing required fields');
     }
 
-    if (!Array.isArray(importData.data.ideas) || !Array.isArray(importData.data.notes) || !Array.isArray(importData.data.boards)) {
+    if (
+      !Array.isArray(importData.data.ideas) ||
+      !Array.isArray(importData.data.notes) ||
+      !Array.isArray(importData.data.boards) ||
+      !Array.isArray(importData.data.habits)
+    ) {
       throw new Error('Import data has invalid structure');
     }
 

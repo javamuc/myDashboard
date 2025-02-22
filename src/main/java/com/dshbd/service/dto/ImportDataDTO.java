@@ -20,6 +20,7 @@ public class ImportDataDTO {
         private List<ImportIdeaDTO> ideas;
         private List<ImportNoteDTO> notes;
         private List<ImportBoardDTO> boards;
+        private List<ImportHabitDTO> habits;
 
         public List<ImportIdeaDTO> getIdeas() {
             return ideas;
@@ -43,6 +44,14 @@ public class ImportDataDTO {
 
         public void setBoards(List<ImportBoardDTO> boards) {
             this.boards = boards;
+        }
+
+        public List<ImportHabitDTO> getHabits() {
+            return habits;
+        }
+
+        public void setHabits(List<ImportHabitDTO> habits) {
+            this.habits = habits;
         }
     }
 
@@ -295,6 +304,144 @@ public class ImportDataDTO {
 
         public void setPosition(int position) {
             this.position = position;
+        }
+    }
+
+    public static class ImportHabitDTO {
+
+        @NotNull
+        private String name;
+
+        private String description;
+        private boolean active;
+        private String scheduleType;
+        private Instant createdDate;
+        private Instant lastModifiedDate;
+        private List<ImportHabitDayScheduleDTO> daySchedules;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public boolean isActive() {
+            return active;
+        }
+
+        public void setActive(boolean active) {
+            this.active = active;
+        }
+
+        public String getScheduleType() {
+            return scheduleType;
+        }
+
+        public void setScheduleType(String scheduleType) {
+            this.scheduleType = scheduleType;
+        }
+
+        public Instant getCreatedDate() {
+            return createdDate;
+        }
+
+        public void setCreatedDate(Instant createdDate) {
+            this.createdDate = createdDate;
+        }
+
+        public Instant getLastModifiedDate() {
+            return lastModifiedDate;
+        }
+
+        public void setLastModifiedDate(Instant lastModifiedDate) {
+            this.lastModifiedDate = lastModifiedDate;
+        }
+
+        public List<ImportHabitDayScheduleDTO> getDaySchedules() {
+            return daySchedules;
+        }
+
+        public void setDaySchedules(List<ImportHabitDayScheduleDTO> daySchedules) {
+            this.daySchedules = daySchedules;
+        }
+    }
+
+    public static class ImportHabitDayScheduleDTO {
+
+        @NotNull
+        private String dayOfWeek;
+
+        @NotNull
+        private String scheduleType;
+
+        private Integer repetitions;
+        private List<ImportHabitSpecificTimeDTO> specificTimes;
+
+        public String getDayOfWeek() {
+            return dayOfWeek;
+        }
+
+        public void setDayOfWeek(String dayOfWeek) {
+            this.dayOfWeek = dayOfWeek;
+        }
+
+        public String getScheduleType() {
+            return scheduleType;
+        }
+
+        public void setScheduleType(String scheduleType) {
+            this.scheduleType = scheduleType;
+        }
+
+        public Integer getRepetitions() {
+            return repetitions;
+        }
+
+        public void setRepetitions(Integer repetitions) {
+            this.repetitions = repetitions;
+        }
+
+        public List<ImportHabitSpecificTimeDTO> getSpecificTimes() {
+            return specificTimes;
+        }
+
+        public void setSpecificTimes(List<ImportHabitSpecificTimeDTO> specificTimes) {
+            this.specificTimes = specificTimes;
+        }
+    }
+
+    public static class ImportHabitSpecificTimeDTO {
+
+        @NotNull
+        private Integer hour;
+
+        @NotNull
+        private Integer minute;
+
+        public Integer getHour() {
+            return hour;
+        }
+
+        public void setHour(Integer hour) {
+            this.hour = hour;
+        }
+
+        public Integer getMinute() {
+            return minute;
+        }
+
+        public void setMinute(Integer minute) {
+            this.minute = minute;
         }
     }
 

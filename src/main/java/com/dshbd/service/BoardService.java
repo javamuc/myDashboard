@@ -40,7 +40,7 @@ public class BoardService extends BaseService {
         if (boards.isEmpty()) {
             log.debug("No boards found for user {}, creating default board", userId);
             Board board = new Board();
-            board.setTitle("Life Board");
+            board.setTitle("Default Board");
             board.setDescription("Default Board");
             board.setOwnerId(userId);
             boards.add(boardRepository.save(board));
