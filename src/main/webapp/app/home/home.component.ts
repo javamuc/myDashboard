@@ -6,7 +6,6 @@ import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { ClockComponent } from '../shared/clock/clock.component';
 import { NotesComponent } from '../notes/notes.component';
-import { WeatherComponent } from 'app/shared/weather/weather.component';
 import { BoardComponent } from 'app/shared/board/board.component';
 import { Board } from 'app/shared/board/board.model';
 import { LoginService } from 'app/login/login.service';
@@ -24,7 +23,6 @@ import { HabitTrackerComponent } from '../habit/habit-tracker.component';
     RouterModule,
     ClockComponent,
     NotesComponent,
-    WeatherComponent,
     BoardComponent,
     PomodoroComponent,
     StockPickerComponent,

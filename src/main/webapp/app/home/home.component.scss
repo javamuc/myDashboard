@@ -2,19 +2,11 @@
 Main page styles
 ========================================================================== */
 
-.hipster {
-  display: block;
-  margin-top: 20px;
-  width: 100%;
-  height: auto;
-}
-
 .left-sidebar {
   display: flex;
   flex-direction: column;
   margin: 0;
   row-gap: 1rem;
-  column-gap: 1rem;
 }
 
 .row {
@@ -23,35 +15,5 @@ Main page styles
 
 .col-md-3,
 .col-md-6 {
-  padding: 15px;
-}
-
-/* responsive CSS */
-@media screen and (min-width: 768px) {
-  .hipster {
-    margin-top: 30px;
-  }
-}
-
-@media screen and (max-width: 992px) {
-  .row {
-    flex-direction: column;
-  }
-
-  .col-md-3,
-  .col-md-6 {
-    width: 100%;
-  }
-}
-
-/* wait autoprefixer update to allow simple generation of high pixel density media query */
-@media only screen and (-webkit-min-device-pixel-ratio: 2),
-  only screen and (-moz-min-device-pixel-ratio: 2),
-  only screen and (-o-min-device-pixel-ratio: 2/1),
-  only screen and (min-resolution: 192dpi),
-  only screen and (min-resolution: 2dppx) {
-  .hipster {
-    background: url('../../content/images/jhipster_family_member_0.svg') no-repeat center top;
-    background-size: contain;
-  }
+  padding: 1rem;
 }
