@@ -46,6 +46,12 @@
         {{ task.dueDate | date: 'shortDate' }}
       </div>
     }
+    @if (boardName) {
+      <div class="task-board-name" (click)="navigateToBoard($event)" role="link" tabindex="0">
+        <fa-icon icon="clipboard-list"></fa-icon>
+        {{ boardName }}
+      </div>
+    }
     <div class="task-last-modified-date">
       <fa-icon icon="clock"></fa-icon>
       {{ task.lastModifiedDate | date: 'short' }}

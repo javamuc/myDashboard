@@ -29,6 +29,7 @@ import { AlertService } from 'app/core/util/alert.service';
 import { BacklogBoardComponent } from './backlog-board/backlog-board.component';
 import { CookieService } from '../cookie/cookie.service';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { ActivatedRoute } from '@angular/router';
 
 type TaskProperty = keyof Task;
 
@@ -134,6 +135,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   private readonly taskService = inject(TaskService);
   private readonly alertService = inject(AlertService);
   private readonly cookieService = inject(CookieService);
+  private readonly route = inject(ActivatedRoute);
   private destroy$ = new Subject<void>();
   private taskUpdateSubject = new Subject<Task>();
 
@@ -144,6 +146,14 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Handle query parameters for board selection
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      const boardName = params['name'];
+      if (boardName) {
+        this.loadBoardByName(boardName);
+      }
+    });
+
     this.loadBoards();
 
     this.sidebarService
@@ -501,5 +511,20 @@ export class BoardComponent implements OnInit, OnDestroy {
     }
 
     return true;
+  }
+
+  private loadBoardByName(name: string): void {
+    this.boards.update(boards => {
+      const board = boards.find(b => b.title.toLowerCase() === name.toLowerCase());
+      if (board) {
+        this.onBoardSelect(board);
+      } else {
+        this.alertService.addAlert({
+          type: 'warning',
+          message: `Board "${name}" not found`,
+        });
+      }
+      return boards;
+    });
   }
 }

@@ -7,6 +7,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { AlertService } from 'app/core/util/alert.service';
 import { Board } from '../board/board.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'jhi-task-card',
@@ -18,12 +19,14 @@ import { Board } from '../board/board.model';
 export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() task!: Task;
   @Input() index!: number;
+  @Input() boardName: string | undefined;
   @ViewChild('taskCard') taskCard!: ElementRef;
   private destroy$ = new Subject<void>();
   private sidebarIsOpen = signal(false);
   private taskData = signal<Task | undefined>(undefined);
   private activeBoard = signal<Board | undefined>(undefined);
   private readonly alertService = inject(AlertService);
+  private readonly router = inject(Router);
 
   constructor(private sidebarService: SidebarService) {}
 
@@ -81,6 +84,13 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
     else {
       this.sidebarService.setTaskData(this.task);
       this.sidebarService.setBoardId(this.task.boardId);
+    }
+  }
+
+  navigateToBoard(event: Event): void {
+    event.stopPropagation(); // Prevent task from opening
+    if (this.boardName) {
+      void this.router.navigate(['/board'], { queryParams: { name: this.boardName } });
     }
   }
 

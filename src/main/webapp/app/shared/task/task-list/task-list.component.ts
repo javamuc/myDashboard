@@ -18,7 +18,6 @@ export class TaskListComponent implements OnInit {
   @Input() status: 'to-do' | 'in-progress' | 'done' = 'in-progress';
   @Input() limit?: number;
   @Input() sortBy: 'createdDate' | 'lastModifiedDate' = 'lastModifiedDate';
-
   tasks = signal<TaskVM[]>([]);
   loading = signal(true);
 

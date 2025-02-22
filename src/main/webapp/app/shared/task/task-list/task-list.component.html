@@ -7,7 +7,7 @@
     <div *ngIf="loading()" class="loading">Loading...</div>
     <div *ngIf="!loading() && tasks().length === 0" class="empty-state">{{ emptyStateMessage }}</div>
     <div *ngFor="let task of tasks(); let index = index" class="task-card">
-      <jhi-task-card [task]="task.task" [index]="index"></jhi-task-card>
+      <jhi-task-card [task]="task.task" [index]="index" [boardName]="task.board.title"></jhi-task-card>
     </div>
   </div>
 </div>

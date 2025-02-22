@@ -26,6 +26,24 @@
     outline: none;
   }
 
+  .task-board-name {
+    cursor: pointer;
+    color: var(--primary-color);
+    text-decoration: underline;
+
+    &:hover {
+      color: var(--primary-color-dark);
+    }
+
+    &:focus {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    font-size: 0.8rem;
+  }
+
   .task-header {
     display: flex;
     justify-content: space-between;
