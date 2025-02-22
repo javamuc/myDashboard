@@ -67,6 +67,8 @@ export class NotesComponent implements OnInit, OnDestroy {
       this.notes.set(notes);
       if (notes.length > 0) {
         this.selectedNote.set(notes[0]);
+      } else {
+        this.selectedNote.set(null);
       }
       this.updateFilteredNotes();
     });

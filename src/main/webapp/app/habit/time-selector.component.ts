@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HabitSpecificTime } from './habit.model';
 
@@ -16,7 +16,7 @@ interface TimeKey {
   standalone: true,
   imports: [CommonModule],
 })
-export class TimeSelectorComponent {
+export class TimeSelectorComponent implements OnChanges {
   @Input() selectedTimes: HabitSpecificTime[] = [];
   @Output() selectedTimesChange = new EventEmitter<HabitSpecificTime[]>();
 

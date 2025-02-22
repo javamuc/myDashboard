@@ -6,7 +6,6 @@ import { Subject, of } from 'rxjs';
 
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
-
 import HomeComponent from './home.component';
 
 describe('Home Component', () => {
