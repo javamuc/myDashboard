@@ -1,38 +1,28 @@
 <div class="weather-container">
-  <div class="location">
-    <h2>München, Deutschland</h2>
-  </div>
-
   @if (currentWeather()) {
     <div class="current-weather">
       <div class="weather-icon">
-        <i [class]="currentWeather()!.icon"></i>
+        <fa-icon [icon]="currentWeather()!.icon"></fa-icon>
       </div>
       <div class="weather-info">
-        <div class="temperature">{{ currentWeather()!.temperature }}°C</div>
         <div class="details">
+          <div class="temperature">{{ currentWeather()!.temperature }}°C</div>
           <span class="condition">{{ currentWeather()!.condition }}</span>
           <span class="wind">
-            <i class="fas fa-wind"></i>
+            <fa-icon icon="wind"></fa-icon>
             {{ currentWeather()!.windSpeed }} km/h
             {{ getWindDirection(currentWeather()!.windDirection) }}
           </span>
           <span class="precipitation">
-            <i class="fas fa-tint"></i>
+            <fa-icon icon="tint"></fa-icon>
             {{ currentWeather()!.precipitation }}%
-          </span>
-        </div>
-        <div>
-          <span class="timestamp">
-            <i class="fas fa-clock"></i>
-            {{ currentWeather()!.timestamp | date: 'medium' }}
           </span>
         </div>
       </div>
     </div>
   } @else {
     <div class="loading">
-      <i class="fas fa-spinner fa-spin"></i>
+      <fa-icon icon="spinner"></fa-icon>
       Loading weather data...
     </div>
   }
@@ -47,7 +37,7 @@
           </div>
           <div class="temp">{{ hour.temperature | number: '1.0-0' }}°C</div>
           <div class="precip">
-            <i class="fas fa-tint"></i>
+            <fa-icon icon="tint"></fa-icon>
             {{ hour.precipitation | number: '1.0-1' }} mm
           </div>
         </div>
@@ -55,7 +45,7 @@
     </div>
   } @else {
     <div class="loading">
-      <i class="fas fa-spinner fa-spin"></i>
+      <fa-icon icon="spinner"></fa-icon>
       Loading forecast data...
     </div>
   }

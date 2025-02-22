@@ -3,13 +3,13 @@ import { WeatherService, WeatherData } from './weather.service';
 import { CommonModule } from '@angular/common';
 import { Subscription, timer } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 @Component({
   selector: 'jhi-weather',
   templateUrl: './weather.component.html',
   styleUrls: ['./weather.component.scss'],
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FontAwesomeModule],
 })
 export class WeatherComponent implements OnInit, OnDestroy {
   currentWeather = signal<WeatherData | undefined>(undefined);

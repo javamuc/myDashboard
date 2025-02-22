@@ -33,6 +33,7 @@ import {
   faTasks,
   faThList,
   faTimes,
+  faTint,
   faTrashAlt,
   faUser,
   faUserPlus,
@@ -54,9 +55,17 @@ import {
   faPlay,
   faFileImport,
   faFileExport,
+  faWind,
+  faSun,
+  faCloudRain,
+  faCloudSun,
+  faCloudMoon,
+  faMoon,
+  faStar,
+  faStarHalf,
+
   // jhipster-needle-add-icon-import
 } from '@fortawesome/free-solid-svg-icons';
-
 export const fontAwesomeIcons = [
   faArrowLeft,
   faAsterisk,
@@ -93,6 +102,7 @@ export const fontAwesomeIcons = [
   faThList,
   faTimes,
   faTrashAlt,
+  faTint,
   faUser,
   faUserPlus,
   faUsers,
@@ -113,5 +123,14 @@ export const fontAwesomeIcons = [
   faPlay,
   faFileImport,
   faFileExport,
+  faWind,
+  faSun,
+  faCloudRain,
+  faCloudSun,
+  faCloudMoon,
+  faMoon,
+  faStar,
+  faStarHalf,
+
   // jhipster-needle-add-icon-import
 ];
