@@ -1,36 +1,40 @@
 <div class="container-fluid">
-  <div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-      <div class="card">
-        <div class="card-header">
-          <h2 class="text-center mb-0">Data Import/Export</h2>
-        </div>
-        <div class="card-body">
-          <div class="row mb-4">
-            <div class="col-12">
-              <h3>Export Data</h3>
-              <p class="text-muted">Download all your data in JSON format</p>
-              <button class="btn btn-primary" (click)="downloadData()">
-                <fa-icon icon="download" class="me-2"></fa-icon>
-                Export Data
-              </button>
-            </div>
+  <div class="card jh-card">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
+      <h1 class="h2">Data Import/Export</h1>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Export Data</h5>
+            <p class="card-text">Download all your data including ideas, notes, boards, and tasks in JSON format.</p>
+            <button type="button" class="btn btn-primary" (click)="downloadData()" [disabled]="loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+              <span *ngIf="!loading">Download Data</span>
+              <span *ngIf="loading">Downloading...</span>
+            </button>
           </div>
+        </div>
+      </div>
 
-          <hr />
-
-          <div class="row mt-4">
-            <div class="col-12">
-              <h3>Import Data</h3>
-              <p class="text-muted">Upload a previously exported data file</p>
-              <div class="import-section">
-                <input type="file" class="form-control" id="dataFile" accept=".json" (change)="handleFileUpload($event)" />
-                <small class="form-text text-muted mt-2">
-                  <fa-icon icon="info-circle" class="me-1"></fa-icon>
-                  Only .json files are supported
-                </small>
-              </div>
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">Import Data</h5>
+            <p class="card-text">Import your previously exported data file to restore your content.</p>
+            <div class="mb-3">
+              <input
+                type="file"
+                class="form-control"
+                id="importFile"
+                accept=".json"
+                (change)="handleFileUpload($event)"
+                [disabled]="loading"
+              />
             </div>
+            <small class="text-muted">Only .json files are supported</small>
           </div>
         </div>
       </div>
