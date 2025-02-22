@@ -32,7 +32,7 @@ public class IdeaService extends BaseService<Idea, Long> {
         log.debug("Request to partially update Idea : {}", idea);
 
         return ideaRepository
-            .findById(idea.getId())
+            .findByIdAndOwnerId(idea.getId(), getUserId())
             .map(existingIdea -> {
                 if (idea.getContent() != null) {
                     existingIdea.setContent(idea.getContent());

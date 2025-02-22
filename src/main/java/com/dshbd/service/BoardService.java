@@ -12,36 +12,29 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class BoardService {
+public class BoardService extends BaseService {
 
     private final Logger log = LoggerFactory.getLogger(BoardService.class);
 
     private final BoardRepository boardRepository;
-    private final UserService userService;
 
     public BoardService(BoardRepository boardRepository, UserService userService) {
+        super(userService);
         this.boardRepository = boardRepository;
-        this.userService = userService;
     }
 
     public Board createBoard(BoardDTO boardDTO) {
         Board board = new Board();
         board.setTitle(boardDTO.getTitle());
         board.setDescription(boardDTO.getDescription());
-
-        return userService
-            .getUserWithAuthorities()
-            .map(user -> {
-                board.setOwnerId(user.getId());
-                log.debug("Created Information for Board: {}", board);
-                return boardRepository.save(board);
-            })
-            .orElseThrow(() -> new IllegalStateException("User could not be found"));
+        board.setOwnerId(getUserId());
+        log.debug("Created Information for Board: {}", board);
+        return boardRepository.save(board);
     }
 
     @Transactional(readOnly = true)
     public List<Board> getCurrentUserBoards() {
-        Long userId = userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId();
+        Long userId = getUserId();
         List<Board> boards = boardRepository.findByOwnerIdAndArchived(userId, false);
 
         if (boards.isEmpty()) {
@@ -59,10 +52,7 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public Optional<Board> getBoard(Long id) {
-        return boardRepository.findByIdAndOwnerId(
-            id,
-            userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId()
-        );
+        return boardRepository.findByIdAndOwnerId(id, getUserId());
     }
 
     public void deleteBoard(Long id) {
