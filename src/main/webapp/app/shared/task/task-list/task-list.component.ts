@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { TaskVM } from '../task.model';
+import { TaskStatus, TaskVM } from '../task.model';
 import { TaskCardComponent } from '../../task-card/task-card.component';
 import { TaskService } from '../task.service';
 
@@ -15,7 +15,6 @@ import { TaskService } from '../task.service';
 export class TaskListComponent implements OnInit {
   @Input() title = 'Tasks';
   @Input() emptyStateMessage = 'No tasks yet. Go to the board to create your first task!';
-  @Input() status: 'to-do' | 'in-progress' | 'done' = 'in-progress';
   @Input() limit?: number;
   @Input() sortBy: 'createdDate' | 'lastModifiedDate' = 'lastModifiedDate';
   tasks = signal<TaskVM[]>([]);
@@ -24,16 +23,11 @@ export class TaskListComponent implements OnInit {
   constructor(private taskService: TaskService) {}
 
   ngOnInit(): void {
-    this.loadTasks();
+    this.loadTasks('in-progress');
   }
 
-  private loadTasks(): void {
-    if (!this.status) {
-      this.loading.set(false);
-      return;
-    }
-
-    this.taskService.findTasksByStatus(this.status).subscribe(taskVMs => {
+  private loadTasks(status: TaskStatus): void {
+    this.taskService.findTasksByStatus(status).subscribe(taskVMs => {
       const sortedTasks = taskVMs.sort((a, b) => {
         const dateA = a.task[this.sortBy] ? new Date(a.task[this.sortBy]).getTime() : 0;
         const dateB = b.task[this.sortBy] ? new Date(b.task[this.sortBy]).getTime() : 0;
@@ -41,7 +35,11 @@ export class TaskListComponent implements OnInit {
       });
 
       this.tasks.set(this.limit ? sortedTasks.slice(0, this.limit) : sortedTasks);
-      this.loading.set(false);
+      if (taskVMs.length > 0 || status === 'to-do') {
+        this.loading.set(false);
+      } else {
+        this.loadTasks('to-do');
+      }
     });
   }
 }

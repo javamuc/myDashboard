@@ -149,6 +149,7 @@ export class WeatherService {
   }
 
   private getIconClass(apiIcon: string): string {
+    console.warn('apiIcon', apiIcon);
     const iconMap: Record<string, string> = {
       clearday: 'sun',
       clearnight: 'moon',
@@ -162,6 +163,6 @@ export class WeatherService {
       snow: 'snowflake',
       thunder: 'bolt',
     };
-    return iconMap[apiIcon] || 'question';
+    return iconMap[apiIcon.replace('-', '')] || 'question';
   }
 }
