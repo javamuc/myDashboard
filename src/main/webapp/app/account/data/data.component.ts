@@ -44,7 +44,31 @@ export class DataComponent {
     }
 
     const file = input.files[0];
-    // TODO: Implement file upload and data import
-    console.warn('Uploading file:', file.name);
+    if (file.type !== 'application/json') {
+      this.alertService.addAlert({
+        type: 'danger',
+        message: 'Please select a JSON file.',
+      });
+      return;
+    }
+
+    try {
+      this.loading = true;
+      await this.dataService.importData(file);
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Data imported successfully!',
+      });
+      // Reset the file input
+      input.value = '';
+    } catch (error) {
+      console.error('Error importing data:', error);
+      this.alertService.addAlert({
+        type: 'danger',
+        message: error instanceof Error ? error.message : 'Failed to import data. Please try again.',
+      });
+    } finally {
+      this.loading = false;
+    }
   }
 }

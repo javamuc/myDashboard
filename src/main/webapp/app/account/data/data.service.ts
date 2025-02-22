@@ -5,15 +5,33 @@ import { NoteService } from 'app/notes/note.service';
 import { BoardService } from 'app/shared/board/board.service';
 import { TaskService } from 'app/shared/task/task.service';
 import { Board } from 'app/shared/board/board.model';
-import { Task } from 'app/shared/task/task.model';
+import { Task, TaskStatus } from 'app/shared/task/task.model';
 import { Note } from 'app/notes/note.model';
 import { Idea } from 'app/shared/idea/idea.model';
+import { HttpClient } from '@angular/common/http';
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
 
 interface ExportableTask extends Omit<Task, 'id' | 'boardId'> {
+  title: string;
+  description: string;
+  dueDate: string | null;
+  priority: number;
+  status: TaskStatus;
+  assignee: string | undefined;
+  createdDate: string;
+  lastModifiedDate: string;
   position: number;
 }
 
 interface ExportableBoard extends Omit<Board, 'id' | 'ownerId' | 'tasks'> {
+  title: string;
+  description: string | undefined;
+  started: boolean;
+  toDoLimit: number;
+  progressLimit: number;
+  createdDate: string | undefined;
+  archived: boolean;
+  autoPull: boolean;
   tasks: ExportableTask[];
 }
 
@@ -43,13 +61,18 @@ export interface ExportData {
 @Injectable({ providedIn: 'root' })
 export class DataService {
   private readonly CURRENT_VERSION = '1.0';
+  private readonly resourceUrl: string;
 
   constructor(
     private ideaService: IdeaService,
     private noteService: NoteService,
     private boardService: BoardService,
     private taskService: TaskService,
-  ) {}
+    private http: HttpClient,
+    applicationConfigService: ApplicationConfigService,
+  ) {
+    this.resourceUrl = applicationConfigService.getEndpointFor('api/data');
+  }
 
   async exportData(): Promise<ExportData> {
     try {
@@ -66,19 +89,17 @@ export class DataService {
         boards.map(async board => {
           const tasks = await firstValueFrom(this.taskService.getBoardTasks(board.id!));
           return {
-            // Remove id and ownerId from board
             title: board.title,
             description: board.description,
-            started: board.started,
+            started: board.started ?? false,
             toDoLimit: board.toDoLimit,
             progressLimit: board.progressLimit,
             createdDate: board.createdDate,
-            archived: board.archived,
-            autoPull: board.autoPull,
-            // Include tasks without id and boardId
+            archived: board.archived ?? false,
+            autoPull: board.autoPull ?? false,
             tasks: tasks.map(task => ({
               title: task.title,
-              description: task.description,
+              description: task.description ?? '',
               dueDate: task.dueDate,
               priority: task.priority,
               status: task.status,
@@ -95,13 +116,11 @@ export class DataService {
         version: this.CURRENT_VERSION,
         exportDate: new Date().toISOString(),
         data: {
-          // Remove id and ownerId from ideas
           ideas: ideas.map(idea => ({
             content: idea.content,
             createdDate: idea.createdDate,
             lastUpdatedDate: idea.lastUpdatedDate,
           })),
-          // Remove id and user_id from notes
           notes: notes.map(note => ({
             title: note.title,
             content: note.content,
@@ -126,5 +145,52 @@ export class DataService {
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
+  }
+
+  async importData(file: File): Promise<void> {
+    try {
+      const fileContent = await this.readFileContent(file);
+      const importData = JSON.parse(fileContent) as ExportData;
+
+      // Validate the imported data
+      this.validateImportData(importData);
+
+      // Send the data to the backend for import
+      await firstValueFrom(this.http.post(`${this.resourceUrl}/import`, importData));
+    } catch (error) {
+      throw new Error(`Failed to import data: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  private validateImportData(data: unknown): asserts data is ExportData {
+    if (!data || typeof data !== 'object') {
+      throw new Error('Invalid import data format');
+    }
+
+    const importData = data as Partial<ExportData>;
+
+    if (!importData.version || !importData.exportDate || !importData.data) {
+      throw new Error('Import data is missing required fields');
+    }
+
+    if (!Array.isArray(importData.data.ideas) || !Array.isArray(importData.data.notes) || !Array.isArray(importData.data.boards)) {
+      throw new Error('Import data has invalid structure');
+    }
+
+    // Version check
+    const [majorImport] = importData.version.split('.');
+    const [majorCurrent] = this.CURRENT_VERSION.split('.');
+    if (majorImport !== majorCurrent) {
+      throw new Error(`Incompatible import version. Expected ${this.CURRENT_VERSION}, got ${importData.version}`);
+    }
+  }
+
+  private async readFileContent(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsText(file);
+    });
   }
 }
