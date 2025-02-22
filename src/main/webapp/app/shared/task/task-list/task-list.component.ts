@@ -13,10 +13,10 @@ import { TaskService } from '../task.service';
   imports: [CommonModule, RouterModule, TaskCardComponent],
 })
 export class TaskListComponent implements OnInit {
-  @Input() title = 'Tasks';
   @Input() emptyStateMessage = 'No tasks yet. Go to the board to create your first task!';
   @Input() limit?: number;
   @Input() sortBy: 'createdDate' | 'lastModifiedDate' = 'lastModifiedDate';
+  title = 'In-Progress Tasks';
   tasks = signal<TaskVM[]>([]);
   loading = signal(true);
 
@@ -38,6 +38,7 @@ export class TaskListComponent implements OnInit {
       if (taskVMs.length > 0 || status === 'to-do') {
         this.loading.set(false);
       } else {
+        this.title = 'To-Do Tasks';
         this.loadTasks('to-do');
       }
     });
