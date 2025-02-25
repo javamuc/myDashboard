@@ -28,10 +28,10 @@ public class NoteService extends BaseService {
         this.noteMapper = noteMapper;
     }
 
-    public NoteDTO createNote(NoteVM noteVM) {
+    public NoteDTO createNote(String title, String content) {
         Note note = new Note();
-        note.setTitle(noteVM.getTitle());
-        note.setContent(noteVM.getContent());
+        note.setTitle(title);
+        note.setContent(content);
         note.setUserId(getUserId());
         Note savedNote = noteRepository.saveAndFlush(note);
         log.debug("Saved Note: {}", savedNote);

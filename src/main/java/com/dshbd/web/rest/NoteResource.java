@@ -43,7 +43,7 @@ public class NoteResource {
     public ResponseEntity<NoteDTO> createNote(@Valid @RequestBody NoteVM noteVM) throws URISyntaxException {
         log.debug("REST request to save Note : {}", noteVM);
 
-        NoteDTO result = noteService.createNote(noteVM);
+        NoteDTO result = noteService.createNote(noteVM.getTitle(), noteVM.getContent());
         return ResponseEntity.created(new URI("/api/notes/" + result.getId())).body(result);
     }
 
