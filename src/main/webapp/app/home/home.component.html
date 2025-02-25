@@ -1,23 +1,31 @@
-<div class="row">
-  <div class="left-sidebar col-md-2">
-    <jhi-alert-error></jhi-alert-error>
-    <jhi-alert></jhi-alert>
-    <jhi-clock></jhi-clock>
-    <jhi-habit-tracker></jhi-habit-tracker>
-    <jhi-pomodoro></jhi-pomodoro>
-  </div>
+@if (isAuthenticated()) {
+  <div class="row">
+    <div class="left-sidebar col-md-2">
+      <jhi-alert-error></jhi-alert-error>
+      <jhi-alert></jhi-alert>
+      <jhi-clock></jhi-clock>
+      <jhi-habit-tracker></jhi-habit-tracker>
+      <jhi-pomodoro></jhi-pomodoro>
+    </div>
 
-  <div class="home-content col-md-10">
-    @switch (activeComponent()) {
-      @case ('board') {
-        <jhi-board></jhi-board>
+    <div class="home-content col-md-10">
+      @switch (activeComponent()) {
+        @case ('board') {
+          <jhi-board></jhi-board>
+        }
+        @case ('notes') {
+          <jhi-notes></jhi-notes>
+        }
+        @case ('dashboard') {
+          <jhi-dashboard></jhi-dashboard>
+        }
       }
-      @case ('notes') {
-        <jhi-notes></jhi-notes>
-      }
-      @case ('dashboard') {
-        <jhi-dashboard></jhi-dashboard>
-      }
-    }
+    </div>
   </div>
-</div>
+} @else {
+  <div class="row">
+    <div class="col-md-12">
+      <h1 (click)="login()">Please login to continue</h1>
+    </div>
+  </div>
+}

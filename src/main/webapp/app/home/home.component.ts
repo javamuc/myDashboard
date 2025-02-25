@@ -48,8 +48,23 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
   private readonly router = inject(Router);
   private readonly homeService = inject(HomeService);
+  private readonly accountService = inject(AccountService);
 
   ngOnInit(): void {
+    this.accountService
+      .getAuthenticationState()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(account => {
+        if (!account) {
+          this.router.navigate(['/login'], {
+            queryParams: {
+              reason: 'unauthenticated',
+              redirect: this.router.url,
+            },
+          });
+        }
+      });
+
     this.homeService
       .getActiveComponent()
       .pipe(takeUntil(this.destroy$))
@@ -60,6 +75,10 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
   login(): void {
     this.router.navigate(['/login']);
+  }
+
+  isAuthenticated(): boolean {
+    return this.accountService.isAuthenticated();
   }
 
   ngOnDestroy(): void {
