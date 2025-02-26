@@ -1,0 +1,8 @@
+
+/target
+/logs
+/build
+/dist
+/docs
+/coverage
+/node_modules
