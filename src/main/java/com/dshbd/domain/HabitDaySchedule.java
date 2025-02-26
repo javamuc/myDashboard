@@ -14,8 +14,8 @@ public class HabitDaySchedule implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "habit_day_schedule_seq")
+    @SequenceGenerator(name = "habit_day_schedule_seq", sequenceName = "habit_day_schedule_seq", allocationSize = 1)
     private Long id;
 
     @NotNull

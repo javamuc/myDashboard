@@ -12,8 +12,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 public class Task implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "task_seq")
+    @SequenceGenerator(name = "task_seq", sequenceName = "task_seq", allocationSize = 1)
     private Long id;
 
     @NotNull

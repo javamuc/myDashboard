@@ -23,8 +23,8 @@ public class Idea implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "idea_seq")
+    @SequenceGenerator(name = "idea_seq", sequenceName = "idea_seq", allocationSize = 1)
     private Long id;
 
     @NotNull

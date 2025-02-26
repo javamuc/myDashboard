@@ -11,8 +11,8 @@ import org.hibernate.annotations.CreationTimestamp;
 public class Board implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "board_seq")
+    @SequenceGenerator(name = "board_seq", sequenceName = "board_seq", allocationSize = 1)
     private Long id;
 
     @NotNull

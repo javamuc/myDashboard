@@ -7,6 +7,8 @@
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet id="20240325000000-1" author="san">
+        <createSequence sequenceName="habit_record_seq" startValue="1000" incrementBy="1"/>
+
         <createTable tableName="habit_record">
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>

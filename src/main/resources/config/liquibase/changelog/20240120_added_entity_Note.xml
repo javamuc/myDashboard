@@ -7,6 +7,7 @@
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <changeSet id="20240120000001" author="jhipster">
+        <createSequence sequenceName="note_seq" startValue="1000" incrementBy="1"/>
         <createTable tableName="note">
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>

@@ -12,8 +12,8 @@ import org.hibernate.annotations.CreationTimestamp;
 public class HabitRecord implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "habit_record_seq")
+    @SequenceGenerator(name = "habit_record_seq", sequenceName = "habit_record_seq", allocationSize = 1)
     private Long id;
 
     @NotNull
