@@ -84,18 +84,16 @@ export class IdeaListComponent implements OnInit, OnDestroy {
         content: '',
       })
       .subscribe(() => {
-        this.deleteIdea(selectedIdea.id);
+        this.deleteIdea(selectedIdea.id, false);
       });
   }
 
-  protected deleteIdea(selectedIdeaId: number, converted = false): void {
-    if (converted) {
-      this.recentIdeas = this.recentIdeas.filter(i => i.id !== selectedIdeaId);
-    } else {
-      this.ideaService.delete(selectedIdeaId).subscribe(() => {
+  protected deleteIdea(selectedIdeaId: number, deleteFromList = true): void {
+    this.ideaService.delete(selectedIdeaId).subscribe(() => {
+      if (deleteFromList) {
         this.recentIdeas = this.recentIdeas.filter(i => i.id !== selectedIdeaId);
-      });
-    }
+      }
+    });
   }
 
   private loadRecentItems(): void {
