@@ -1,53 +1,64 @@
 <div class="container-fluid">
   <div class="row">
     <!-- Habits List -->
-    <div class="col-md-4 border-end">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>My Habits</h2>
-        <button class="btn btn-primary" (click)="addHabit()">
-          <fa-icon icon="plus"></fa-icon>
-          <span>Add Habit</span>
-        </button>
-      </div>
-
-      <div class="list-group">
-        <div
-          *ngFor="let habit of habits()"
-          class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-          [class.active]="habit === selectedHabit()"
-          (click)="selectHabit(habit)"
-        >
-          <div>
-            <h5 class="mb-1">
-              <ng-container *ngIf="habit !== editingHabit(); else editMode">
-                <span (click)="startEditing(habit, $event)">{{ habit.name }}</span>
-              </ng-container>
-              <ng-template #editMode>
-                <input
-                  #habitInput
-                  type="text"
-                  class="form-control form-control-sm"
-                  [(ngModel)]="habit.name"
-                  (blur)="finishEditing(habit)"
-                  (keydown)="onKeyDown($event, habit)"
-                  (click)="$event.stopPropagation()"
-                  placeholder="New Habit"
-                  autofocus
-                />
-              </ng-template>
-            </h5>
-            <small *ngIf="habit.description">{{ habit.description }}</small>
-          </div>
-          <button class="btn btn-danger btn-sm" (click)="deleteHabit(habit); $event.stopPropagation()">
-            <fa-icon icon="trash"></fa-icon>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h2>
+            <fa-icon icon="check-circle"></fa-icon>
+            <span>My Habits</span>
+          </h2>
+          <button class="btn btn-primary add-habit-btn" (click)="addHabit()">
+            <fa-icon icon="plus"></fa-icon>
+            <span>Add Habit</span>
           </button>
+        </div>
+        <div class="card-body">
+          <div class="habit-list">
+            <div *ngFor="let habit of habits()" class="habit-item" [class.active]="habit === selectedHabit()" (click)="selectHabit(habit)">
+              <div class="habit-info">
+                <div class="habit-name">
+                  <ng-container *ngIf="habit !== editingHabit(); else editMode">
+                    <span (click)="startEditing(habit, $event)">{{ habit.name }}</span>
+                  </ng-container>
+                  <ng-template #editMode>
+                    <input
+                      #habitInput
+                      type="text"
+                      class="form-control"
+                      [(ngModel)]="habit.name"
+                      (blur)="finishEditing(habit)"
+                      (keydown)="onKeyDown($event, habit)"
+                      (click)="$event.stopPropagation()"
+                      placeholder="New Habit"
+                      autofocus
+                    />
+                  </ng-template>
+                </div>
+                <small *ngIf="habit.description" class="habit-description">{{ habit.description }}</small>
+              </div>
+              <button class="btn btn-danger btn-sm" (click)="deleteHabit(habit); $event.stopPropagation()">
+                <fa-icon icon="trash"></fa-icon>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Habit Schedule -->
     <div class="col-md-8" *ngIf="selectedHabit()">
-      <jhi-habit-schedule [habit]="selectedHabit()!" (habitChange)="updateHabit($event)"></jhi-habit-schedule>
+      <div class="card">
+        <div class="card-header">
+          <h2>
+            <fa-icon icon="calendar-alt"></fa-icon>
+            <span>Habit Schedule: {{ selectedHabit()?.name }}</span>
+          </h2>
+        </div>
+        <div class="card-body">
+          <jhi-habit-schedule [habit]="selectedHabit()!" (habitChange)="updateHabit($event)"></jhi-habit-schedule>
+        </div>
+      </div>
     </div>
   </div>
 </div>
