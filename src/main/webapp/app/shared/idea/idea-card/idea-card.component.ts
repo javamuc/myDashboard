@@ -1,7 +1,8 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Idea } from '../idea.model';
+import { HomeService } from 'app/home/home.service';
 
 @Component({
   selector: 'jhi-idea-card',
@@ -21,6 +22,8 @@ export class IdeaCardComponent {
   @Output() deleteFromList = new EventEmitter<number>();
   convertedToTask = false;
   convertedToNote = false;
+
+  private readonly homeService = inject(HomeService);
 
   onSelect(): void {
     this.select.emit(this.idea.id);
@@ -50,10 +53,12 @@ export class IdeaCardComponent {
   openTask(event: Event): void {
     event.stopPropagation();
     // this.openTask.emit(this.idea);
+    this.homeService.setActiveComponent('board');
   }
 
   openNote(event: Event): void {
     event.stopPropagation();
-    // this.openNote.emit(this.idea);
+    //open the notes component in the home component
+    this.homeService.setActiveComponent('notes');
   }
 }
