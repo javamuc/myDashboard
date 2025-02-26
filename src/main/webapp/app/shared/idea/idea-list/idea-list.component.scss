@@ -1,7 +1,6 @@
 .dashboard-section {
   background: var(--background-secondary);
   border-radius: 8px;
-  padding: 1rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   .section-header {
@@ -48,10 +47,54 @@
 }
 
 .idea-card {
-  background-color: #1b3147;
-  border-radius: 8px;
+  position: relative;
   padding: 1rem;
-  border: 1px solid var(--border-color);
+  padding-right: 80px; // Space for action buttons
+  cursor: pointer;
+  transition: transform 0.2s;
+  background-color: rgb(48, 48, 48);
+  border-radius: 8px;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    outline-color 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+
+  &.selected {
+    border-left: 4px solid #2196f3;
+    background-color: rgba(33, 150, 243, 0.05);
+  }
+
+  .idea-actions {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 8px;
+
+    .btn-icon {
+      background: transparent;
+      border: none;
+      padding: 6px;
+      border-radius: 50%;
+      transition: background 0.2s;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    .delete-btn {
+      color: #f44336;
+    }
+
+    .convert-btn {
+      color: #4caf50;
+    }
+  }
 
   .idea-content {
     color: var(--text-color);

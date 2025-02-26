@@ -15,27 +15,4 @@ import { IdeaListComponent } from '../shared/idea/idea-list/idea-list.component'
   standalone: true,
   imports: [CommonModule, FontAwesomeModule, RouterModule, FormsModule, TaskListComponent, IdeaListComponent],
 })
-export class DashboardComponent implements OnInit {
-  recentIdeas: Idea[] = [];
-  loading = true;
-
-  private readonly ideaService = inject(IdeaService);
-
-  ngOnInit(): void {
-    this.loadRecentItems();
-  }
-
-  private loadRecentItems(): void {
-    // Load recent ideas
-    this.ideaService.query().subscribe(ideas => {
-      this.recentIdeas = ideas
-        .sort((a, b) => {
-          const dateA = a.createdDate ? new Date(a.createdDate).getTime() : 0;
-          const dateB = b.createdDate ? new Date(b.createdDate).getTime() : 0;
-          return dateB - dateA;
-        })
-        .slice(0, 5);
-      this.loading = false;
-    });
-  }
-}
+export class DashboardComponent {}

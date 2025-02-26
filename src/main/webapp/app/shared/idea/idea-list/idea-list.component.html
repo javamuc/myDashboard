@@ -1,11 +1,24 @@
 <section class="dashboard-section">
   <div class="section-content">
     <div *ngIf="loading" class="loading">Loading...</div>
-    <div *ngIf="!loading && ideas.length === 0" class="empty-state">
+    <div *ngIf="!loading && recentIdeas.length === 0" class="empty-state">
       {{ emptyStateMessage }}
     </div>
-    <div *ngFor="let idea of ideas" class="idea-card">
+    <div *ngFor="let idea of recentIdeas" class="idea-card" [class.selected]="selectedIdeaId === idea.id" (click)="selectIdea(idea.id)">
       <div class="idea-content">{{ idea.content }}</div>
+      <div class="idea-actions">
+        <div class="action-buttons">
+          <button class="btn-icon convert-btn" (click)="convertToTask.emit(idea); $event.stopPropagation()" title="Make it a task">
+            <fa-icon [icon]="['fas', 'tasks']"></fa-icon>
+          </button>
+          <button class="btn-icon convert-btn" (click)="convertToNote.emit(idea); $event.stopPropagation()" title="Make it a note">
+            <fa-icon [icon]="['fas', 'note-sticky']"></fa-icon>
+          </button>
+          <button class="btn-icon delete-btn" (click)="deleteIdea(idea.id); $event.stopPropagation()" title="Delete idea">
+            <fa-icon [icon]="['fas', 'xmark']"></fa-icon>
+          </button>
+        </div>
+      </div>
       <div class="idea-date">{{ idea.createdDate | date: 'medium' }}</div>
     </div>
   </div>
