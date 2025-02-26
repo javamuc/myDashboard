@@ -20,6 +20,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+    </changeSet>
+
+    <changeSet id="20240321000000-2" author="jhipster" context="dev">
         <loadData
                   file="config/liquibase/data/idea.csv"
                   separator=","

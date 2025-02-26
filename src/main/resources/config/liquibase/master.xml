@@ -25,14 +25,11 @@
     <include file="config/liquibase/changelog/20240320000001_added_entity_Task.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240124_add_lastModifiedDate_to_task.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240124_update_task_entity.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20240321000000_added_entity_Exchange.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20240322000000_add_enabled_to_exchange.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240321000000_added_entity_Idea.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240130000000_added_entity_Habit.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240325000000_added_entity_HabitRecord.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240326000000_add_limits_to_board.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240326000001_add_position_to_task.xml" relativeToChangelogFile="false"/>
-    <include file="config/liquibase/changelog/20240327000000_drop_exchange_table.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240328000000_update_task_description_length.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240328000001_add_columns_to_board.xml" relativeToChangelogFile="false"/>
 </databaseChangeLog>

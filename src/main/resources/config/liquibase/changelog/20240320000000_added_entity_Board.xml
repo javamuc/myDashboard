@@ -24,7 +24,9 @@
             constraintName="fk_board_owner_id"
             referencedColumnNames="id"
             referencedTableName="jhi_user"/>
+    </changeSet>
 
+    <changeSet id="20240320000000-2" author="jhipster" context="dev">
 
         <loadData
                   file="config/liquibase/data/board.csv"

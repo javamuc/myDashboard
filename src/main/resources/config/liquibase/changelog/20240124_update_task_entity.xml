@@ -21,7 +21,11 @@
         <!-- Drop completed column -->
         <dropColumn tableName="task" columnName="completed"/>
 
-      <loadData
+    </changeSet>
+
+    <changeSet id="20240124000003" author="jhipster" context="dev">
+    
+        <loadData
                 file="config/liquibase/data/task.csv"
                 separator=","
                 tableName="task"
