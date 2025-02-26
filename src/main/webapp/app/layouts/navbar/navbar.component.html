@@ -99,29 +99,6 @@
             </ul>
           </li>
         }
-        @if (languages && languages.length > 1) {
-          <li ngbDropdown class="nav-item dropdown pointer" display="dynamic">
-            <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="languagesnavBarDropdown">
-              <span>
-                <fa-icon icon="flag"></fa-icon>
-                <span jhiTranslate="global.menu.language">Language</span>
-              </span>
-            </a>
-            <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="languagesnavBarDropdown">
-              @for (language of languages; track $index) {
-                <li>
-                  <a
-                    class="dropdown-item"
-                    [jhiActiveMenu]="language"
-                    href="javascript:void(0);"
-                    (click)="changeLanguage(language); collapseNavbar()"
-                    >{{ language | findLanguageFromKey }}</a
-                  >
-                </li>
-              }
-            </ul>
-          </li>
-        }
         @if (account()) {
           <li
             ngbDropdown
@@ -134,8 +111,7 @@
             <a class="nav-link dropdown-toggle" ngbDropdownToggle href="javascript:void(0);" id="account-menu" data-cy="accountMenu">
               @if (!accountRef?.imageUrl) {
                 <span>
-                  <fa-icon icon="wrench"></fa-icon>
-                  <span jhiTranslate="global.menu.account.settings">Settings</span>
+                  <fa-icon icon="bars"></fa-icon>
                 </span>
               } @else {
                 <span>
@@ -205,6 +181,27 @@
                     <span jhiTranslate="global.menu.account.importExport">Import/Export</span>
                   </a>
                 </li>
+                @if (languages && languages.length > 1) {
+                  <li ngbDropdown class="dropdown-submenu" display="dynamic" placement="left-top">
+                    <a ngbDropdownToggle class="dropdown-item dropdown-toggle" id="languagesSubmenu">
+                      <fa-icon icon="flag" [fixedWidth]="true"></fa-icon>
+                      <span jhiTranslate="global.menu.language">Language</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-left" ngbDropdownMenu aria-labelledby="languagesSubmenu">
+                      @for (language of languages; track $index) {
+                        <li>
+                          <a
+                            class="dropdown-item"
+                            [jhiActiveMenu]="language"
+                            href="javascript:void(0);"
+                            (click)="changeLanguage(language); collapseNavbar()"
+                            >{{ language | findLanguageFromKey }}</a
+                          >
+                        </li>
+                      }
+                    </ul>
+                  </li>
+                }
                 <li>
                   <a class="dropdown-item" (click)="logout()" id="logout" data-cy="logout">
                     <fa-icon icon="sign-out-alt" [fixedWidth]="true"></fa-icon>
