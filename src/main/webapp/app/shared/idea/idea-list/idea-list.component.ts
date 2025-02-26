@@ -200,12 +200,20 @@ export class IdeaListComponent implements OnInit, OnDestroy {
       });
   }
 
+  protected deleteFromList(selectedIdeaId: number): void {
+    this.removeFromList(selectedIdeaId);
+  }
+
   protected deleteIdea(selectedIdeaId: number, deleteFromList = true): void {
     this.ideaService.delete(selectedIdeaId).subscribe(() => {
       if (deleteFromList) {
-        this.recentIdeas = this.recentIdeas.filter(i => i.id !== selectedIdeaId);
+        this.removeFromList(selectedIdeaId);
       }
     });
+  }
+
+  private removeFromList(selectedIdeaId: number): void {
+    this.recentIdeas = this.recentIdeas.filter(i => i.id !== selectedIdeaId);
   }
 
   private loadRecentItems(): void {
