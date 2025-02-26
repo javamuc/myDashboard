@@ -12,9 +12,30 @@
       [selected]="selectedIdeaId === idea.id"
       (select)="selectIdea($event)"
       (delete)="deleteIdea($event)"
-      (makeTask)="makeTask(idea)"
-      (makeNote)="makeNote(idea)"
+      (makeTask)="makeTaskWithEvent($event)"
+      (makeNote)="makeNote($event)"
     >
     </jhi-idea-card>
+  </div>
+</div>
+
+<!-- Board Selector Dropdown -->
+<div
+  #boardSelector
+  *ngIf="showBoardSelector"
+  class="board-selector"
+  [style.top.px]="boardSelectorPosition.top"
+  [style.left.px]="boardSelectorPosition.left"
+  style="display: block !important"
+>
+  <div class="board-selector-header">
+    <h6>Select a board</h6>
+    <button type="button" class="btn-close" (click)="closeBoardSelector()">×</button>
+  </div>
+  <div class="board-selector-body">
+    <div *ngFor="let board of boards" class="board-option" (click)="selectBoard(board.id!)">
+      {{ board.title }}
+    </div>
+    <div *ngIf="boards.length === 0" class="no-boards">No active boards available</div>
   </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, Input, EventEmitter, HostListener, Output, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, EventEmitter, HostListener, Output, inject, OnInit, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Idea } from '../idea.model';
@@ -10,6 +10,7 @@ import { NoteService } from 'app/notes/note.service';
 import { BoardService } from 'app/shared/board/board.service';
 import { Board } from 'app/shared/board/board.model';
 import { IdeaCardComponent } from '../idea-card/idea-card.component';
+import { TaskStatus, NewTask } from 'app/shared/task/task.model';
 
 @Component({
   selector: 'jhi-idea-list',
@@ -28,6 +29,13 @@ export class IdeaListComponent implements OnInit, OnDestroy {
   ideaCreatedSub?: Subscription;
   boards: Board[] = [];
 
+  // Board selection for task creation
+  showBoardSelector = false;
+  selectedIdea: Idea | null = null;
+  boardSelectorPosition = { top: 0, left: 0 };
+
+  @ViewChild('boardSelector') boardSelector?: ElementRef;
+
   private readonly ideaService = inject(IdeaService);
   private readonly taskService = inject(TaskService);
   private readonly noteService = inject(NoteService);
@@ -38,13 +46,21 @@ export class IdeaListComponent implements OnInit, OnDestroy {
     this.ideaCreatedSub = this.ideaService.ideaCreated.subscribe(() => {
       this.loadRecentItems();
     });
-    this.boardService.query().subscribe(boards => {
-      this.boards = boards;
-    });
+    this.loadBoards();
+
+    // Close board selector when clicking outside
+    document.addEventListener('click', this.onDocumentClick.bind(this));
   }
 
   ngOnDestroy(): void {
     this.ideaCreatedSub?.unsubscribe();
+    document.removeEventListener('click', this.onDocumentClick.bind(this));
+  }
+
+  loadBoards(): void {
+    this.boardService.query().subscribe(boards => {
+      this.boards = boards.filter(board => !board.archived);
+    });
   }
 
   selectIdea(ideaId: number): void {
@@ -70,11 +86,107 @@ export class IdeaListComponent implements OnInit, OnDestroy {
         event.preventDefault();
         if (selectedIdea) this.makeNote(selectedIdea);
         break;
+      case 'escape':
+        event.preventDefault();
+        this.closeBoardSelector();
+        break;
     }
   }
 
-  protected makeTask(selectedIdea: Idea): void {
-    console.warn('makeTask', selectedIdea);
+  selectBoard(boardId: number): void {
+    if (this.selectedIdea) {
+      this.createTaskOnBoard(this.selectedIdea, boardId);
+    }
+    this.closeBoardSelector();
+  }
+
+  createTaskOnBoard(idea: Idea, boardId: number): void {
+    const newTask: NewTask = {
+      title: idea.content,
+      description: '',
+      dueDate: null,
+      priority: 1,
+      status: 'backlog',
+      boardId,
+      position: 0, // Will be positioned at the top of the TO_DO column
+    };
+
+    this.taskService.create(newTask).subscribe(() => {
+      // Delete the idea after successful task creation
+      this.deleteIdea(idea.id, false);
+    });
+  }
+
+  closeBoardSelector(): void {
+    this.showBoardSelector = false;
+    this.selectedIdea = null;
+  }
+
+  onDocumentClick(event: MouseEvent): void {
+    // Add debugging
+    console.warn('Document click event:', event.target);
+    console.warn('showBoardSelector:', this.showBoardSelector);
+    if (this.boardSelector) {
+      console.warn('boardSelector element:', this.boardSelector.nativeElement);
+      console.warn('Contains target?', this.boardSelector.nativeElement.contains(event.target));
+    }
+
+    // Ignore clicks on buttons that trigger the board selector
+    const target = event.target as HTMLElement;
+    if (target.closest('button') && target.closest('button')?.title === 'Convert to Task') {
+      console.warn('Ignoring click on Convert to Task button');
+      return;
+    }
+
+    // Close board selector when clicking outside
+    if (this.showBoardSelector && this.boardSelector && !this.boardSelector.nativeElement.contains(event.target)) {
+      console.warn('Closing board selector due to outside click');
+      this.closeBoardSelector();
+    }
+  }
+
+  protected makeTaskWithEvent(data: { idea: Idea; event: MouseEvent }): void {
+    console.warn('makeTaskWithEvent called with data:', data);
+    this.makeTask(data.idea, data.event);
+  }
+
+  protected makeTask(idea: Idea, event?: MouseEvent): void {
+    console.warn('makeTask called with event:', event);
+    this.selectedIdea = idea;
+
+    // If there's only one board, use it directly
+    if (this.boards.length === 1) {
+      this.createTaskOnBoard(idea, this.boards[0].id!);
+      return;
+    }
+
+    // Otherwise show board selector
+    if (event) {
+      // Position the board selector near the clicked button
+      const target = event.target as HTMLElement;
+      const button = target.closest('button') ?? target;
+      const rect = button.getBoundingClientRect();
+      console.warn('Button rect:', rect);
+
+      // Set position with a slight offset
+      this.boardSelectorPosition = {
+        top: rect.bottom + window.scrollY + 5, // Add 5px offset
+        left: rect.left + window.scrollX,
+      };
+      console.warn('Board selector position:', this.boardSelectorPosition);
+    } else {
+      // Default position if no event is provided
+      this.boardSelectorPosition = {
+        top: 100,
+        left: 100,
+      };
+    }
+
+    // Ensure we're not closing the selector immediately
+    setTimeout(() => {
+      this.showBoardSelector = true;
+      console.warn('showBoardSelector set to:', this.showBoardSelector);
+    }, 0);
   }
 
   protected makeNote(selectedIdea: Idea): void {

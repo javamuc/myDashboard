@@ -15,7 +15,7 @@ export class IdeaCardComponent {
   @Input() selected = false;
 
   @Output() select = new EventEmitter<number>();
-  @Output() makeTask = new EventEmitter<Idea>();
+  @Output() makeTask = new EventEmitter<{ idea: Idea; event: MouseEvent }>();
   @Output() makeNote = new EventEmitter<Idea>();
   @Output() delete = new EventEmitter<number>();
 
@@ -31,9 +31,9 @@ export class IdeaCardComponent {
     this.delete.emit(this.idea.id);
   }
 
-  onConvertToTask(event: Event): void {
+  onConvertToTask(event: MouseEvent): void {
     event.stopPropagation();
-    this.makeTask.emit(this.idea);
+    this.makeTask.emit({ idea: this.idea, event });
     this.convertedToTask = true;
   }
 
