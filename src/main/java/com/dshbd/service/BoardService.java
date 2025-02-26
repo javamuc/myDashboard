@@ -43,8 +43,7 @@ public class BoardService extends BaseService {
             board.setTitle("Default Board");
             board.setDescription("Default Board");
             board.setOwnerId(userId);
-            boards.add(boardRepository.save(board));
-            boardRepository.flush();
+            boards.add(boardRepository.saveAndFlush(board));
             log.info("Default board created for user {} with id {}", userId, board.getId());
         }
         return boards;
