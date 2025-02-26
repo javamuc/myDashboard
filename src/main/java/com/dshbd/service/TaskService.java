@@ -15,18 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class TaskService {
+public class TaskService extends BaseService {
 
     private final Logger log = LoggerFactory.getLogger(TaskService.class);
 
     private final TaskRepository taskRepository;
     private final BoardRepository boardRepository;
-    private final UserService userService;
 
     public TaskService(TaskRepository taskRepository, BoardRepository boardRepository, UserService userService) {
+        super(userService);
         this.taskRepository = taskRepository;
         this.boardRepository = boardRepository;
-        this.userService = userService;
     }
 
     public Task createTask(TaskDTO taskDTO) {
@@ -118,16 +117,11 @@ public class TaskService {
     }
 
     private List<Long> getBoardsIdsForCurrentUser() {
-        Long userId =
-            this.userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId();
-        List<Board> boards = boardRepository.findByOwnerId(userId);
-        return boards.stream().map(Board::getId).toList();
+        return getBoardsForCurrentUser().stream().map(Board::getId).toList();
     }
 
     private List<Board> getBoardsForCurrentUser() {
-        Long userId =
-            this.userService.getUserWithAuthorities().orElseThrow(() -> new IllegalStateException("User could not be found")).getId();
-        List<Board> boards = boardRepository.findByOwnerId(userId);
+        List<Board> boards = boardRepository.findByOwnerIdAndArchived(getUserId(), false);
         return boards;
     }
 
