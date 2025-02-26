@@ -1,35 +1,35 @@
 .dashboard-section {
-  background: var(--background-secondary);
+  background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin-bottom: 20px;
 
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-
-    h2 {
-      font-size: 1.25rem;
-      margin: 0;
-      color: var(--text-color);
-    }
-
-    .view-all {
-      color: var(--primary-color);
-      text-decoration: none;
-      font-size: 0.875rem;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #333;
   }
 
   .section-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    .loading-state {
+      padding: 20px;
+      text-align: center;
+      color: #6c757d;
+    }
+
+    .empty-state {
+      padding: 20px;
+      text-align: center;
+      color: #6c757d;
+      font-style: italic;
+    }
+
+    .ideas-list {
+      display: flex;
+      flex-direction: column;
+    }
   }
 }
 

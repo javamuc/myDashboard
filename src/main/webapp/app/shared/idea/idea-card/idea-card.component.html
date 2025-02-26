@@ -1,0 +1,19 @@
+<div class="idea-card" [class.selected]="selected" (click)="onSelect()">
+  <div class="idea-content">{{ idea.content }}</div>
+  <div class="idea-actions">
+    <button type="button" class="btn btn-sm btn-outline-info" (click)="onConvertToTask($event)" title="Convert to Task">
+      <fa-icon icon="tasks"></fa-icon>
+    </button>
+    <button type="button" class="btn btn-sm btn-outline-info" (click)="onConvertToNote($event)" title="Convert to Note">
+      <fa-icon icon="sticky-note"></fa-icon>
+    </button>
+    <button type="button" class="btn btn-sm btn-outline-danger" (click)="onDelete($event)" title="Delete Idea">
+      <fa-icon icon="trash"></fa-icon>
+    </button>
+  </div>
+
+  <div class="idea-last-modified-date">
+    <fa-icon icon="clock"></fa-icon>
+    {{ idea.createdDate | date: 'short' }}
+  </div>
+</div>

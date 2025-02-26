@@ -1,0 +1,50 @@
+.idea-card {
+  background-color: rgb(48, 48, 48);
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    outline-color 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+
+  &:hover {
+    transform: translateY(-2px);
+    background-color: #222222;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  &.selected {
+    border-color: #90caf9;
+  }
+
+  .idea-content {
+    margin-bottom: 10px;
+    word-break: break-word;
+  }
+
+  .idea-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+
+    button {
+      opacity: 0.7;
+      transition: opacity 0.2s ease;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  .idea-date {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 8px;
+    text-align: right;
+  }
+}

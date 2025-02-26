@@ -1,25 +1,20 @@
-<section class="dashboard-section">
-  <div class="section-content">
-    <div *ngIf="loading" class="loading">Loading...</div>
-    <div *ngIf="!loading && recentIdeas.length === 0" class="empty-state">
-      {{ emptyStateMessage }}
-    </div>
-    <div *ngFor="let idea of recentIdeas" class="idea-card" [class.selected]="selectedIdeaId === idea.id" (click)="selectIdea(idea.id)">
-      <div class="idea-content">{{ idea.content }}</div>
-      <div class="idea-actions">
-        <div class="action-buttons">
-          <button class="btn-icon convert-btn" (click)="convertToTask.emit(idea); $event.stopPropagation()" title="Make it a task">
-            <fa-icon [icon]="['fas', 'tasks']"></fa-icon>
-          </button>
-          <button class="btn-icon convert-btn" (click)="convertToNote.emit(idea); $event.stopPropagation()" title="Make it a note">
-            <fa-icon [icon]="['fas', 'note-sticky']"></fa-icon>
-          </button>
-          <button class="btn-icon delete-btn" (click)="deleteIdea(idea.id); $event.stopPropagation()" title="Delete idea">
-            <fa-icon [icon]="['fas', 'xmark']"></fa-icon>
-          </button>
-        </div>
-      </div>
-      <div class="idea-date">{{ idea.createdDate | date: 'medium' }}</div>
-    </div>
+<div class="section-content">
+  <div *ngIf="loading" class="loading-state">
+    <span>Loading ideas...</span>
   </div>
-</section>
+  <div *ngIf="!loading && recentIdeas.length === 0" class="empty-state">
+    <span>{{ emptyStateMessage }}</span>
+  </div>
+  <div *ngIf="!loading && recentIdeas.length > 0" class="ideas-list">
+    <jhi-idea-card
+      *ngFor="let idea of recentIdeas"
+      [idea]="idea"
+      [selected]="selectedIdeaId === idea.id"
+      (select)="selectIdea($event)"
+      (delete)="deleteIdea($event)"
+      (makeTask)="makeTask(idea)"
+      (makeNote)="makeNote(idea)"
+    >
+    </jhi-idea-card>
+  </div>
+</div>

@@ -5,31 +5,41 @@ import { Idea } from '../idea.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IdeaService } from '../idea.service';
 import { Subscription } from 'rxjs';
+import { TaskService } from 'app/shared/task/task.service';
+import { NoteService } from 'app/notes/note.service';
+import { BoardService } from 'app/shared/board/board.service';
+import { Board } from 'app/shared/board/board.model';
+import { IdeaCardComponent } from '../idea-card/idea-card.component';
+
 @Component({
   selector: 'jhi-idea-list',
   templateUrl: './idea-list.component.html',
   styleUrl: './idea-list.component.scss',
   standalone: true,
-  imports: [CommonModule, RouterModule, FontAwesomeModule],
+  imports: [CommonModule, RouterModule, FontAwesomeModule, IdeaCardComponent],
 })
 export class IdeaListComponent implements OnInit, OnDestroy {
   @Input() title = 'Ideas';
   @Input() emptyStateMessage = 'No ideas yet. Click the lightbulb icon in the navbar to capture your first idea!';
-  @Output() convertToTask = new EventEmitter<Idea>();
-  @Output() convertToNote = new EventEmitter<Idea>();
 
   recentIdeas: Idea[] = [];
   loading = true;
   selectedIdeaId: number | null = null;
-
   ideaCreatedSub?: Subscription;
+  boards: Board[] = [];
+
   private readonly ideaService = inject(IdeaService);
+  private readonly taskService = inject(TaskService);
+  private readonly noteService = inject(NoteService);
+  private readonly boardService = inject(BoardService);
 
   ngOnInit(): void {
     this.loadRecentItems();
-    this.ideaCreatedSub = this.ideaService.ideaCreated.subscribe(idea => {
-      // adds the new idea on first position
-      this.recentIdeas.unshift(idea);
+    this.ideaCreatedSub = this.ideaService.ideaCreated.subscribe(() => {
+      this.loadRecentItems();
+    });
+    this.boardService.query().subscribe(boards => {
+      this.boards = boards;
     });
   }
 
@@ -54,19 +64,38 @@ export class IdeaListComponent implements OnInit, OnDestroy {
         break;
       case 't':
         event.preventDefault();
-        if (selectedIdea) this.convertToTask.emit(selectedIdea);
+        if (selectedIdea) this.makeTask(selectedIdea);
         break;
       case 'n':
         event.preventDefault();
-        if (selectedIdea) this.convertToNote.emit(selectedIdea);
+        if (selectedIdea) this.makeNote(selectedIdea);
         break;
     }
   }
 
-  protected deleteIdea(selectedIdeaId: number): void {
-    this.ideaService.delete(selectedIdeaId).subscribe(() => {
+  protected makeTask(selectedIdea: Idea): void {
+    console.warn('makeTask', selectedIdea);
+  }
+
+  protected makeNote(selectedIdea: Idea): void {
+    this.noteService
+      .create({
+        title: selectedIdea.content,
+        content: '',
+      })
+      .subscribe(() => {
+        this.deleteIdea(selectedIdea.id);
+      });
+  }
+
+  protected deleteIdea(selectedIdeaId: number, converted = false): void {
+    if (converted) {
       this.recentIdeas = this.recentIdeas.filter(i => i.id !== selectedIdeaId);
-    });
+    } else {
+      this.ideaService.delete(selectedIdeaId).subscribe(() => {
+        this.recentIdeas = this.recentIdeas.filter(i => i.id !== selectedIdeaId);
+      });
+    }
   }
 
   private loadRecentItems(): void {
