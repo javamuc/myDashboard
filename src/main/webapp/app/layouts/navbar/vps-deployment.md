@@ -202,6 +202,29 @@ Make the script executable:
 sudo chmod +x /opt/app/deploy.sh
 ```
 
+### 3.3.1 Create a sudoers file for the deployer user
+
+SSH into your server and run:
+
+```bash
+sudo visudo -f /etc/sudoers.d/deployer
+```
+
+Add the following content:
+
+```text
+# Allow deployer to run specific commands without password
+deployer ALL=(ALL) NOPASSWD: /bin/chown
+deployer ALL=(ALL) NOPASSWD: /bin/mkdir
+deployer ALL=(ALL) NOPASSWD: /usr/bin/tee /etc/systemd/system/mydashboard.service
+deployer ALL=(ALL) NOPASSWD: /bin/systemctl daemon-reload
+deployer ALL=(ALL) NOPASSWD: /bin/systemctl enable mydashboard
+deployer ALL=(ALL) NOPASSWD: /bin/systemctl restart mydashboard
+deployer ALL=(ALL) NOPASSWD: /bin/systemctl status mydashboard
+```
+
+These are needed to the deployer user can run the script without permission problems.
+
 ### 3.4. Configure Nginx as a Reverse Proxy
 
 ```bash
