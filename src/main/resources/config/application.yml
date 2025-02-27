@@ -199,7 +199,7 @@ jhipster:
   #   allow-credentials: true
   #   max-age: 1800
   mail:
-    from: myDashboard@localhost
+    from: noreply@app.zaphrox.de
   api-docs:
     default-include-pattern: /api/**
     management-include-pattern: /management/**
