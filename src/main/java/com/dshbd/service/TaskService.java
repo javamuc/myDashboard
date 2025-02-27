@@ -6,6 +6,7 @@ import com.dshbd.repository.BoardRepository;
 import com.dshbd.repository.TaskRepository;
 import com.dshbd.service.dto.TaskDTO;
 import com.dshbd.service.vm.TaskVM;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -107,6 +108,9 @@ public class TaskService extends BaseService {
     @Transactional(readOnly = true)
     public List<TaskVM> findByStatus(String status) {
         List<Board> boards = getBoardsForCurrentUser();
+        if (boards.isEmpty()) {
+            return new ArrayList<>();
+        }
         List<Long> boardIds = boards.stream().map(Board::getId).toList();
         log.info("Board IDs: {}", boardIds);
         List<Task> tasks = taskRepository.findByBoardIdInAndStatus(boardIds, status);
