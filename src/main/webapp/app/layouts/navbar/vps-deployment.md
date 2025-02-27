@@ -143,8 +143,10 @@ if [ -f "$JAR_PATH.current" ]; then
 fi
 
 # Update the current version
-echo "Updating current version"
-cp "$JAR_PATH" "$JAR_PATH.current"
+if [ -f "$JAR_PATH" ]; then
+  echo "Updating current version"
+  cp "$JAR_PATH" "$JAR_PATH.current"
+fi
 
 # Update application.properties if needed
 # cp $APP_DIR/application-prod.properties $DEPLOY_DIR/application.properties
@@ -307,10 +309,10 @@ create 0640 appuser appuser
 
 ## 7. Backup Strategy
 
-### 7.1. Set Up Database Backups (if applicable)
+### 7.1. Set Up Database Backups
 
 ```bash
-sudo apt install postgresql-client -y  # If using PostgreSQL
+sudo apt install postgresql-client -y  # For PostgreSQL
 
 # Create backup script
 sudo nano /opt/app/backup-db.sh
@@ -327,7 +329,35 @@ pg_dump -h localhost -U dbuser dbname > $BACKUP_DIR/backup-$TIMESTAMP.sql
 find $BACKUP_DIR -name "backup-*.sql" -mtime +7 -delete
 ```
 
-Make it executable and add to crontab:
+### 7.2 Create a .pgpass file
+
+Create a .pgpass file in the home directory of the user running the script (likely the deployer user):
+
+```bash
+sudo -u deployer nano /home/deployer/.pgpass
+```
+
+Add a line with this format:
+
+```text
+hostname:port:database:username:password
+```
+
+For example:
+
+```text
+localhost:5432:dbName:dbUser:dbPassword
+```
+
+Set proper permissions (important for security):
+
+```bash
+sudo -u deployer chmod 600 /home/deployer/.pgpass
+```
+
+With this approach PostgreSQL will automatically use the credentials from the .pgpass file.
+
+### 7.3 Make it executable and add to crontab:
 
 ```bash
 sudo chmod +x /opt/app/backup-db.sh
