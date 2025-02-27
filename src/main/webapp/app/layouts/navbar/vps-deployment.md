@@ -203,7 +203,7 @@ sudo chmod +x /opt/app/deploy.sh
 ### 3.4. Configure Nginx as a Reverse Proxy
 
 ```bash
-sudo nano /etc/nginx/sites-available/mydashboard
+sudo nano /etc/nginx/sites-available/app.zaphrox.de
 ```
 
 Add the following configuration:
@@ -226,7 +226,7 @@ server {
 Enable the site:
 
 ```bash
-sudo ln -s /etc/nginx/sites-available/mydashboard /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/app.zaphrox.de /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl restart nginx
 ```
