@@ -1,42 +1,48 @@
-<div class="section-content">
-  <div *ngIf="loading" class="loading-state">
-    <span>Loading ideas...</span>
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">{{ title }}</h5>
+    <a routerLink="/board" class="btn btn-primary btn-sm">View All</a>
   </div>
-  <div *ngIf="!loading && recentIdeas.length === 0" class="empty-state">
-    <span>{{ emptyStateMessage }}</span>
-  </div>
-  <div *ngIf="!loading && recentIdeas.length > 0" class="ideas-list">
-    <jhi-idea-card
-      *ngFor="let idea of recentIdeas"
-      [idea]="idea"
-      [selected]="selectedIdeaId === idea.id"
-      (select)="selectIdea($event)"
-      (delete)="deleteIdea($event)"
-      (makeTask)="makeTaskWithEvent($event)"
-      (makeNote)="makeNote($event)"
-      (deleteFromList)="deleteFromList($event)"
-    >
-    </jhi-idea-card>
-  </div>
-</div>
-
-<!-- Board Selector Dropdown -->
-<div
-  #boardSelector
-  *ngIf="showBoardSelector"
-  class="board-selector"
-  [style.top.px]="boardSelectorPosition.top"
-  [style.left.px]="boardSelectorPosition.left"
-  style="display: block !important"
->
-  <div class="board-selector-header">
-    <h6>Select a board</h6>
-    <button type="button" class="btn-close" (click)="closeBoardSelector()">×</button>
-  </div>
-  <div class="board-selector-body">
-    <div *ngFor="let board of boards" class="board-option" (click)="selectBoard(board.id!)">
-      {{ board.title }}
+  <div class="card-body">
+    <div *ngIf="loading" class="loading-state">
+      <span>Loading ideas...</span>
     </div>
-    <div *ngIf="boards.length === 0" class="no-boards">No active boards available</div>
+    <div *ngIf="!loading && recentIdeas.length === 0" class="empty-state">
+      <span>{{ emptyStateMessage }}</span>
+    </div>
+    <div *ngIf="!loading && recentIdeas.length > 0" class="ideas-list">
+      <jhi-idea-card
+        *ngFor="let idea of recentIdeas"
+        [idea]="idea"
+        [selected]="selectedIdeaId === idea.id"
+        (select)="selectIdea($event)"
+        (delete)="deleteIdea($event)"
+        (makeTask)="makeTaskWithEvent($event)"
+        (makeNote)="makeNote($event)"
+        (deleteFromList)="deleteFromList($event)"
+      >
+      </jhi-idea-card>
+    </div>
+  </div>
+
+  <!-- Board Selector Dropdown -->
+  <div
+    #boardSelector
+    *ngIf="showBoardSelector"
+    class="board-selector"
+    [style.top.px]="boardSelectorPosition.top"
+    [style.left.px]="boardSelectorPosition.left"
+    style="display: block !important"
+  >
+    <div class="board-selector-header">
+      <h6>Select a board</h6>
+      <button type="button" class="btn-close" (click)="closeBoardSelector()">×</button>
+    </div>
+    <div class="board-selector-body">
+      <div *ngFor="let board of boards" class="board-option" (click)="selectBoard(board.id!)">
+        {{ board.title }}
+      </div>
+      <div *ngIf="boards.length === 0" class="no-boards">No active boards available</div>
+    </div>
   </div>
 </div>

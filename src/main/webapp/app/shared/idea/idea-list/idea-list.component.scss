@@ -1,36 +1,19 @@
-.dashboard-section {
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 16px;
-  margin-bottom: 20px;
+.loading-state {
+  padding: 20px;
+  text-align: center;
+  color: #6c757d;
+}
 
-  .section-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 16px;
-    color: #333;
-  }
+.empty-state {
+  padding: 20px;
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+}
 
-  .section-content {
-    .loading-state {
-      padding: 20px;
-      text-align: center;
-      color: #6c757d;
-    }
-
-    .empty-state {
-      padding: 20px;
-      text-align: center;
-      color: #6c757d;
-      font-style: italic;
-    }
-
-    .ideas-list {
-      display: flex;
-      flex-direction: column;
-    }
-  }
+.ideas-list {
+  display: flex;
+  flex-direction: column;
 }
 
 .loading {
@@ -44,68 +27,6 @@
   padding: 2rem;
   color: var(--text-secondary);
   font-style: italic;
-}
-
-.idea-card {
-  position: relative;
-  padding: 1rem;
-  padding-right: 80px; // Space for action buttons
-  cursor: pointer;
-  transition: transform 0.2s;
-  background-color: rgb(48, 48, 48);
-  border-radius: 8px;
-  transition:
-    transform 0.2s ease,
-    background-color 0.2s ease,
-    outline-color 0.2s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  outline: 2px solid transparent;
-  outline-offset: 2px;
-
-  &.selected {
-    border-left: 4px solid #2196f3;
-    background-color: rgba(33, 150, 243, 0.05);
-  }
-
-  .idea-actions {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    gap: 8px;
-
-    .btn-icon {
-      background: transparent;
-      border: none;
-      padding: 6px;
-      border-radius: 50%;
-      transition: background 0.2s;
-
-      &:hover {
-        background: rgba(0, 0, 0, 0.1);
-      }
-    }
-
-    .delete-btn {
-      color: #f44336;
-    }
-
-    .convert-btn {
-      color: #4caf50;
-    }
-  }
-
-  .idea-content {
-    color: var(--text-color);
-    margin-bottom: 0.5rem;
-    line-height: 1.4;
-  }
-
-  .idea-date {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-  }
 }
 
 .board-selector {

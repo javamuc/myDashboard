@@ -1,64 +1,62 @@
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-12">
-      <!-- Active Habits List -->
-      <div class="list-group">
-        <div
-          *ngFor="let progress of habitProgress()"
-          class="list-group-item"
-          [class.disabled]="!progress.canAddRecord"
-          (click)="recordHabitCompletion(progress, $event)"
-          role="button"
-        >
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <h5 class="mb-1">{{ progress.habit.name }}</h5>
-              <!-- Today's Schedule -->
-              <div class="day-schedules mt-2" *ngIf="progress.todaySchedule">
-                <div class="schedule-item">
-                  <ng-container [ngSwitch]="progress.todaySchedule.scheduleType">
-                    <span *ngSwitchCase="'ANYTIME'"> {{ progress.todaySchedule.repetitions }} time(s) today </span>
-                    <span *ngSwitchCase="'SPECIFIC'">
-                      <span *ngFor="let time of progress.todaySchedule.specificTimes" class="badge bg-secondary me-1">
-                        {{ time.hour.toString().padStart(2, '0') }}:{{ time.minute.toString().padStart(2, '0') }}
-                      </span>
+<div class="row">
+  <div class="col-12">
+    <!-- Active Habits List -->
+    <div class="list-group">
+      <div
+        *ngFor="let progress of habitProgress()"
+        class="list-group-item"
+        [class.disabled]="!progress.canAddRecord"
+        (click)="recordHabitCompletion(progress, $event)"
+        role="button"
+      >
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="mb-1">{{ progress.habit.name }}</h5>
+            <!-- Today's Schedule -->
+            <div class="day-schedules mt-2" *ngIf="progress.todaySchedule">
+              <div class="schedule-item">
+                <ng-container [ngSwitch]="progress.todaySchedule.scheduleType">
+                  <span *ngSwitchCase="'ANYTIME'"> {{ progress.todaySchedule.repetitions }} time(s) today </span>
+                  <span *ngSwitchCase="'SPECIFIC'">
+                    <span *ngFor="let time of progress.todaySchedule.specificTimes" class="badge bg-secondary me-1">
+                      {{ time.hour.toString().padStart(2, '0') }}:{{ time.minute.toString().padStart(2, '0') }}
                     </span>
-                  </ng-container>
-                </div>
+                  </span>
+                </ng-container>
               </div>
-              <small *ngIf="progress.habit.description" class="text-muted">{{ progress.habit.description }}</small>
             </div>
-
-            <!-- Schedule Information -->
-            <div class="schedule-info">
-              <ng-container [ngSwitch]="progress.habit.scheduleType">
-                <span *ngSwitchCase="'DAILY'" class="badge bg-primary">Daily</span>
-                <span *ngSwitchCase="'SELECTED_DAYS'" class="badge bg-info">Selected Days</span>
-              </ng-container>
-            </div>
+            <small *ngIf="progress.habit.description" class="text-muted">{{ progress.habit.description }}</small>
           </div>
 
-          <!-- Progress Bar -->
-          <div class="progress-section mt-2">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-              <small class="text-muted">Progress: {{ progress.completedCount }}/{{ progress.targetCount }}</small>
-              <small class="text-muted">{{ progress.progress | number: '1.0-0' }}%</small>
-            </div>
-            <ngb-progressbar
-              [type]="progress.progress === 100 ? 'success' : 'primary'"
-              [value]="progress.progress"
-              [striped]="true"
-              [animated]="progress.progress < 100"
-              height="10px"
-            ></ngb-progressbar>
+          <!-- Schedule Information -->
+          <div class="schedule-info">
+            <ng-container [ngSwitch]="progress.habit.scheduleType">
+              <span *ngSwitchCase="'DAILY'" class="badge bg-primary">Daily</span>
+              <span *ngSwitchCase="'SELECTED_DAYS'" class="badge bg-info">Selected Days</span>
+            </ng-container>
           </div>
         </div>
-      </div>
 
-      <!-- Empty State -->
-      <div *ngIf="habitProgress().length === 0" class="text-center mt-4">
-        <p class="text-muted">No active habits found for today.</p>
+        <!-- Progress Bar -->
+        <div class="progress-section mt-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <small class="text-muted">Progress: {{ progress.completedCount }}/{{ progress.targetCount }}</small>
+            <small class="text-muted">{{ progress.progress | number: '1.0-0' }}%</small>
+          </div>
+          <ngb-progressbar
+            [type]="progress.progress === 100 ? 'success' : 'primary'"
+            [value]="progress.progress"
+            [striped]="true"
+            [animated]="progress.progress < 100"
+            height="10px"
+          ></ngb-progressbar>
+        </div>
       </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="habitProgress().length === 0" class="text-center mt-4">
+      <p class="text-muted">No active habits found for today.</p>
     </div>
   </div>
 </div>

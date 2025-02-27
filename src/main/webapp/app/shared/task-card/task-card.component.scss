@@ -119,17 +119,10 @@
       }
     }
     .task-last-modified-date {
-      font-size: 0.6rem;
-      color: rgba(255, 255, 255, 0.5);
       display: flex;
       align-items: center;
       margin-left: auto;
       gap: 0.5rem;
-
-      i {
-        font-size: 0.6rem;
-        width: 1rem;
-      }
     }
   }
 }

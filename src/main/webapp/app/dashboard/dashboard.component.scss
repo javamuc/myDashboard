@@ -1,17 +1,6 @@
 .dashboard-container {
   padding-top: 2rem;
-  padding-right: 1rem;
   margin: 0 auto;
-}
-
-.dashboard-header {
-  margin-bottom: 2rem;
-
-  h1 {
-    font-size: 2rem;
-    color: var(--text-color);
-    margin: 0;
-  }
 }
 
 .dashboard-content {
@@ -67,64 +56,4 @@
   padding: 2rem;
   color: var(--text-secondary);
   font-style: italic;
-}
-
-.idea-card {
-  background: var(--background-primary);
-  border-radius: 6px;
-  padding: 1rem;
-  border: 1px solid var(--border-color);
-
-  .idea-content {
-    color: var(--text-color);
-    margin-bottom: 0.5rem;
-    line-height: 1.4;
-  }
-
-  .idea-date {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-  }
-}
-
-.task-card {
-  background: var(--background-primary);
-  border-radius: 6px;
-  padding: 1rem;
-  border: 1px solid var(--border-color);
-
-  .task-status {
-    display: inline-block;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
-
-    &.to-do {
-      background: var(--status-todo-bg);
-      color: var(--status-todo-text);
-    }
-
-    &.in-progress {
-      background: var(--status-progress-bg);
-      color: var(--status-progress-text);
-    }
-
-    &.done {
-      background: var(--status-done-bg);
-      color: var(--status-done-text);
-    }
-  }
-
-  .task-title {
-    color: var(--text-color);
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-  }
-
-  .task-date {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-  }
 }

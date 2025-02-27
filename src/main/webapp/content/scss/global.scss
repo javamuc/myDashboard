@@ -81,6 +81,13 @@ Browser Upgrade Prompt
   padding: 0.2em 0;
 }
 
+.card-date {
+  font-size: 0.6rem;
+  color: #6c757d;
+  margin-top: 8px;
+  text-align: right;
+}
+
 /* ==========================================================================
 Generic styles
 ========================================================================== */
@@ -289,5 +296,6 @@ Main page styles
 }
 
 .container-fluid {
-  padding-right: 0;
+  padding-right: 1rem;
+  padding-left: 1rem;
 }
