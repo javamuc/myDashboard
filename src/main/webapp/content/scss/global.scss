@@ -286,7 +286,8 @@ Main page styles
 ========================================================================== */
 
 .main-wrapper {
-  min-height: 100vh;
+  min-height: 100%;
+  background-color: rgb(26, 25, 25);
 }
 
 .content-area {
