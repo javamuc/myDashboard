@@ -64,9 +64,22 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: myDashboard
-          path: target
+          path: ./
+
+      - name: List files for debugging
+        run: ls -la
 
       - name: Deploy
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: deployer
+          key: ${{ secrets.SSH_KEY }}
+          source: '*.jar'
+          target: '/opt/app/'
+
+      - name: Execute deployment script
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.VPS_HOST }}
