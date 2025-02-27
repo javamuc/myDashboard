@@ -13,6 +13,8 @@ import { PomodoroComponent } from '../shared/pomodoro/pomodoro.component';
 import StockPickerComponent from '../shared/shared.module';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { HabitTrackerComponent } from '../habit/habit-tracker.component';
+import { HideOnPomodoroDirective } from '../shared/pomodoro/hide-on-pomodoro.directive';
+
 @Component({
   selector: 'jhi-home',
   templateUrl: './home.component.html',
@@ -27,7 +29,9 @@ import { HabitTrackerComponent } from '../habit/habit-tracker.component';
     StockPickerComponent,
     DashboardComponent,
     HabitTrackerComponent,
+    HideOnPomodoroDirective,
   ],
+  standalone: true,
 })
 export default class HomeComponent implements OnInit, OnDestroy {
   account = inject(AccountService).trackCurrentAccount();
