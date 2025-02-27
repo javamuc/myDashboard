@@ -104,7 +104,7 @@ class BoardServiceTest {
         // Arrange
         when(userService.getUserWithAuthorities()).thenReturn(Optional.of(user));
         when(boardRepository.findByOwnerIdAndArchived(user.getId(), false)).thenReturn(new ArrayList<Board>());
-        when(boardRepository.save(any(Board.class))).thenReturn(board);
+        when(boardRepository.saveAndFlush(any(Board.class))).thenReturn(board);
 
         // Act
         List<Board> result = boardService.getCurrentUserBoards();
@@ -112,8 +112,7 @@ class BoardServiceTest {
         // Assert
         assertThat(result).hasSize(1);
         verify(boardRepository).findByOwnerIdAndArchived(user.getId(), false);
-        verify(boardRepository).save(any(Board.class));
-        verify(boardRepository).flush();
+        verify(boardRepository).saveAndFlush(any(Board.class));
     }
 
     @Test
