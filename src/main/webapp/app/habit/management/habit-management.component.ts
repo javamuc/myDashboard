@@ -1,10 +1,10 @@
 import { Component, OnInit, signal, ViewChild, ElementRef, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Habit, HabitDaySchedule, DayOfWeek, DayScheduleType } from './habit.model';
+import { Habit, HabitDaySchedule, DayOfWeek, DayScheduleType } from '../habit.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { HabitScheduleComponent } from './habit-schedule.component';
-import { HabitService } from './habit.service';
+import { HabitService } from '../habit.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({

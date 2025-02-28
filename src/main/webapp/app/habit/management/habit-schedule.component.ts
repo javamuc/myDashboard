@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Habit, DayOfWeek, ScheduleType, HabitDaySchedule, DayScheduleType } from './habit.model';
+import { Habit, DayOfWeek, ScheduleType, HabitDaySchedule, DayScheduleType } from '../habit.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { DayScheduleComponent } from './day-schedule.component';
 

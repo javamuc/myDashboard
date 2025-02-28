@@ -60,7 +60,8 @@ export class HabitTrackerComponent implements OnInit {
                 canAddRecord: completedCount < targetCount,
               };
             });
-            this.habitProgress.set(progress);
+            const activeProgress = progress.filter(p => p.canAddRecord);
+            this.habitProgress.set(activeProgress);
           });
       });
   }

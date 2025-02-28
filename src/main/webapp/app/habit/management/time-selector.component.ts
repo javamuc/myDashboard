@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HabitSpecificTime } from './habit.model';
+import { HabitSpecificTime } from '../habit.model';
 
 interface TimeKey {
   hour: number;

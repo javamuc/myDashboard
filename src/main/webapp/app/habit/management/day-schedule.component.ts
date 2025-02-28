@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HabitDaySchedule, HabitSpecificTime, DayScheduleType } from './habit.model';
+import { HabitDaySchedule, HabitSpecificTime, DayScheduleType } from '../habit.model';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TimeSelectorComponent } from './time-selector.component';
 

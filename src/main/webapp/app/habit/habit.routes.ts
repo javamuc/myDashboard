@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { HabitManagementComponent } from './habit-management.component';
+import { HabitManagementComponent } from './management/habit-management.component';
 
 export const HABIT_ROUTE: Routes = [
   {
