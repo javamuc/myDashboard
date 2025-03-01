@@ -1,13 +1,16 @@
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
   HostListener,
   Input,
   OnChanges,
+  OnDestroy,
   Output,
   SimpleChanges,
   ViewChild,
+  effect,
   inject,
   signal,
   WritableSignal,
@@ -28,8 +31,9 @@ import { DiaryEntryComponent } from '../diary-entry/diary-entry.component';
   standalone: true,
   imports: [CommonModule, FormsModule, FontAwesomeModule, DiaryEmoticonSelectorComponent, DiaryTagSelectorComponent, DiaryEntryComponent],
 })
-export class DiaryEditorComponent implements OnChanges {
+export class DiaryEditorComponent implements OnChanges, AfterViewInit {
   @ViewChild('entryInput') entryInput!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild(DiaryEmoticonSelectorComponent) emoticonSelector!: DiaryEmoticonSelectorComponent;
   @Input() entry: DiaryEntry | null = null;
   @Output() saveEntry = new EventEmitter<DiaryEntry>();
   @Output() cancelEdit = new EventEmitter<void>();
@@ -45,6 +49,33 @@ export class DiaryEditorComponent implements OnChanges {
   currentEditingEntry = this.diaryService.getCurrentEditingEntry();
 
   entryContent: WritableSignal<string> = signal('');
+
+  private previousEditorState = false;
+
+  constructor() {
+    // Use effect to watch for changes to the isEditorOpen signal
+    effect(() => {
+      const isOpen = this.isEditorOpen();
+      // Only focus when the editor transitions from closed to open
+      if (isOpen && !this.previousEditorState) {
+        setTimeout(() => {
+          if (this.emoticonSelector) {
+            this.emoticonSelector.focus();
+          }
+        });
+      }
+      this.previousEditorState = isOpen;
+    });
+  }
+
+  ngAfterViewInit(): void {
+    // Focus the emoticon selector if the editor is already open when the view is initialized
+    if (this.isEditorOpen() && this.emoticonSelector) {
+      setTimeout(() => {
+        this.emoticonSelector.focus();
+      });
+    }
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['entry'] && this.entry) {
@@ -64,42 +95,53 @@ export class DiaryEditorComponent implements OnChanges {
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
-    // Handle keyboard shortcuts for emoticons (CMD+1 through CMD+9)
-    if ((event.metaKey || event.ctrlKey) && /^[1-9]$/.test(event.key)) {
+    // Handle keyboard shortcuts for emoticons (1 through 9)
+    if (this.isEditorOpen() && /^[1-9]$/.test(event.key)) {
+      // Stop propagation to prevent navbar from capturing these keys
+      event.stopPropagation();
       event.preventDefault();
+
       const emoticonIndex = parseInt(event.key, 10) - 1;
       const emoticons = this.diaryService.getEmoticons()();
 
       if (emoticons[emoticonIndex]) {
         this.selectEmoticon(emoticons[emoticonIndex]);
       }
+      return;
     }
 
     // Handle Escape key to close tag selector or editor
     if (event.key === 'Escape') {
       if (this.isTagSelectorOpen()) {
         event.preventDefault();
+        event.stopPropagation();
         this.closeTagSelector();
       } else if (this.isEditorOpen()) {
         event.preventDefault();
+        event.stopPropagation();
         this.closeEditor();
       }
+      return;
     }
 
     // Handle Enter key to create entry when tag selector is open
     if (event.key === 'Enter' && this.isTagSelectorOpen() && !event.shiftKey) {
       event.preventDefault();
+      event.stopPropagation();
       this.startNewEntry();
+      return;
     }
 
     // Handle CMD+Enter to save entry
     if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
       event.preventDefault();
+      event.stopPropagation();
       if (this.isEditingEntry()) {
         this.saveEditedEntry();
       } else if (this.entryContent().trim()) {
         this.createEntry();
       }
+      return;
     }
   }
 

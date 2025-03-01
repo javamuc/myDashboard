@@ -30,15 +30,15 @@ export class DiaryService {
 
   // Default emoticons
   private emoticons = signal<DiaryEmoticon[]>([
-    { id: 1, name: 'Ecstatic', emoji: '😇', shortcut: 'CMD+1' },
-    { id: 2, name: 'Happy', emoji: '😍', shortcut: 'CMD+2' },
-    { id: 3, name: 'Content', emoji: '🙂', shortcut: 'CMD+3' },
-    { id: 4, name: 'Neutral', emoji: '🤔', shortcut: 'CMD+4' },
-    { id: 5, name: 'Displeased', emoji: '😕', shortcut: 'CMD+5' },
-    { id: 6, name: 'Frustrated', emoji: '😑', shortcut: 'CMD+6' },
-    { id: 7, name: 'Annoyed', emoji: '😵', shortcut: 'CMD+7' },
-    { id: 8, name: 'Angry', emoji: '😠', shortcut: 'CMD+8' },
-    { id: 9, name: 'Furious', emoji: '🤬', shortcut: 'CMD+9' },
+    { id: 1, name: 'Ecstatic', emoji: '😇', shortcut: '1' },
+    { id: 2, name: 'Happy', emoji: '😍', shortcut: '2' },
+    { id: 3, name: 'Content', emoji: '🙂', shortcut: '3' },
+    { id: 4, name: 'Neutral', emoji: '🤔', shortcut: '4' },
+    { id: 5, name: 'Displeased', emoji: '😕', shortcut: '5' },
+    { id: 6, name: 'Frustrated', emoji: '😑', shortcut: '6' },
+    { id: 7, name: 'Annoyed', emoji: '😵', shortcut: '7' },
+    { id: 8, name: 'Angry', emoji: '😠', shortcut: '8' },
+    { id: 9, name: 'Furious', emoji: '🤬', shortcut: '9' },
   ]);
 
   // Getters

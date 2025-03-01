@@ -7,20 +7,11 @@ import { DiaryEntry, DiaryTag } from '../shared/diary/diary.model';
 import { DiaryEditorComponent } from '../shared/diary/diary-editor/diary-editor.component';
 import { DiaryEntryComponent } from '../shared/diary/diary-entry/diary-entry.component';
 import { DiaryTagSelectorComponent } from '../shared/diary/diary-tag-selector/diary-tag-selector.component';
-import { DiaryEmoticonSelectorComponent } from '../shared/diary/diary-emoticon-selector/diary-emoticon-selector.component';
 
 @Component({
   selector: 'jhi-diary',
   standalone: true,
-  imports: [
-    CommonModule,
-    FontAwesomeModule,
-    FormsModule,
-    DiaryEditorComponent,
-    DiaryEntryComponent,
-    DiaryTagSelectorComponent,
-    DiaryEmoticonSelectorComponent,
-  ],
+  imports: [CommonModule, FontAwesomeModule, FormsModule, DiaryEditorComponent, DiaryEntryComponent, DiaryTagSelectorComponent],
   templateUrl: './diary.component.html',
   styleUrls: ['./diary.component.scss'],
 })
@@ -46,7 +37,10 @@ export class DiaryComponent implements OnInit {
   createNewEntry(): void {
     this.isEditing = true;
     this.selectedEntry = null;
-    this.diaryService.openEditor();
+    this.diaryService.closeEditor();
+    setTimeout(() => {
+      this.diaryService.openEditor();
+    }, 0);
   }
 
   editEntry(entry: DiaryEntry): void {

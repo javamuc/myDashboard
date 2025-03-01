@@ -19,13 +19,14 @@ export class NoteEditorComponent implements AfterViewInit, OnChanges {
 
   ngAfterViewInit(): void {
     // Focus title for new notes, content for existing notes
-    setTimeout(() => {
-      if (this.note.title.length === 0) {
-        this.titleInput.nativeElement.focus();
-      } else {
-        this.contentInput.nativeElement.focus();
-      }
-    });
+    // setTimeout(() => {
+    //   if (this.note.title.length === 0) {
+    //     this.titleInput.nativeElement.focus();
+    //   } else {
+    //     this.contentInput.nativeElement.focus();
+    //   }
+    // });
+    console.warn('ngAfterViewInit ', this.note.id);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -35,7 +36,8 @@ export class NoteEditorComponent implements AfterViewInit, OnChanges {
       (changes['note'].previousValue?.id !== undefined && changes['note'].currentValue.id !== changes['note'].previousValue.id)
     ) {
       this.previousNoteId = changes['note'].currentValue.id;
-      this.ngAfterViewInit();
+      // this.ngAfterViewInit();
+      this.titleInput.nativeElement.focus();
     }
   }
 
