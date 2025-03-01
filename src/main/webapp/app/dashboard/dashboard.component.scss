@@ -1,6 +1,36 @@
 .dashboard-container {
   padding-top: 2rem;
   margin: 0 auto;
+  max-width: 1400px;
+}
+
+.dashboard-grid {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.dashboard-column {
+  min-width: 300px;
+}
+
+.column-two-thirds {
+  flex: 2;
+}
+
+.column-one-third {
+  flex: 1;
+}
+
+// For mobile devices, stack the columns
+@media (max-width: 768px) {
+  .dashboard-grid {
+    flex-direction: column;
+  }
+
+  .dashboard-column {
+    width: 100%;
+  }
 }
 
 .dashboard-content {
