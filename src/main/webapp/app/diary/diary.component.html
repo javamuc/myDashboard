@@ -17,11 +17,6 @@
       </div>
     } @else {
       <div class="diary-entries-container">
-        <div class="tag-filter-container">
-          <h3>Filter by Tags</h3>
-          <jhi-diary-tag-selector [selectedTags]="selectedTags" (tagToggled)="onTagSelected($event)"></jhi-diary-tag-selector>
-        </div>
-
         @if (filteredEntries.length === 0) {
           <div class="no-entries">
             <p>No diary entries found. Create your first entry!</p>
