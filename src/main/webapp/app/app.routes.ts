@@ -53,6 +53,22 @@ const routes: Routes = [
     loadChildren: () => import(`./entities/entity.routes`),
   },
   {
+    path: 'board',
+    loadChildren: () => import('./board/board.route').then(r => r.BOARD_ROUTE),
+    canActivate: [UserRouteAccessService],
+    data: {
+      authorities: [Authority.USER],
+    },
+  },
+  {
+    path: 'habit',
+    loadChildren: () => import('./habit/habit.routes').then(r => r.HABIT_ROUTE),
+    canActivate: [UserRouteAccessService],
+    data: {
+      authorities: [Authority.USER],
+    },
+  },
+  {
     path: 'diary',
     component: DiaryComponent,
     canActivate: [UserRouteAccessService],
