@@ -1,0 +1,135 @@
+.tag-selector {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+  }
+}
+
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.tag-item {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.5);
+  }
+
+  &.selected {
+    background-color: rgba(var(--primary-rgb), 0.2);
+    border-color: var(--primary);
+    color: #ffffff;
+  }
+}
+
+.add-tag-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+  }
+}
+
+.new-tag-container {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  .new-tag-input {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 0.875rem;
+    width: 120px;
+
+    &:focus {
+      outline: none;
+    }
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .new-tag-actions {
+    display: flex;
+    gap: 0.25rem;
+
+    button {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .confirm-button {
+      background-color: var(--primary);
+      color: #ffffff;
+
+      &:hover {
+        background-color: var(--primary-dark);
+      }
+    }
+
+    .cancel-button {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+}
+
+.tag-selector-help {
+  text-align: center;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+
+  p {
+    margin: 0;
+  }
+}

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-export type HomeComponent = 'board' | 'notes' | 'dashboard';
+export type HomeComponent = 'board' | 'notes' | 'dashboard' | 'diary';
 
 @Injectable({ providedIn: 'root' })
 export class HomeService {

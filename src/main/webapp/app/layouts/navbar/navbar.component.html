@@ -38,6 +38,12 @@
               <span>Notes (3)</span>
             </button>
           </li>
+          <li class="nav-item">
+            <button class="btn btn-link nav-link" (click)="switchToDiary()" [class.active]="isActive('diary')">
+              <fa-icon icon="book"></fa-icon>
+              <span>Diary (4)</span>
+            </button>
+          </li>
           <li>
             <jhi-quick-idea></jhi-quick-idea>
           </li>

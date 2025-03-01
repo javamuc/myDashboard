@@ -5,40 +5,19 @@ import { Authority } from 'app/config/authority.constants';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { errorRoute } from './layouts/error/error.route';
 
+import HomeComponent from './home/home.component';
+import { DiaryComponent } from './diary/diary.component';
+
 const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./home/home.component'),
+    component: HomeComponent,
     title: 'home.title',
   },
   {
     path: '',
     loadComponent: () => import('./layouts/navbar/navbar.component'),
     outlet: 'navbar',
-  },
-  {
-    path: 'board',
-    loadChildren: () => import('./board/board.route').then(r => r.BOARD_ROUTE),
-    canActivate: [UserRouteAccessService],
-    data: {
-      authorities: [Authority.USER],
-    },
-  },
-  {
-    path: 'habit',
-    loadChildren: () => import('./habit/habit.routes').then(r => r.HABIT_ROUTE),
-    canActivate: [UserRouteAccessService],
-    data: {
-      authorities: [Authority.USER],
-    },
-  },
-  {
-    path: 'admin',
-    data: {
-      authorities: [Authority.ADMIN],
-    },
-    canActivate: [UserRouteAccessService],
-    loadChildren: () => import('./admin/admin.routes'),
   },
   {
     path: 'account',
@@ -51,7 +30,35 @@ const routes: Routes = [
   },
   {
     path: '',
+    loadComponent: () => import('./layouts/main/main.component'),
+    data: {
+      authorities: [Authority.USER],
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
+    path: 'admin',
+    data: {
+      authorities: [Authority.ADMIN],
+    },
+    canActivate: [UserRouteAccessService],
+    loadChildren: () => import('./admin/admin.routes'),
+  },
+  {
+    path: 'entities',
+    data: {
+      authorities: [Authority.USER],
+    },
+    canActivate: [UserRouteAccessService],
     loadChildren: () => import(`./entities/entity.routes`),
+  },
+  {
+    path: 'diary',
+    component: DiaryComponent,
+    canActivate: [UserRouteAccessService],
+    data: {
+      authorities: [Authority.USER],
+    },
   },
   ...errorRoute,
 ];

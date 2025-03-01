@@ -1,0 +1,40 @@
+<div class="tag-selector">
+  <h3>What was it about?</h3>
+
+  <div class="tags-list">
+    @for (tag of diaryTags(); track tag.id) {
+      <button class="tag-item" [class.selected]="isTagSelected(tag)" (click)="toggleTag(tag)" [attr.data-tag-id]="tag.id" tabindex="0">
+        {{ tag.name }}
+      </button>
+    }
+
+    @if (!isAddingNewTag) {
+      <button class="add-tag-button" (click)="startAddNewTag()">
+        <fa-icon icon="plus"></fa-icon>
+      </button>
+    } @else {
+      <div class="new-tag-container">
+        <input
+          type="text"
+          class="new-tag-input"
+          [(ngModel)]="newTagName"
+          placeholder="New tag name..."
+          (keydown.enter)="addNewTag()"
+          (keydown.escape)="cancelAddNewTag()"
+        />
+        <div class="new-tag-actions">
+          <button class="confirm-button" (click)="addNewTag()">
+            <fa-icon icon="check"></fa-icon>
+          </button>
+          <button class="cancel-button" (click)="cancelAddNewTag()">
+            <fa-icon icon="times"></fa-icon>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="tag-selector-help">
+    <p>Select one or more tags. Press Enter to continue or Escape to cancel.</p>
+  </div>
+</div>

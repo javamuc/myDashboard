@@ -1,0 +1,140 @@
+.diary-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+.diary-content {
+  width: 700px;
+  max-width: 90vw;
+  max-height: 90vh;
+  background-color: rgb(26, 25, 25);
+  color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.diary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+
+  .close-button {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0.25rem;
+
+    &:hover {
+      color: #ffffff;
+    }
+  }
+}
+
+.entry-input-container {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  .entry-input {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: #ffffff;
+    font-size: 0.9rem;
+    resize: vertical;
+    margin-bottom: 0.75rem;
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .entry-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+
+    button {
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+
+      fa-icon {
+        font-size: 0.875rem;
+      }
+    }
+
+    .save-button {
+      background-color: var(--primary);
+      color: #ffffff;
+      border: none;
+
+      &:hover {
+        background-color: var(--primary-dark);
+      }
+    }
+
+    .cancel-button {
+      background-color: transparent;
+      color: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+.entries-list {
+  padding: 1rem;
+  overflow-y: auto;
+  flex: 1;
+
+  h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .no-entries {
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+    text-align: center;
+    padding: 2rem 0;
+  }
+}

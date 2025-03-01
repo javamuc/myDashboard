@@ -1,0 +1,17 @@
+<div class="diary-entry">
+  <div class="entry-left">
+    <div class="entry-emoticon">{{ entry.emoticon.emoji }}</div>
+    <div class="entry-tags">
+      @for (tag of entry.tags; track tag.id) {
+        <div class="entry-tag">{{ tag.name }}</div>
+      }
+    </div>
+    <div class="entry-date">{{ formatDate(entry.createdAt) }}</div>
+  </div>
+  <div class="entry-content">
+    <div class="entry-text">{{ entry.content }}</div>
+    <button class="edit-button" (click)="onEditClick()">
+      <fa-icon icon="edit"></fa-icon>
+    </button>
+  </div>
+</div>

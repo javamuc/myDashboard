@@ -1,0 +1,62 @@
+@if (isEditorOpen()) {
+  <div class="diary-overlay" (click)="onOverlayClick($event)">
+    <div class="diary-content" (click)="onContentClick($event)">
+      <div class="diary-header">
+        <h2>Mood Tracker & Diary</h2>
+        <button class="close-button" (click)="closeEditor()">
+          <fa-icon icon="times"></fa-icon>
+        </button>
+      </div>
+
+      <!-- Emoticon Selector -->
+      <jhi-diary-emoticon-selector [selectedEmoticon]="selectedEmoticon()" (emoticonSelected)="selectEmoticon($event)">
+      </jhi-diary-emoticon-selector>
+
+      <!-- Tag Selector (appears when emoticon is selected) -->
+      @if (isTagSelectorOpen()) {
+        <jhi-diary-tag-selector
+          [selectedTags]="selectedTags()"
+          (tagToggled)="toggleTag($event)"
+          (tagAdded)="addNewTag($event)"
+          (enterPressed)="startNewEntry()"
+          (escapePressed)="closeTagSelector()"
+        >
+        </jhi-diary-tag-selector>
+      }
+
+      <!-- Entry Input (appears when creating a new entry) -->
+      @if (selectedEmoticon() && !isTagSelectorOpen() && !isEditingEntry()) {
+        <div class="entry-input-container">
+          <textarea
+            #entryInput
+            [ngModel]="entryContent()"
+            (ngModelChange)="entryContent.set($event)"
+            placeholder="What's on your mind? (Press ⌘+Enter to save)"
+            class="entry-input"
+          ></textarea>
+          <div class="entry-actions">
+            <button class="save-button" (click)="createEntry()"><fa-icon icon="save"></fa-icon> Save</button>
+            <button class="cancel-button" (click)="closeTagSelector()"><fa-icon icon="times"></fa-icon> Cancel</button>
+          </div>
+        </div>
+      }
+
+      <!-- Edit Entry Input (appears when editing an existing entry) -->
+      @if (isEditingEntry()) {
+        <div class="entry-input-container">
+          <textarea
+            #entryInput
+            [ngModel]="entryContent()"
+            (ngModelChange)="entryContent.set($event)"
+            placeholder="Edit your entry... (Press ⌘+Enter to save)"
+            class="entry-input"
+          ></textarea>
+          <div class="entry-actions">
+            <button class="save-button" (click)="saveEditedEntry()"><fa-icon icon="save"></fa-icon> Save</button>
+            <button class="cancel-button" (click)="cancelEditing()"><fa-icon icon="times"></fa-icon> Cancel</button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

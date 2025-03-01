@@ -14,6 +14,7 @@ import StockPickerComponent from '../shared/shared.module';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 import { HabitTrackerComponent } from '../habit/habit-tracker.component';
 import { HideOnPomodoroDirective } from '../shared/pomodoro/hide-on-pomodoro.directive';
+import { DiaryComponent } from '../diary/diary.component';
 
 @Component({
   selector: 'jhi-home',
@@ -30,6 +31,7 @@ import { HideOnPomodoroDirective } from '../shared/pomodoro/hide-on-pomodoro.dir
     DashboardComponent,
     HabitTrackerComponent,
     HideOnPomodoroDirective,
+    DiaryComponent,
   ],
   standalone: true,
 })

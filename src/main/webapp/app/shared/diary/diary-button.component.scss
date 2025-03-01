@@ -1,0 +1,19 @@
+.diary-button {
+  display: inline-block;
+
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color);
+    transition: color 0.2s;
+
+    &:hover {
+      color: var(--primary);
+    }
+
+    fa-icon {
+      font-size: 1rem;
+    }
+  }
+}

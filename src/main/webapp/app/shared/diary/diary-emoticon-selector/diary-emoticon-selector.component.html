@@ -1,0 +1,16 @@
+<div class="emoticon-selector">
+  <div class="emoticons-list">
+    @for (emoticon of emoticons(); track emoticon.id) {
+      <div
+        class="emoticon-item"
+        [class.selected]="selectedEmoticon?.id === emoticon.id"
+        (click)="selectEmoticon(emoticon)"
+        [attr.title]="emoticon.name + ' (' + emoticon.shortcut + ')'"
+      >
+        <div class="emoticon-emoji">{{ emoticon.emoji }}</div>
+        <div class="emoticon-name">{{ emoticon.name }}</div>
+        <div class="emoticon-shortcut">{{ emoticon.shortcut }}</div>
+      </div>
+    }
+  </div>
+</div>

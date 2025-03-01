@@ -1,0 +1,49 @@
+.emoticon-selector {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.emoticons-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.emoticon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80px;
+  padding: 0.75rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  background-color: rgba(255, 255, 255, 0.05);
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  &.selected {
+    background-color: rgba(var(--primary-rgb), 0.2);
+    border: 1px solid var(--primary);
+  }
+
+  .emoticon-emoji {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .emoticon-name {
+    font-size: 0.8rem;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .emoticon-shortcut {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin-top: 0.25rem;
+  }
+}

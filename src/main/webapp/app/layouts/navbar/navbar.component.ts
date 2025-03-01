@@ -89,6 +89,9 @@ export default class NavbarComponent implements OnInit {
       } else if (event.key === '3') {
         event.preventDefault();
         this.switchToNotes();
+      } else if (event.key === '4') {
+        event.preventDefault();
+        this.switchToDiary();
       }
     }
   }
@@ -103,6 +106,10 @@ export default class NavbarComponent implements OnInit {
 
   switchToNotes(): void {
     this.homeService.setActiveComponent('notes');
+  }
+
+  switchToDiary(): void {
+    this.homeService.setActiveComponent('diary');
   }
 
   changeLanguage(languageKey: string): void {
