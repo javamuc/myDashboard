@@ -1,3 +1,9 @@
+.board-settings-container {
+  padding-top: 2rem;
+  height: 100%;
+  background-color: var(--bs-gray-900);
+}
+
 .board-list {
   display: flex;
   flex-direction: column;
@@ -15,12 +21,12 @@
     transition: all 0.2s ease-in-out;
 
     &:hover {
-      background-color: #f8f9fa;
+      background-color: var(--bs-gray-700);
     }
 
     &.active {
-      background-color: #e9ecef;
-      border-color: #ced4da;
+      background-color: var(--bs-gray-900);
+      border-color: var(--bs-primary);
     }
 
     &.archived {
