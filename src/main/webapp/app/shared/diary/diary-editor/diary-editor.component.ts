@@ -110,6 +110,14 @@ export class DiaryEditorComponent implements OnChanges, AfterViewInit {
       return;
     }
 
+    // Handle Enter key to continue to tag selection when emoticon is selected
+    if (event.key === 'Enter' && this.selectedEmoticon() && !this.isTagSelectorOpen() && !this.isEditingEntry()) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.openTagSelector();
+      return;
+    }
+
     // Handle Escape key to close tag selector or editor
     if (event.key === 'Escape') {
       if (this.isTagSelectorOpen()) {
@@ -158,6 +166,10 @@ export class DiaryEditorComponent implements OnChanges, AfterViewInit {
     this.diaryService.selectEmoticon(emoticon);
   }
 
+  openTagSelector(): void {
+    this.diaryService.openTagSelector();
+  }
+
   toggleTag(tag: DiaryTag): void {
     this.diaryService.toggleTag(tag);
   }
@@ -167,7 +179,7 @@ export class DiaryEditorComponent implements OnChanges, AfterViewInit {
   }
 
   startNewEntry(): void {
-    if (this.selectedEmoticon()) {
+    if (this.selectedEmoticon() && this.selectedTags().length > 0) {
       this.entryContent.set('');
       this.closeTagSelector();
 
@@ -188,6 +200,7 @@ export class DiaryEditorComponent implements OnChanges, AfterViewInit {
 
       this.saveEntry.emit(newEntry as DiaryEntry);
       this.entryContent.set('');
+      this.diaryService.resetSelections();
     }
   }
 
@@ -219,6 +232,7 @@ export class DiaryEditorComponent implements OnChanges, AfterViewInit {
   cancelEditing(): void {
     this.diaryService.stopEditingEntry();
     this.entryContent.set('');
+    this.diaryService.resetSelections();
     this.cancelEdit.emit();
   }
 

@@ -120,6 +120,10 @@ export class DiaryService {
 
   selectEmoticon(emoticon: DiaryEmoticon): void {
     this.selectedEmoticon.set(emoticon);
+    // No longer automatically open tag selector
+  }
+
+  openTagSelector(): void {
     this.isTagSelectorOpen.set(true);
   }
 
@@ -142,8 +146,7 @@ export class DiaryService {
 
   closeTagSelector(): void {
     this.isTagSelectorOpen.set(false);
-    this.selectedEmoticon.set(null);
-    this.selectedTags.set([]);
+    // Don't reset emoticon and tags here
   }
 
   createDiaryEntry(content: string): void {
@@ -189,9 +192,13 @@ export class DiaryService {
     this.toggleTag(newTag);
   }
 
-  private resetState(): void {
+  resetSelections(): void {
     this.selectedEmoticon.set(null);
     this.selectedTags.set([]);
+  }
+
+  private resetState(): void {
+    this.resetSelections();
     this.isTagSelectorOpen.set(false);
     this.isEditingEntry.set(false);
     this.currentEditingEntry.set(null);
