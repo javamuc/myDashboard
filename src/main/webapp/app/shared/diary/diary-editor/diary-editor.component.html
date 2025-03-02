@@ -12,7 +12,6 @@
       @if (!isTagSelectorOpen()) {
         <jhi-diary-emoticon-selector
           [selectedEmoticon]="selectedEmoticon()"
-          [selectionConfirmed]="false"
           (emoticonSelected)="selectEmoticon($event)"
           (nextClicked)="openTagSelector()"
         >

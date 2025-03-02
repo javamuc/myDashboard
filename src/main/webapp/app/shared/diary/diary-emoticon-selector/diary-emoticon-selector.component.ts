@@ -13,7 +13,7 @@ import { DiaryService } from '../diary.service';
 export class DiaryEmoticonSelectorComponent {
   @ViewChild('selectorContainer') selectorContainer!: ElementRef<HTMLDivElement>;
   @Input() selectedEmoticon: DiaryEmoticon | null = null;
-  @Input() selectionConfirmed = false;
+  selectionConfirmed = false;
   @Output() emoticonSelected = new EventEmitter<DiaryEmoticon>();
   @Output() nextClicked = new EventEmitter<void>();
 
