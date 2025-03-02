@@ -34,6 +34,7 @@ import { DiaryEntryComponent } from '../diary-entry/diary-entry.component';
 export class DiaryEditorComponent implements OnChanges, AfterViewInit {
   @ViewChild('entryInput') entryInput!: ElementRef<HTMLTextAreaElement>;
   @ViewChild(DiaryEmoticonSelectorComponent) emoticonSelector!: DiaryEmoticonSelectorComponent;
+  @ViewChild(DiaryTagSelectorComponent) tagSelector!: DiaryTagSelectorComponent;
   @Input() entry: DiaryEntry | null = null;
   @Output() saveEntry = new EventEmitter<DiaryEntry>();
   @Output() cancelEdit = new EventEmitter<void>();
@@ -168,6 +169,13 @@ export class DiaryEditorComponent implements OnChanges, AfterViewInit {
 
   openTagSelector(): void {
     this.diaryService.openTagSelector();
+
+    // Focus the tag selector after it's opened
+    setTimeout(() => {
+      if (this.tagSelector) {
+        this.tagSelector.focus();
+      }
+    });
   }
 
   toggleTag(tag: DiaryTag): void {

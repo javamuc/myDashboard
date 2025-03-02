@@ -2,6 +2,11 @@
   padding: 0;
   width: 100%;
   flex: 1;
+  outline: none;
+
+  &:focus {
+    outline: none;
+  }
 
   h3 {
     margin: 0 0 1rem 0;
@@ -11,16 +16,23 @@
   }
 }
 
-.tags-list {
+.tags-container {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.75rem;
   margin-bottom: 1rem;
   max-width: 600px;
 }
 
+.tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 36px;
+}
+
 .tag-item {
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.5rem;
   border-radius: 20px;
   background-color: #333;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -28,6 +40,14 @@
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+
+  .tag-shortcut {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    margin-left: 0.25rem;
+  }
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.15);

@@ -26,6 +26,10 @@ export class DiaryService {
     { id: 7, name: 'coworkers' },
     { id: 8, name: 'health' },
     { id: 9, name: 'college' },
+    { id: 10, name: 'hobby' },
+    { id: 11, name: 'travel' },
+    { id: 12, name: 'fitness' },
+    { id: 13, name: 'entertainment' },
   ]);
 
   // Default emoticons

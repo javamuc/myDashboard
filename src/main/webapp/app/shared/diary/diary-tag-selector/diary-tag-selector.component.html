@@ -1,37 +1,62 @@
-<div class="tag-selector">
+<div class="tag-selector" tabindex="0">
   <h3>What was it about?</h3>
 
-  <div class="tags-list">
-    @for (tag of diaryTags(); track tag.id) {
-      <button class="tag-item" [class.selected]="isTagSelected(tag)" (click)="toggleTag(tag)" [attr.data-tag-id]="tag.id" tabindex="0">
-        {{ tag.name }}
-      </button>
-    }
+  <div class="tags-container">
+    <!-- First row of tags (q,w,e,r,t,y) -->
+    <div class="tags-row">
+      @for (tag of firstRowTags; track tag.id; let i = $index) {
+        <button class="tag-item" [class.selected]="isTagSelected(tag)" (click)="toggleTag(tag)" [attr.data-tag-id]="tag.id" tabindex="0">
+          {{ tag.name }} <span class="tag-shortcut">({{ getTagShortcut(i) }})</span>
+        </button>
+      }
+    </div>
 
-    @if (!isAddingNewTag) {
-      <button class="add-tag-button" (click)="startAddNewTag()">
-        <fa-icon icon="plus"></fa-icon>
-      </button>
-    } @else {
-      <div class="new-tag-container">
-        <input
-          type="text"
-          class="new-tag-input"
-          [(ngModel)]="newTagName"
-          placeholder="New tag name..."
-          (keydown.enter)="addNewTag()"
-          (keydown.escape)="cancelAddNewTag()"
-        />
-        <div class="new-tag-actions">
-          <button class="confirm-button" (click)="addNewTag()">
-            <fa-icon icon="check"></fa-icon>
-          </button>
-          <button class="cancel-button" (click)="cancelAddNewTag()">
-            <fa-icon icon="times"></fa-icon>
-          </button>
+    <!-- Second row of tags (a,s,d,f,g,h) -->
+    <div class="tags-row">
+      @for (tag of secondRowTags; track tag.id; let i = $index) {
+        <button class="tag-item" [class.selected]="isTagSelected(tag)" (click)="toggleTag(tag)" [attr.data-tag-id]="tag.id" tabindex="0">
+          {{ tag.name }} <span class="tag-shortcut">({{ getTagShortcut(i + 6) }})</span>
+        </button>
+      }
+    </div>
+
+    <!-- Third row of tags (z,x,c,v,b,n) -->
+    <div class="tags-row">
+      @for (tag of thirdRowTags; track tag.id; let i = $index) {
+        <button class="tag-item" [class.selected]="isTagSelected(tag)" (click)="toggleTag(tag)" [attr.data-tag-id]="tag.id" tabindex="0">
+          {{ tag.name }} <span class="tag-shortcut">({{ getTagShortcut(i + 12) }})</span>
+        </button>
+      }
+    </div>
+
+    <!-- Add new tag button -->
+    <div class="tags-row">
+      @if (!isAddingNewTag && canAddMoreTags()) {
+        <button class="add-tag-button" (click)="startAddNewTag()">
+          <fa-icon icon="plus"></fa-icon>
+        </button>
+      } @else if (isAddingNewTag) {
+        <div class="new-tag-container">
+          <input
+            type="text"
+            class="new-tag-input"
+            [(ngModel)]="newTagName"
+            placeholder="New tag name..."
+            (keydown)="$event.stopPropagation()"
+            (keydown.enter)="addNewTag(); $event.preventDefault()"
+            (keydown.escape)="cancelAddNewTag(); $event.preventDefault()"
+          />
+          <div class="new-tag-actions">
+            <button class="confirm-button" (click)="addNewTag()">
+              <fa-icon icon="check"></fa-icon>
+            </button>
+            <button class="cancel-button" (click)="cancelAddNewTag()">
+              <fa-icon icon="times"></fa-icon>
+            </button>
+          </div>
         </div>
-      </div>
-    }
+      }
+    </div>
   </div>
 
   <div class="tag-selector-help">
