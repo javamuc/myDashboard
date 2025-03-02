@@ -9,7 +9,7 @@
       </div>
 
       <!-- Emoticon Selector (initial state) -->
-      @if (!isTagSelectorOpen()) {
+      @if (!isTagSelectorOpen() && !(selectedEmoticon() && selectedTags().length > 0)) {
         <jhi-diary-emoticon-selector
           [selectedEmoticon]="selectedEmoticon()"
           (emoticonSelected)="selectEmoticon($event)"
@@ -43,6 +43,8 @@
               <div class="selected-emoticon-large">
                 {{ selectedEmoticon()?.emoji }}
               </div>
+              <div class="entry-sidebar-label">Content</div>
+              <div class="entry-sidebar-count">{{ selectedTags().length }}</div>
               <div class="selected-tags-sidebar">
                 @for (tag of selectedTags(); track tag.id) {
                   <div class="selected-tag">{{ tag.name }}</div>
