@@ -35,8 +35,8 @@ export class DiaryEmoticonSelectorComponent {
       }
     }
 
-    // Handle Enter key to continue to tag selection
-    if (event.key === 'Enter' && this.selectedEmoticon && !this.selectionConfirmed) {
+    // Handle Enter or Right Arrow key to continue to tag selection
+    if ((event.key === 'Enter' || event.key === 'ArrowRight') && this.selectedEmoticon && !this.selectionConfirmed) {
       event.stopPropagation();
       event.preventDefault();
       this.nextClicked.emit();

@@ -64,10 +64,13 @@ export class DiaryTagSelectorComponent implements OnInit {
 
   @HostListener('keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent): void {
+    console.warn('Tag selector keydown:', event.key);
+
     // Skip shortcut handling if user is typing in the new tag input
     if (this.isAddingNewTag && document.activeElement?.classList.contains('new-tag-input')) {
       // Only handle Enter and Escape for the input field
       if (event.key === 'Enter') {
+        console.warn('Enter key pressed in diary tag selector - new tag input');
         event.preventDefault();
         this.addNewTag();
       } else if (event.key === 'Escape') {
@@ -85,14 +88,15 @@ export class DiaryTagSelectorComponent implements OnInit {
       return;
     }
 
-    // Handle tab and arrow navigation
-    if (event.key === 'Tab' || event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+    // Handle tab navigation
+    if (event.key === 'Tab') {
       // Let the default tab behavior work for navigation
       return;
     }
 
     // Handle space to toggle selected tag
     if (event.key === 'Space' && document.activeElement instanceof HTMLElement) {
+      console.warn('Space key pressed in diary tag selector');
       const tagId = document.activeElement.getAttribute('data-tag-id');
       if (tagId) {
         event.preventDefault();
@@ -104,13 +108,16 @@ export class DiaryTagSelectorComponent implements OnInit {
     }
 
     // Handle Enter key
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' || event.key === 'ArrowRight') {
+      console.warn('Enter/ArrowRight key pressed in diary tag selector - emitting enterPressed');
       event.preventDefault();
-      this.enterPressed.emit();
+      if (this.selectedTags && this.selectedTags.length > 0) {
+        this.enterPressed.emit();
+      }
     }
 
     // Handle Escape key
-    if (event.key === 'Escape') {
+    if (event.key === 'Escape' || event.key === 'ArrowLeft') {
       event.preventDefault();
       this.escapePressed.emit();
     }

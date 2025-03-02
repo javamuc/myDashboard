@@ -76,6 +76,13 @@ export class DiaryEditorComponent implements OnChanges, AfterViewInit {
         this.emoticonSelector.focus();
       });
     }
+
+    // Set up a timer to check if the tag selector is open
+    setInterval(() => {
+      if (this.isEditorOpen()) {
+        console.warn('Tag selector open check:', this.isTagSelectorOpen());
+      }
+    }, 1000);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -94,10 +101,20 @@ export class DiaryEditorComponent implements OnChanges, AfterViewInit {
     }
   }
 
-  @HostListener('document:keydown', ['$event'])
+  @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
+    // Skip if the editor is not open
+    if (!this.isEditorOpen()) {
+      return;
+    }
+
+    console.warn('Keyboard event:', event.key, 'isTagSelectorOpen:', this.isTagSelectorOpen());
+
+    const isTextInput = event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;
+    const isTextArea = event.target === this.entryInput?.nativeElement;
+
     // Handle keyboard shortcuts for emoticons (1 through 9)
-    if (this.isEditorOpen() && /^[1-9]$/.test(event.key)) {
+    if (this.isEditorOpen() && /^[1-9]$/.test(event.key) && !isTextInput) {
       // Stop propagation to prevent navbar from capturing these keys
       event.stopPropagation();
       event.preventDefault();
@@ -111,21 +128,33 @@ export class DiaryEditorComponent implements OnChanges, AfterViewInit {
       return;
     }
 
-    // Handle Enter key to continue to tag selection when emoticon is selected
-    if (event.key === 'Enter' && this.selectedEmoticon() && !this.isTagSelectorOpen() && !this.isEditingEntry()) {
+    // Handle Enter or Right Arrow key to continue to tag selection when emoticon is selected
+    if (
+      (event.key === 'Enter' || event.key === 'ArrowRight') &&
+      this.selectedEmoticon() &&
+      !this.isTagSelectorOpen() &&
+      !this.isEditingEntry() &&
+      !isTextInput
+    ) {
       event.preventDefault();
       event.stopPropagation();
       this.openTagSelector();
       return;
     }
 
-    // Handle Escape key to close tag selector or editor
-    if (event.key === 'Escape') {
+    // Handle Escape or Left Arrow key to go back or close
+    if (event.key === 'Escape' || event.key === 'ArrowLeft') {
+      // Don't handle left arrow in text inputs unless at the beginning of the text
+      if (event.key === 'ArrowLeft' && isTextInput && !(isTextArea && this.entryInput.nativeElement.selectionStart === 0)) {
+        return;
+      }
+
       if (this.isTagSelectorOpen()) {
         event.preventDefault();
         event.stopPropagation();
-        this.closeTagSelector();
-      } else if (this.isEditorOpen()) {
+        console.warn('Escape/ArrowLeft pressed while tag selector is open, forcing it closed');
+        this.diaryService.forceCloseTagSelector();
+      } else if (this.isEditorOpen() && !isTextArea) {
         event.preventDefault();
         event.stopPropagation();
         this.closeEditor();
@@ -133,15 +162,22 @@ export class DiaryEditorComponent implements OnChanges, AfterViewInit {
       return;
     }
 
-    // Handle Enter key to create entry when tag selector is open
-    if (event.key === 'Enter' && this.isTagSelectorOpen() && !event.shiftKey) {
+    // Handle Enter or Right Arrow key to create entry when tag selector is open
+    if (
+      (event.key === 'Enter' || event.key === 'ArrowRight') &&
+      this.isTagSelectorOpen() &&
+      this.selectedTags().length > 0 &&
+      !event.shiftKey &&
+      !isTextInput
+    ) {
+      console.warn('Handling Enter/Right Arrow in tag selector');
       event.preventDefault();
       event.stopPropagation();
       this.startNewEntry();
       return;
     }
 
-    // Handle CMD+Enter to save entry
+    // Handle CMD+Enter to save entry (works in text area too)
     if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
       event.preventDefault();
       event.stopPropagation();
@@ -183,18 +219,62 @@ export class DiaryEditorComponent implements OnChanges, AfterViewInit {
   }
 
   closeTagSelector(): void {
-    this.diaryService.closeTagSelector();
+    console.warn('closeTagSelector called');
+    this.diaryService.forceCloseTagSelector();
+    console.warn('Tag selector closed, isTagSelectorOpen:', this.isTagSelectorOpen());
   }
 
   startNewEntry(): void {
+    console.warn('startNewEntry called');
     if (this.selectedEmoticon() && this.selectedTags().length > 0) {
+      console.warn('startNewEntry called 2');
       this.entryContent.set('');
-      this.closeTagSelector();
 
-      // Focus the input after the tag selector is closed
+      // Use the new forceCloseTagSelector method
+      this.diaryService.forceCloseTagSelector();
+      console.warn('After forceCloseTagSelector, isTagSelectorOpen:', this.isTagSelectorOpen());
+
+      // Force Angular change detection and focus the input
       setTimeout(() => {
-        this.entryInput.nativeElement.focus();
-      });
+        console.warn('After timeout, isTagSelectorOpen:', this.isTagSelectorOpen());
+
+        // If the tag selector is still open, force it closed again
+        if (this.isTagSelectorOpen()) {
+          console.warn('Tag selector is still open, forcing it closed again');
+          this.diaryService.forceCloseTagSelector();
+
+          // Give it another moment to update the UI
+          setTimeout(() => {
+            if (this.entryInput?.nativeElement) {
+              console.warn('Focusing entry input after second close');
+              this.entryInput.nativeElement.focus();
+            } else {
+              console.warn('Entry input not available after second close');
+            }
+          }, 50);
+        } else if (this.entryInput?.nativeElement) {
+          console.warn('Focusing entry input');
+          this.entryInput.nativeElement.focus();
+        } else {
+          console.warn('Entry input not available');
+        }
+      }, 100);
+
+      // Set up a timer to ensure the tag selector stays closed
+      const checkInterval = setInterval(() => {
+        if (this.isTagSelectorOpen() && this.selectedEmoticon() && this.selectedTags().length > 0) {
+          console.warn('Tag selector reopened, forcing it closed again');
+          this.diaryService.forceCloseTagSelector();
+        } else if (!this.isEditorOpen()) {
+          // Clear the interval if the editor is closed
+          clearInterval(checkInterval);
+        }
+      }, 200);
+
+      // Clear the interval after 5 seconds
+      setTimeout(() => {
+        clearInterval(checkInterval);
+      }, 5000);
     }
   }
 
