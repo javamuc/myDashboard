@@ -1,37 +1,38 @@
 <div class="idea-card" [class.selected]="selected" (click)="onSelect()">
   <div class="idea-content">{{ idea.content }}</div>
-  <div class="idea-actions">
-    <button
-      *ngIf="!convertedToNote && !convertedToTask"
-      type="button"
-      class="btn btn-sm btn-outline-info"
-      (click)="onConvertToTask($event)"
-      title="Convert to Task"
-    >
-      <fa-icon icon="tasks"></fa-icon>
-    </button>
-    <button
-      *ngIf="!convertedToNote && !convertedToTask"
-      type="button"
-      class="btn btn-sm btn-outline-info"
-      (click)="onConvertToNote($event)"
-      title="Convert to Note"
-    >
-      <fa-icon icon="sticky-note"></fa-icon>
-    </button>
-    <button *ngIf="convertedToTask" type="button" class="btn btn-sm btn-outline-info" (click)="openTask($event)" title="Convert to Task">
-      Open <fa-icon icon="tasks"></fa-icon>
-    </button>
-    <button *ngIf="convertedToNote" type="button" class="btn btn-sm btn-outline-info" (click)="openNote($event)" title="Convert to Note">
-      Open <fa-icon icon="sticky-note"></fa-icon>
-    </button>
-    <button type="button" class="btn btn-sm btn-outline-danger" (click)="onDelete($event)" title="Delete Idea">
-      <fa-icon icon="trash"></fa-icon>
-    </button>
-  </div>
-
-  <div class="card-date">
-    <fa-icon icon="clock"></fa-icon>
-    {{ idea.createdDate | date: 'short' }}
+  <div class="idea-actions-container">
+    <div class="idea-actions">
+      <button
+        *ngIf="!convertedToNote && !convertedToTask"
+        type="button"
+        class="btn btn-sm btn-outline-info"
+        (click)="onConvertToTask($event)"
+        title="Convert to Task"
+      >
+        <fa-icon icon="tasks"></fa-icon>
+      </button>
+      <button
+        *ngIf="!convertedToNote && !convertedToTask"
+        type="button"
+        class="btn btn-sm btn-outline-info"
+        (click)="onConvertToNote($event)"
+        title="Convert to Note"
+      >
+        <fa-icon icon="sticky-note"></fa-icon>
+      </button>
+      <button *ngIf="convertedToTask" type="button" class="btn btn-sm btn-outline-info" (click)="openTask($event)" title="Convert to Task">
+        Open <fa-icon icon="tasks"></fa-icon>
+      </button>
+      <button *ngIf="convertedToNote" type="button" class="btn btn-sm btn-outline-info" (click)="openNote($event)" title="Convert to Note">
+        Open <fa-icon icon="sticky-note"></fa-icon>
+      </button>
+      <button type="button" class="btn btn-sm btn-outline-danger" (click)="onDelete($event)" title="Delete Idea">
+        <fa-icon icon="trash"></fa-icon>
+      </button>
+    </div>
+    <div class="card-date">
+      <fa-icon icon="clock"></fa-icon>
+      {{ idea.createdDate | date: 'short' }}
+    </div>
   </div>
 </div>

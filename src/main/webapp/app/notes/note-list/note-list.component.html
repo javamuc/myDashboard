@@ -2,7 +2,7 @@
   <div *ngFor="let note of notes" class="note-item" [class.selected]="isSelected(note)" (click)="onNoteClick(note)">
     <div class="note-title">{{ note.title }}</div>
     <div class="note-preview">{{ getPreviewText(note.content) }}</div>
-    <div class="note-date">{{ note.lastModifiedDate | date: 'short' }}</div>
+    <div class="card-date">{{ note.lastModifiedDate | date: 'short' }}</div>
   </div>
   <div *ngIf="notes.length === 0" class="no-notes">
     <p>No notes found</p>

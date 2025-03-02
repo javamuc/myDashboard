@@ -1,8 +1,6 @@
 .board-container {
   padding-top: 2rem;
-  color: #ffffff;
-  min-height: 100vh;
-  height: 100%;
+  height: calc(100vh - 150px);
   display: flex;
   flex-direction: column;
 }
@@ -88,7 +86,6 @@
           border-radius: 4px;
           background-color: rgba(255, 255, 255, 0.1);
           border: 1px solid rgba(255, 255, 255, 0.1);
-          color: #ffffff;
           cursor: pointer;
 
           &:hover {
