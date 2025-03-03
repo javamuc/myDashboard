@@ -13,9 +13,7 @@ import { DiaryService } from '../diary.service';
 export class DiaryEmoticonSelectorComponent {
   @ViewChild('selectorContainer') selectorContainer!: ElementRef<HTMLDivElement>;
   @Input() selectedEmoticon: DiaryEmoticon | null = null;
-  selectionConfirmed = false;
   @Output() emoticonSelected = new EventEmitter<DiaryEmoticon>();
-  @Output() nextClicked = new EventEmitter<void>();
 
   readonly diaryService = inject(DiaryService);
   emoticons = this.diaryService.getEmoticons();
@@ -34,23 +32,10 @@ export class DiaryEmoticonSelectorComponent {
         this.selectEmoticon(emoticonsList[emoticonIndex]);
       }
     }
-
-    // Handle Enter or Right Arrow key to continue to tag selection
-    if ((event.key === 'Enter' || event.key === 'ArrowRight') && this.selectedEmoticon && !this.selectionConfirmed) {
-      event.stopPropagation();
-      event.preventDefault();
-      this.nextClicked.emit();
-    }
   }
 
   selectEmoticon(emoticon: DiaryEmoticon): void {
     this.emoticonSelected.emit(emoticon);
-  }
-
-  onNextClick(): void {
-    if (this.selectedEmoticon) {
-      this.nextClicked.emit();
-    }
   }
 
   focus(): void {

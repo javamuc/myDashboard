@@ -1,7 +1,6 @@
 .emoticon-selector {
   padding: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background-color: #1a1a1a;
   transition: all 0.3s ease;
 
   &:focus {
@@ -15,31 +14,12 @@
   }
 }
 
-.selector-title {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  color: #ffffff;
-  font-size: 1.2rem;
-  font-weight: normal;
-  transition: opacity 0.3s ease;
-
-  &.hidden {
-    opacity: 0;
-    height: 0;
-    margin: 0;
-    overflow: hidden;
-  }
-}
-
 .emoticons-list {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: center;
-  background-color: #222;
-  padding: 1rem;
   border-radius: 8px;
-  transition: all 0.3s ease;
 
   &.selection-made {
     background-color: transparent;
@@ -60,15 +40,15 @@
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
-  background-color: #333;
+  background-color: var(--bs-gray-900);
 
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
   }
 
   &.selected {
-    background-color: rgba(var(--primary-rgb), 0.2);
-    border: 1px solid var(--primary);
+    background-color: var(--bs-gray-800);
+    border: 1px solid var(--bs-gray-700);
 
     .emoticons-list.selection-made & {
       width: 60px;
@@ -86,16 +66,6 @@
     }
   }
 
-  &.fade-out {
-    opacity: 0;
-    width: 0;
-    height: 0;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    transition: all 0.3s ease;
-  }
-
   .emoticon-emoji {
     font-size: 1.5rem;
     margin-bottom: 0.25rem;
@@ -105,61 +75,12 @@
     font-size: 0.75rem;
     text-align: center;
     color: rgba(255, 255, 255, 0.9);
-
-    &.hidden {
-      opacity: 0;
-      height: 0;
-      margin: 0;
-      overflow: hidden;
-    }
   }
 
   .emoticon-shortcut {
     font-size: 0.65rem;
     color: rgba(255, 255, 255, 0.5);
     margin-top: 0.25rem;
-
-    &.hidden {
-      opacity: 0;
-      height: 0;
-      margin: 0;
-      overflow: hidden;
-    }
-  }
-}
-
-.selector-footer {
-  display: flex;
-  justify-content: center;
-  margin-top: 1.5rem;
-  transition: opacity 0.3s ease;
-
-  &.hidden {
-    opacity: 0;
-    height: 0;
-    margin: 0;
-    overflow: hidden;
-  }
-
-  .instruction-text {
-    text-align: center;
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.9rem;
-  }
-
-  .next-button {
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 0.5rem 1.5rem;
-    font-size: 0.9rem;
-    cursor: pointer;
-    margin-left: 1rem;
-
-    &:hover {
-      background-color: var(--primary-dark);
-    }
   }
 }
 

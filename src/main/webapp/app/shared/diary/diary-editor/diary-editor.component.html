@@ -7,49 +7,47 @@
           <fa-icon icon="times"></fa-icon>
         </button>
       </div>
-
-      <!-- Emoticon Selector (initial state) -->
-      @if (!isTagSelectorOpen() && !(selectedEmoticon() && selectedTags().length > 0)) {
-        <jhi-diary-emoticon-selector
-          [selectedEmoticon]="selectedEmoticon()"
-          (emoticonSelected)="selectEmoticon($event)"
-          (nextClicked)="openTagSelector()"
-        >
-        </jhi-diary-emoticon-selector>
-      }
-
-      <!-- Combined Emoticon and Tag Selector (after emoticon selection) -->
-      @if (isTagSelectorOpen() && !(selectedEmoticon() && selectedTags().length > 0 && !isTagSelectorOpen())) {
-        <div class="combined-selector">
-          <div class="selected-emoticon">
-            <div class="emoticon-emoji">{{ selectedEmoticon()?.emoji }}</div>
-          </div>
-          <jhi-diary-tag-selector
-            [selectedTags]="selectedTags()"
-            (tagToggled)="toggleTag($event)"
-            (tagAdded)="addNewTag($event)"
-            (enterPressed)="startNewEntry()"
-            (escapePressed)="closeTagSelector()"
+      <div class="diary-steps">
+        <h4 class="selector-title">{{ steps[currentStep()].title }}</h4>
+        <!-- Emoticon Selector (initial state) -->
+        @if (currentStep() === 0) {
+          <jhi-diary-emoticon-selector
+            [selectedEmoticon]="selectedEmoticon()"
+            (emoticonSelected)="selectEmoticon($event)"
+            (nextClicked)="openTagSelector()"
           >
-          </jhi-diary-tag-selector>
-          <div class="debug-info">Tag selector is open: {{ isTagSelectorOpen() }}</div>
-        </div>
-      }
+          </jhi-diary-emoticon-selector>
+        }
 
-      <!-- Entry Input (appears only after tags are selected) -->
-      @if (selectedEmoticon() && selectedTags().length > 0 && !isTagSelectorOpen() && !isEditingEntry()) {
-        <div class="entry-input-container">
-          <div class="debug-info">Entry input container is visible. Tag selector is closed: {{ !isTagSelectorOpen() }}</div>
-          <div class="entry-content-layout">
+        <!-- Combined Emoticon and Tag Selector (after emoticon selection) -->
+        @else if (currentStep() === 1) {
+          <div class="combined-selector">
             <div class="entry-sidebar">
-              <div class="selected-emoticon-large">
-                {{ selectedEmoticon()?.emoji }}
+              <div class="selected-emoticon">
+                <div class="emoticon-emoji">{{ selectedEmoticon()?.emoji }}</div>
               </div>
-              <div class="entry-sidebar-label">Content</div>
-              <div class="entry-sidebar-count">{{ selectedTags().length }}</div>
-              <div class="selected-tags-sidebar">
+            </div>
+            <jhi-diary-tag-selector
+              [selectedTags]="selectedTags()"
+              (tagToggled)="toggleTag($event)"
+              (tagAdded)="addNewTag($event)"
+              (enterPressed)="startNewEntry()"
+              (escapePressed)="closeTagSelector()"
+            >
+            </jhi-diary-tag-selector>
+          </div>
+        }
+
+        <!-- Entry Input (appears only after tags are selected) -->
+        @else if (currentStep() === 2) {
+          <div class="combined-selector">
+            <div class="entry-sidebar">
+              <div class="selected-emoticon">
+                <div class="emoticon-emoji">{{ selectedEmoticon()?.emoji }}</div>
+              </div>
+              <div class="entry-tags">
                 @for (tag of selectedTags(); track tag.id) {
-                  <div class="selected-tag">{{ tag.name }}</div>
+                  <div class="entry-tag">{{ tag.name }}</div>
                 }
               </div>
             </div>
@@ -60,17 +58,17 @@
                 (ngModelChange)="entryContent.set($event)"
                 placeholder="Text Area"
                 class="entry-input"
+                (keydown)="handleTextareaKeydown($event)"
               ></textarea>
-              <div class="entry-actions">
-                <button class="save-button" (click)="createEntry()">
-                  Save
-                  <div class="save-shortcut">Cmd+Enter</div>
-                </button>
-              </div>
             </div>
           </div>
+        }
+
+        <div class="selector-footer">
+          <button class="previous-button" (click)="previousStep()" [disabled]="!canGoBack()">Back</button>
+          <button class="next-button" (click)="nextStep()" [disabled]="!canGoForward()">Next</button>
         </div>
-      }
+      </div>
 
       <!-- Edit Entry Input (appears when editing an existing entry) -->
       @if (isEditingEntry()) {
@@ -81,6 +79,7 @@
             (ngModelChange)="entryContent.set($event)"
             placeholder="Edit your entry... (Press ⌘+Enter to save)"
             class="entry-input"
+            (keydown)="handleTextareaKeydown($event)"
           ></textarea>
           <div class="entry-actions">
             <button class="save-button" (click)="saveEditedEntry()"><fa-icon icon="save"></fa-icon> Save</button>

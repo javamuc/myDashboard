@@ -40,9 +40,26 @@ export class DiaryEditorComponent implements OnChanges, AfterViewInit {
   @Output() cancelEdit = new EventEmitter<void>();
 
   readonly diaryService = inject(DiaryService);
+  readonly steps = [
+    {
+      label: 'Emoticon',
+      title: 'How do you feel?',
+      selector: this.emoticonSelector,
+    },
+    {
+      label: 'Tags',
+      title: 'What was it about?',
+      selector: this.tagSelector,
+    },
+    {
+      label: 'Content',
+      title: 'Write it down',
+      selector: this.entryInput,
+    },
+  ];
+  currentStep = signal(0);
 
   isEditorOpen = this.diaryService.getIsEditorOpen();
-  entries = this.diaryService.getEntries();
   selectedEmoticon = this.diaryService.getSelectedEmoticon();
   selectedTags = this.diaryService.getSelectedTags();
   isTagSelectorOpen = this.diaryService.getIsTagSelectorOpen();
@@ -101,6 +118,35 @@ export class DiaryEditorComponent implements OnChanges, AfterViewInit {
     }
   }
 
+  nextStep(): void {
+    if (this.currentStep() < this.steps.length - 1) {
+      this.currentStep.update(step => step + 1);
+    }
+    return;
+  }
+
+  previousStep(): void {
+    if (this.currentStep() > 0) {
+      this.currentStep.update(step => step - 1);
+    }
+    return;
+  }
+
+  canGoForward(): boolean {
+    if (this.currentStep() === 0) {
+      return this.selectedEmoticon() !== null;
+    } else if (this.currentStep() === 1) {
+      return this.selectedTags().length > 0;
+    } else if (this.currentStep() === 2) {
+      return this.entryContent().trim().length > 0;
+    }
+    return false;
+  }
+
+  canGoBack(): boolean {
+    return this.currentStep() > 0;
+  }
+
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
     // Skip if the editor is not open
@@ -129,16 +175,10 @@ export class DiaryEditorComponent implements OnChanges, AfterViewInit {
     }
 
     // Handle Enter or Right Arrow key to continue to tag selection when emoticon is selected
-    if (
-      (event.key === 'Enter' || event.key === 'ArrowRight') &&
-      this.selectedEmoticon() &&
-      !this.isTagSelectorOpen() &&
-      !this.isEditingEntry() &&
-      !isTextInput
-    ) {
+    if ((event.key === 'Enter' || event.key === 'ArrowRight') && this.canGoForward()) {
       event.preventDefault();
       event.stopPropagation();
-      this.openTagSelector();
+      this.nextStep();
       return;
     }
 
@@ -149,31 +189,14 @@ export class DiaryEditorComponent implements OnChanges, AfterViewInit {
         return;
       }
 
-      if (this.isTagSelectorOpen()) {
+      // If we're in the text area and Escape is pressed, blur the input and open tag selector
+      if (this.canGoBack()) {
+        console.warn('Escape pressed in text area, blurring input and opening tag selector');
         event.preventDefault();
         event.stopPropagation();
-        console.warn('Escape/ArrowLeft pressed while tag selector is open, forcing it closed');
-        this.diaryService.forceCloseTagSelector();
-      } else if (this.isEditorOpen() && !isTextArea) {
-        event.preventDefault();
-        event.stopPropagation();
-        this.closeEditor();
+        this.previousStep();
+        return;
       }
-      return;
-    }
-
-    // Handle Enter or Right Arrow key to create entry when tag selector is open
-    if (
-      (event.key === 'Enter' || event.key === 'ArrowRight') &&
-      this.isTagSelectorOpen() &&
-      this.selectedTags().length > 0 &&
-      !event.shiftKey &&
-      !isTextInput
-    ) {
-      console.warn('Handling Enter/Right Arrow in tag selector');
-      event.preventDefault();
-      event.stopPropagation();
-      this.startNewEntry();
       return;
     }
 
@@ -333,6 +356,50 @@ export class DiaryEditorComponent implements OnChanges, AfterViewInit {
   addNewTag(name: string): void {
     if (name.trim()) {
       this.diaryService.addNewTag(name.trim());
+    }
+  }
+
+  // Handle Escape key in the textarea
+  handleTextareaEscape(event: KeyboardEvent): void {
+    console.warn('Escape key pressed directly in textarea');
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (this.entryInput?.nativeElement && !this.isTagSelectorOpen() && !this.isEditingEntry()) {
+      this.entryInput.nativeElement.blur();
+      this.diaryService.openTagSelector();
+
+      // Focus the tag selector after it's opened
+      setTimeout(() => {
+        if (this.tagSelector) {
+          this.tagSelector.focus();
+        }
+      }, 50);
+    }
+  }
+
+  // Handle keydown events in the textarea
+  handleTextareaKeydown(event: KeyboardEvent): void {
+    // Only handle Escape key
+    if (event.key === 'Escape') {
+      console.warn('Escape key pressed in textarea via keydown handler');
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (this.entryInput?.nativeElement && !this.isTagSelectorOpen() && !this.isEditingEntry()) {
+        this.entryInput.nativeElement.blur();
+        this.diaryService.openTagSelector();
+
+        // Focus the tag selector after it's opened
+        setTimeout(() => {
+          if (this.tagSelector) {
+            this.tagSelector.focus();
+          }
+        }, 50);
+      } else if (this.isEditingEntry()) {
+        // If editing an entry, cancel editing on Escape
+        this.cancelEditing();
+      }
     }
   }
 }

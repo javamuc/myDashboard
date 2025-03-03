@@ -1,27 +1,16 @@
-<div class="emoticon-selector" tabindex="0" #selectorContainer [class.selection-made]="selectionConfirmed">
-  <h2 class="selector-title" [class.hidden]="selectionConfirmed">How do you feel?</h2>
-  <div class="emoticons-list" [class.selection-made]="selectionConfirmed">
+<div class="emoticon-selector" tabindex="0" #selectorContainer>
+  <div class="emoticons-list">
     @for (emoticon of emoticons(); track emoticon.id) {
       <div
         class="emoticon-item"
         [class.selected]="selectedEmoticon?.id === emoticon.id"
-        [class.fade-out]="selectionConfirmed && selectedEmoticon?.id !== emoticon.id"
         (click)="selectEmoticon(emoticon)"
         [attr.title]="emoticon.name + ' (' + emoticon.shortcut + ')'"
       >
         <div class="emoticon-emoji">{{ emoticon.emoji }}</div>
-        <div class="emoticon-name" [class.hidden]="selectionConfirmed">{{ emoticon.name }}</div>
-        <div class="emoticon-shortcut" [class.hidden]="selectionConfirmed">{{ emoticon.shortcut }}</div>
+        <div class="emoticon-name">{{ emoticon.name }}</div>
+        <div class="emoticon-shortcut">{{ emoticon.shortcut }}</div>
       </div>
     }
-  </div>
-
-  <div class="tag-selector-container" *ngIf="selectionConfirmed">
-    <ng-content></ng-content>
-  </div>
-
-  <div class="selector-footer" [class.hidden]="selectionConfirmed">
-    <div class="instruction-text">Select one emotion. Press Enter or → to continue.</div>
-    <button class="next-button" (click)="onNextClick()" [disabled]="!selectedEmoticon">Next</button>
   </div>
 </div>

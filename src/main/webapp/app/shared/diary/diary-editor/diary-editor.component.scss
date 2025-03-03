@@ -11,6 +11,14 @@
   z-index: 1050;
 }
 
+.selector-title {
+  text-align: center;
+  margin: 1rem;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: normal;
+}
+
 .diary-content {
   width: 800px;
   max-width: 95vw;
@@ -61,46 +69,68 @@
   height: 100%;
 }
 
+.selector-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+  transition: opacity 0.3s ease;
+
+  &.hidden {
+    opacity: 0;
+    height: 0;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  .instruction-text {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+  }
+
+  .next-button,
+  .previous-button {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.5rem 1.5rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--primary-dark);
+    }
+  }
+  &.disabled {
+    background-color: var(--primary-dark);
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
 .entry-sidebar {
-  width: 170px;
-  background-color: #111;
-  padding: 1.5rem 1rem;
+  width: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
 
-  .selected-emoticon-large {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-  }
-
-  .entry-sidebar-label {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 0.25rem;
-  }
-
-  .entry-sidebar-count {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #fff;
-    margin-bottom: 1rem;
-  }
-
-  .selected-tags-sidebar {
-    width: 100%;
+  .entry-tags {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    width: 100%;
+  }
 
-    .selected-tag {
-      background-color: #333;
-      color: #fff;
-      padding: 0.5rem;
-      border-radius: 4px;
-      font-size: 0.85rem;
-      text-align: center;
-    }
+  .entry-tag {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
   }
 }
 
@@ -112,7 +142,7 @@
 
   .entry-input {
     flex: 1;
-    min-height: 250px;
+    min-height: 150px;
     padding: 1rem;
     background-color: transparent;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -162,28 +192,9 @@
   }
 }
 
-.entries-list {
-  padding: 1rem;
-  overflow-y: auto;
-  flex: 1;
-
-  h3 {
-    margin: 0 0 1rem 0;
-    font-size: 1rem;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  .no-entries {
-    color: rgba(255, 255, 255, 0.5);
-    font-style: italic;
-    text-align: center;
-    padding: 2rem 0;
-  }
-}
-
 .combined-selector {
   display: flex;
+  flex-direction: row;
   align-items: flex-start;
   padding: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -191,11 +202,9 @@
 }
 
 .selected-emoticon {
-  flex: 0 0 70px;
-  margin-right: 1.5rem;
+  margin-right: 1rem;
   display: flex;
   justify-content: center;
-
   .emoticon-emoji {
     font-size: 2.5rem;
   }
