@@ -14,6 +14,7 @@ import { DiaryService } from '../diary.service';
 })
 export class DiaryTagSelectorComponent implements OnInit {
   @Input() selectedTags: DiaryTag[] = [];
+  @Input() isTagSelectorOpen = false;
   @Output() tagToggled = new EventEmitter<DiaryTag>();
   @Output() tagAdded = new EventEmitter<string>();
   @Output() enterPressed = new EventEmitter<void>();
@@ -66,6 +67,16 @@ export class DiaryTagSelectorComponent implements OnInit {
   handleKeyDown(event: KeyboardEvent): void {
     console.warn('Tag selector keydown:', event.key);
 
+    if (!this.isTagSelectorOpen) {
+      return;
+    }
+
+    if (/^[1-9]$/.test(event.key)) {
+      event.stopPropagation();
+      event.preventDefault();
+      return;
+    }
+
     // Skip shortcut handling if user is typing in the new tag input
     if (this.isAddingNewTag && document.activeElement?.classList.contains('new-tag-input')) {
       // Only handle Enter and Escape for the input field
@@ -105,21 +116,6 @@ export class DiaryTagSelectorComponent implements OnInit {
           this.toggleTag(tag);
         }
       }
-    }
-
-    // Handle Enter key
-    if (event.key === 'Enter' || event.key === 'ArrowRight') {
-      console.warn('Enter/ArrowRight key pressed in diary tag selector - emitting enterPressed');
-      event.preventDefault();
-      if (this.selectedTags && this.selectedTags.length > 0) {
-        this.enterPressed.emit();
-      }
-    }
-
-    // Handle Escape key
-    if (event.key === 'Escape' || event.key === 'ArrowLeft') {
-      event.preventDefault();
-      this.escapePressed.emit();
     }
   }
 

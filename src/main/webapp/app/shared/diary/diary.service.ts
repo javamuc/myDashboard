@@ -119,19 +119,17 @@ export class DiaryService {
   }
 
   resetEditor(): void {
+    console.warn('DiaryService.resetEditor called');
     this.resetState();
   }
 
   selectEmoticon(emoticon: DiaryEmoticon): void {
+    console.warn('DiaryService.selectEmoticon called with emoticon:', emoticon);
     this.selectedEmoticon.set(emoticon);
-    // No longer automatically open tag selector
-  }
-
-  openTagSelector(): void {
-    this.isTagSelectorOpen.set(true);
   }
 
   setSelectedTags(tags: DiaryTag[]): void {
+    console.warn('DiaryService.setSelectedTags called with tags:', tags);
     this.selectedTags.set(tags);
   }
 
@@ -146,27 +144,6 @@ export class DiaryService {
       // Add tag if not selected
       this.selectedTags.set([...currentTags, tag]);
     }
-  }
-
-  closeTagSelector(): void {
-    console.warn('DiaryService.closeTagSelector called');
-    this.isTagSelectorOpen.set(false);
-    console.warn('DiaryService.closeTagSelector - isTagSelectorOpen set to false');
-    // Don't reset emoticon and tags here
-  }
-
-  // New method to force the tag selector to stay closed
-  forceCloseTagSelector(): void {
-    console.warn('DiaryService.forceCloseTagSelector called');
-    this.isTagSelectorOpen.set(false);
-
-    // Use a timeout to ensure it stays closed
-    setTimeout(() => {
-      if (this.isTagSelectorOpen()) {
-        console.warn('Tag selector was reopened, forcing it closed again');
-        this.isTagSelectorOpen.set(false);
-      }
-    }, 50);
   }
 
   createDiaryEntry(content: string): void {

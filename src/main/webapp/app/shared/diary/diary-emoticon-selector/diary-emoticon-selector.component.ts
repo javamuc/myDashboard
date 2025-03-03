@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DiaryEmoticon } from '../diary.model';
 import { DiaryService } from '../diary.service';
@@ -10,13 +10,17 @@ import { DiaryService } from '../diary.service';
   standalone: true,
   imports: [CommonModule],
 })
-export class DiaryEmoticonSelectorComponent {
+export class DiaryEmoticonSelectorComponent implements AfterViewInit {
   @ViewChild('selectorContainer') selectorContainer!: ElementRef<HTMLDivElement>;
   @Input() selectedEmoticon: DiaryEmoticon | null = null;
   @Output() emoticonSelected = new EventEmitter<DiaryEmoticon>();
 
   readonly diaryService = inject(DiaryService);
   emoticons = this.diaryService.getEmoticons();
+
+  ngAfterViewInit(): void {
+    this.focus();
+  }
 
   @HostListener('keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent): void {

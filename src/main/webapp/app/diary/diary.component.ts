@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
@@ -91,5 +91,12 @@ export class DiaryComponent implements OnInit {
 
       return matchesSearch && matchesTags;
     });
+  }
+
+  @HostListener('document:keydown.n', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'n' && !this.diaryService.getIsEditorOpen()()) {
+      this.createNewEntry();
+    }
   }
 }

@@ -14,7 +14,7 @@
           <jhi-diary-emoticon-selector
             [selectedEmoticon]="selectedEmoticon()"
             (emoticonSelected)="selectEmoticon($event)"
-            (nextClicked)="openTagSelector()"
+            #emoticonSelector
           >
           </jhi-diary-emoticon-selector>
         }
@@ -31,8 +31,8 @@
               [selectedTags]="selectedTags()"
               (tagToggled)="toggleTag($event)"
               (tagAdded)="addNewTag($event)"
-              (enterPressed)="startNewEntry()"
-              (escapePressed)="closeTagSelector()"
+              [isTagSelectorOpen]="currentStep() === 1"
+              #tagSelector
             >
             </jhi-diary-tag-selector>
           </div>
@@ -58,7 +58,6 @@
                 (ngModelChange)="entryContent.set($event)"
                 placeholder="Text Area"
                 class="entry-input"
-                (keydown)="handleTextareaKeydown($event)"
               ></textarea>
             </div>
           </div>
