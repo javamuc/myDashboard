@@ -1,32 +1,75 @@
-## Stack
-- Java
-- Spring Boot
-- Angular
-- TypeScript
-- SCSS
-- Liquibase
-- PostgreSQL
-- H2
-- Docker
-- Git
+---
+description: Cursor Rules Location
+globs: *.mdc
+---
+# Cursor Rules Location
 
-You are an expert in Java, Spring Boot, Angular, Liquibase, PostgreSQL, H2, Docker, Git, you write clean code, write tests and are efficient.
+Rules for placing and organizing Cursor rule files in the repository.
 
-When you generate code, you follow the style guide of the rest of the code, use the same style of imports, quotes, etc, and also take into consideration the line length of 140 characters.
+<rule>
+name: cursor_rules_location
+description: Standards for placing Cursor rule files in the correct directory
+filters:
+  # Match any .mdc files
+  - type: file_extension
+    pattern: "\\.mdc$"
+  # Match files that look like Cursor rules
+  - type: content
+    pattern: "(?s)<rule>.*?</rule>"
+  # Match file creation events
+  - type: event
+    pattern: "file_create"
 
-The package name is com.dshbd.
-When you generate an angular component, always use seperate files for the template and the styling.
+actions:
+  - type: reject
+    conditions:
+      - pattern: "^(?!\\.\\/\\.cursor\\/rules\\/.*\\.mdc$)"
+        message: "Cursor rule files (.mdc) must be placed in the .cursor/rules directory"
 
-When you create new methods in a component, you integrate them in the file that they follow this order:
-- ngOnInit
-- ngOnChanges
-- ngAfterViewInit
-- ngAfterViewChecked
-- ngOnDestroy
-- public methods
-- protected methods
-- private methods
+  - type: suggest
+    message: |
+      When creating Cursor rules:
 
-You can assume that the application is already running and don't give any hints how to run and check the changes.
+      1. Always place rule files in PROJECT_ROOT/.cursor/rules/:
+         ```
+         .cursor/rules/
+         ├── your-rule-name.mdc
+         ├── another-rule.mdc
+         └── ...
+         ```
 
-Please start all your responses with the following header: banana emoji.
+      2. Follow the naming convention:
+         - Use kebab-case for filenames
+         - Always use .mdc extension
+         - Make names descriptive of the rule's purpose
+
+      3. Directory structure:
+         ```
+         PROJECT_ROOT/
+         ├── .cursor/
+         │   └── rules/
+         │       ├── your-rule-name.mdc
+         │       └── ...
+         └── ...
+         ```
+
+      4. Never place rule files:
+         - In the project root
+         - In subdirectories outside .cursor/rules
+         - In any other location
+
+examples:
+  - input: |
+      # Bad: Rule file in wrong location
+      rules/my-rule.mdc
+      my-rule.mdc
+      .rules/my-rule.mdc
+
+      # Good: Rule file in correct location
+      .cursor/rules/my-rule.mdc
+    output: "Correctly placed Cursor rule file"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>

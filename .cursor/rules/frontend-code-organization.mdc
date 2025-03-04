@@ -1,0 +1,240 @@
+---
+description: frontend code genertion
+globs: *.ts,*.html,*.scss
+alwaysApply: false
+---
+# Frontend Code Organization Rules
+
+<rule>
+name: frontend_code_organization
+description: Standards for organizing frontend code in the Angular application
+filters:
+  - type: file_extension
+    pattern: "\\.(ts|html|scss)$"
+  - type: directory
+    pattern: "src/main/webapp/app/"
+
+actions:
+  - type: suggest
+    message: |
+      When organizing frontend code:
+
+      1. Component Structure:
+         ```
+         component-name/
+         ├── component-name.component.ts
+         ├── component-name.component.html
+         ├── component-name.component.scss
+         ├── component-name.model.ts      # If needed
+         └── component-name.service.ts    # If needed
+         ```
+
+      2. Component Class Organization:
+         ```typescript
+         @Component({...})
+         export class MyComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+           // Properties
+           @Input() inputProps
+           @Output() events
+           @ViewChild() viewRefs
+           signals/observables
+           other properties
+           private properties
+
+           // Lifecycle Hooks (in order)
+           ngOnInit()
+           ngOnChanges()
+           ngAfterViewInit()
+           ngAfterViewChecked()
+           ngOnDestroy()
+
+           // Methods (in order)
+           public methods()
+           protected methods()
+           private methods()
+         }
+         ```
+
+      3. Template Guidelines:
+         - One feature per file
+         - Use proper indentation (2 spaces)
+         - Break into sub-components when too complex
+         - Use structural directives appropriately
+         - Keep logic in component class
+
+      4. Styling Rules:
+         - Use SCSS
+         - Follow BEM naming convention
+         - Use variables for colors/sizes
+         - Avoid deep nesting (max 3 levels)
+         - Use proper scoping
+
+      5. Code Style:
+         - Max line length: 140 characters
+         - Single quotes for strings
+         - 2 spaces indentation (4 for Java)
+         - No tabs
+         - Arrow function parens: avoid
+         - Template/style in separate files
+
+examples:
+  - input: |
+      // Bad: Everything in one file
+      @Component({
+        selector: 'app-diary',
+        template: `<div>...</div>`,
+        styles: [`:host { ... }`]
+      })
+
+      // Good: Separate files
+      @Component({
+        selector: 'app-diary',
+        templateUrl: './diary.component.html',
+        styleUrls: ['./diary.component.scss']
+      })
+    output: "Properly structured component"
+
+metadata:
+  priority: high
+  version: 1.0
+  tags: ["frontend", "angular", "typescript"]
+</rule>
+
+<rule>
+name: frontend_naming_conventions
+description: Naming conventions for frontend code
+filters:
+  - type: file_extension
+    pattern: "\\.(ts|html|scss)$"
+
+actions:
+  - type: suggest
+    message: |
+      Follow these naming conventions:
+
+      1. Files:
+         - Component: `feature.component.ts`
+         - Template: `feature.component.html`
+         - Styles: `feature.component.scss`
+         - Service: `feature.service.ts`
+         - Model: `feature.model.ts`
+         - All lowercase with hyphens
+
+      2. Classes:
+         - Components: PascalCase + 'Component' (e.g., `DiaryComponent`)
+         - Services: PascalCase + 'Service' (e.g., `DiaryService`)
+         - Models: PascalCase (e.g., `DiaryEntry`)
+         - Interfaces: PascalCase with 'I' prefix (e.g., `IUser`)
+
+      3. Methods:
+         - Camel case
+         - Action verbs (e.g., `createEntry`, `updateUser`)
+         - Event handlers: 'on' prefix (e.g., `onSubmit`)
+         - Observables: '$' suffix (e.g., `entries$`)
+
+      4. Properties:
+         - Camel case
+         - Descriptive names
+         - Boolean: 'is/has/can' prefix
+         - Private: underscore prefix
+
+      5. CSS Classes:
+         - BEM methodology
+         - Lowercase with hyphens
+         - Block: feature name
+         - Element: double underscore
+         - Modifier: double dash
+
+examples:
+  - input: |
+      // Bad naming
+      @Component({
+        selector: 'Diary',
+        templateUrl: './DIARY.html'
+      })
+      export class diarycomponent {}
+
+      // Good naming
+      @Component({
+        selector: 'app-diary',
+        templateUrl: './diary.component.html',
+        styleUrls: ['./diary.component.scss']
+      })
+      export class DiaryComponent {}
+    output: "Proper component naming"
+
+metadata:
+  priority: high
+  version: 1.0
+  tags: ["frontend", "angular", "naming"]
+</rule>
+
+<rule>
+name: frontend_state_management
+description: State management practices for frontend code
+filters:
+  - type: file_extension
+    pattern: "\\.ts$"
+
+actions:
+  - type: suggest
+    message: |
+      Follow these state management practices:
+
+      1. Signals:
+         - Use for component-local state
+         - Keep in service if shared
+         - Use computed signals when possible
+         - Clear state on component destroy
+
+      2. Services:
+         - Single responsibility
+         - State initialization
+         - API communication
+         - State transformations
+
+      3. Component State:
+         - Minimize component state
+         - Use signals for reactive state
+         - Clean up subscriptions
+         - Reset state appropriately
+
+      4. Data Flow:
+         - Unidirectional data flow
+         - Parent to child via @Input()
+         - Child to parent via @Output()
+         - Service for shared state
+
+      5. Error Handling:
+         - Use proper error types
+         - Handle errors at service level
+         - Show user-friendly messages
+         - Log errors appropriately
+
+examples:
+  - input: |
+      // Bad: State management
+      export class DiaryService {
+        entries: DiaryEntry[] = [];
+        updateEntries(entry: DiaryEntry) {
+          this.entries.push(entry);
+        }
+      }
+
+      // Good: State management
+      export class DiaryService {
+        private entries = signal<DiaryEntry[]>([]);
+        getEntries(): typeof this.entries {
+          return this.entries;
+        }
+        updateEntries(entry: DiaryEntry): void {
+          this.entries.update(current => [...current, entry]);
+        }
+      }
+    output: "Proper state management"
+
+metadata:
+  priority: high
+  version: 1.0
+  tags: ["frontend", "angular", "state"]
+</rule>

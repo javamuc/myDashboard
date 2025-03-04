@@ -1,0 +1,446 @@
+---
+description: Testing practices for frontend and backend code
+globs: src/test/**/*.{java,ts,spec.ts}
+alwaysApply: false
+---
+# Testing Practices Rules
+
+<rule>
+name: backend_testing_practices
+description: Standards for backend testing in Spring Boot applications
+filters:
+  - type: file_extension
+    pattern: "\\.java$"
+  - type: directory
+    pattern: "src/test/java/"
+
+actions:
+  - type: suggest
+    message: |
+      When writing backend tests:
+
+      1. Test Class Structure:
+         ```java
+         @IntegrationTest
+         class DiaryResourceIT {
+             // Constants and test data
+             private static final String DEFAULT_CONTENT = "Test content";
+
+             // Dependencies
+             @Autowired
+             private DiaryRepository diaryRepository;
+
+             // Test lifecycle
+             @BeforeEach
+             void setUp() {
+                 // Setup test data
+             }
+
+             // Test methods grouped by functionality
+             @Test
+             void createDiaryEntry() {
+                 // Given
+                 // When
+                 // Then
+             }
+         }
+         ```
+
+      2. Naming Conventions:
+         - Test classes: EntityNameIT for integration tests
+         - Test methods: descriptive_of_what_is_being_tested
+         - Test data constants: DEFAULT_FIELDNAME
+         Example:
+         ```java
+         void should_create_diary_entry_when_valid()
+         void should_throw_exception_when_invalid()
+         ```
+
+      3. Test Categories:
+         - Unit Tests: Test single class/method
+         - Integration Tests: Test component interaction
+         - Repository Tests: Test database operations
+         - REST Tests: Test API endpoints
+         - Security Tests: Test access control
+
+      4. Test Structure (Given/When/Then):
+         ```java
+         @Test
+         void should_create_diary_entry() {
+             // Given
+             DiaryEntry entry = createTestEntry();
+
+             // When
+             DiaryEntry result = diaryService.save(entry);
+
+             // Then
+             assertThat(result).isNotNull();
+             assertThat(result.getContent()).isEqualTo(entry.getContent());
+         }
+         ```
+
+      5. Test Data:
+         - Use constants for test data
+         - Create builder methods
+         - Clean up after tests
+         - Use appropriate scopes
+         Example:
+         ```java
+         private DiaryEntry createTestEntry() {
+             return DiaryEntry.builder()
+                 .content(DEFAULT_CONTENT)
+                 .emoticon(DEFAULT_EMOTICON)
+                 .build();
+         }
+         ```
+
+      6. Mocking:
+         - Mock external dependencies
+         - Use @MockBean for Spring context
+         - Verify important interactions
+         - Don't mock data objects
+         Example:
+         ```java
+         @MockBean
+         private UserService userService;
+
+         @Test
+         void should_use_current_user() {
+             // Given
+             when(userService.getCurrentUser()).thenReturn(testUser);
+
+             // When/Then
+             verify(userService).getCurrentUser();
+         }
+         ```
+
+      7. Security Testing:
+         - Test with different user roles
+         - Verify access controls
+         - Test authentication
+         - Test authorization
+         Example:
+         ```java
+         @Test
+         @WithMockUser(roles = "USER")
+         void should_allow_user_access() {
+             // Test with user role
+         }
+         ```
+
+      8. Database Testing:
+         - Use @DataJpaTest for repository tests
+         - Clean up test data
+         - Use appropriate transaction boundaries
+         - Test edge cases
+         Example:
+         ```java
+         @DataJpaTest
+         class DiaryRepositoryTest {
+             @Test
+             void should_find_by_user_id() {
+                 // Test repository methods
+             }
+         }
+         ```
+
+examples:
+  - input: |
+      // Bad: Poor test structure
+      @Test
+      void test1() {
+          DiaryEntry entry = new DiaryEntry();
+          entry.setContent("test");
+          assertNotNull(diaryService.save(entry));
+      }
+
+      // Good: Clear structure and assertions
+      @Test
+      void should_save_diary_entry_when_valid() {
+          // Given
+          DiaryEntry entry = createTestEntry();
+
+          // When
+          DiaryEntry result = diaryService.save(entry);
+
+          // Then
+          assertThat(result)
+              .isNotNull()
+              .satisfies(saved -> {
+                  assertThat(saved.getContent()).isEqualTo(DEFAULT_CONTENT);
+                  assertThat(saved.getUserId()).isEqualTo(DEFAULT_USER_ID);
+              });
+      }
+    output: "Properly structured test"
+
+metadata:
+  priority: high
+  version: 1.0
+  tags: ["testing", "java", "junit", "spring"]
+</rule>
+
+<rule>
+name: frontend_testing_practices
+description: Standards for frontend testing in Angular applications
+filters:
+  - type: file_extension
+    pattern: "\\.spec.ts$"
+  - type: directory
+    pattern: "src/main/webapp/"
+
+actions:
+  - type: suggest
+    message: |
+      When writing frontend tests:
+
+      1. Test File Structure:
+         ```typescript
+         describe('DiaryComponent', () => {
+           let component: DiaryComponent;
+           let fixture: ComponentFixture<DiaryComponent>;
+           let service: DiaryService;
+
+           beforeEach(async () => {
+             await TestBed.configureTestingModule({
+               // Setup
+             }).compileComponents();
+           });
+
+           beforeEach(() => {
+             fixture = TestBed.createComponent(DiaryComponent);
+             component = fixture.componentInstance;
+             service = TestBed.inject(DiaryService);
+           });
+
+           it('should create', () => {
+             expect(component).toBeTruthy();
+           });
+         });
+         ```
+
+      2. Test Categories:
+         - Component Tests: Test component logic
+         - Service Tests: Test service methods
+         - Pipe Tests: Test pipe transformations
+         - Directive Tests: Test directive behavior
+         - Integration Tests: Test component interaction
+
+      3. Component Testing:
+         - Test component initialization
+         - Test @Input/@Output bindings
+         - Test event handlers
+         - Test state changes
+         - Test template rendering
+         Example:
+         ```typescript
+         it('should update view when emoticon selected', () => {
+           // Given
+           const emoticon = testEmoticon;
+
+           // When
+           component.selectEmoticon(emoticon);
+           fixture.detectChanges();
+
+           // Then
+           const element = fixture.nativeElement;
+           expect(element.querySelector('.emoticon')).toBeTruthy();
+         });
+         ```
+
+      4. Service Testing:
+         - Test API calls
+         - Test state management
+         - Test error handling
+         - Mock HTTP requests
+         Example:
+         ```typescript
+         it('should create diary entry', () => {
+           // Given
+           const entry = createTestEntry();
+           const spy = jest.spyOn(httpClient, 'post');
+
+           // When
+           service.createEntry(entry).subscribe();
+
+           // Then
+           expect(spy).toHaveBeenCalledWith('/api/entries', entry);
+         });
+         ```
+
+      5. Signal Testing:
+         - Test signal initialization
+         - Test signal updates
+         - Test computed signals
+         - Test signal effects
+         Example:
+         ```typescript
+         it('should update selected emoticon signal', () => {
+           // Given
+           const emoticon = testEmoticon;
+
+           // When
+           service.selectEmoticon(emoticon);
+
+           // Then
+           expect(service.getSelectedEmoticon()()).toEqual(emoticon);
+         });
+         ```
+
+      6. Mock Data:
+         - Create test factories
+         - Use type-safe mocks
+         - Keep mocks simple
+         - Share common test data
+         Example:
+         ```typescript
+         const createTestEntry = (): DiaryEntry => ({
+           id: 1,
+           content: 'Test content',
+           emoticon: testEmoticon,
+           tags: testTags,
+           createdAt: new Date()
+         });
+         ```
+
+      7. HTTP Testing:
+         - Use HttpTestingController
+         - Test request methods
+         - Test request parameters
+         - Test response handling
+         Example:
+         ```typescript
+         it('should handle HTTP error', () => {
+           // Given
+           const error = new HttpErrorResponse({ status: 404 });
+           httpMock.expectOne(url).error(error);
+
+           // When/Then
+           service.getEntries().subscribe({
+             error: err => expect(err.status).toBe(404)
+           });
+         });
+         ```
+
+      8. Coverage Requirements:
+         - Components: 80% coverage
+         - Services: 90% coverage
+         - Pipes/Directives: 90% coverage
+         - Focus on critical paths
+         - Test edge cases
+
+examples:
+  - input: |
+      // Bad: Minimal testing
+      describe('DiaryComponent', () => {
+        it('should work', () => {
+          expect(component).toBeTruthy();
+        });
+      });
+
+      // Good: Comprehensive testing
+      describe('DiaryComponent', () => {
+        describe('initialization', () => {
+          it('should create component', () => {
+            expect(component).toBeTruthy();
+          });
+
+          it('should load initial data', () => {
+            expect(component.entries()).toEqual([]);
+          });
+        });
+
+        describe('emoticon selection', () => {
+          it('should update selected emoticon', () => {
+            component.selectEmoticon(testEmoticon);
+            expect(component.selectedEmoticon()).toEqual(testEmoticon);
+          });
+        });
+      });
+    output: "Properly structured component test"
+
+metadata:
+  priority: high
+  version: 1.0
+  tags: ["testing", "angular", "jest", "typescript"]
+</rule>
+
+<rule>
+name: e2e_testing_practices
+description: Standards for end-to-end testing
+filters:
+  - type: file_extension
+    pattern: "\\.cy.ts$"
+  - type: directory
+    pattern: "src/test/javascript/cypress/"
+
+actions:
+  - type: suggest
+    message: |
+      When writing E2E tests:
+
+      1. Test Structure:
+         ```typescript
+         describe('Diary Feature', () => {
+           beforeEach(() => {
+             cy.login('user');
+             cy.visit('/diary');
+           });
+
+           it('should create diary entry', () => {
+             // Test steps
+           });
+         });
+         ```
+
+      2. Best Practices:
+         - Use data-testid for selectors
+         - Create custom commands
+         - Handle loading states
+         - Test user workflows
+         - Clean up test data
+
+      3. Page Objects:
+         ```typescript
+         class DiaryPage {
+           visit() {
+             cy.visit('/diary');
+           }
+
+           createEntry(content: string) {
+             cy.get('[data-testid=new-entry]').click();
+             cy.get('[data-testid=content]').type(content);
+             cy.get('[data-testid=save]').click();
+           }
+         }
+         ```
+
+      4. Test Categories:
+         - Smoke Tests: Basic functionality
+         - Critical Path Tests: Main workflows
+         - Regression Tests: Bug fixes
+         - Performance Tests: Load times
+
+examples:
+  - input: |
+      // Bad: Brittle selectors
+      it('creates entry', () => {
+        cy.get('.button').click();
+        cy.get('input').type('test');
+      });
+
+      // Good: Robust selectors and assertions
+      it('should create new diary entry', () => {
+        cy.get('[data-testid=new-entry]').click();
+        cy.get('[data-testid=content]').type('My diary entry');
+        cy.get('[data-testid=save]').click();
+
+        cy.get('[data-testid=entries-list]')
+          .should('contain', 'My diary entry');
+      });
+    output: "Properly structured E2E test"
+
+metadata:
+  priority: high
+  version: 1.0
+  tags: ["testing", "e2e", "cypress"]
+</rule>

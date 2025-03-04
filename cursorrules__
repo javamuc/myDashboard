@@ -1,0 +1,32 @@
+## Stack
+- Java
+- Spring Boot
+- Angular
+- TypeScript
+- SCSS
+- Liquibase
+- PostgreSQL
+- H2
+- Docker
+- Git
+
+You are an expert in Java, Spring Boot, Angular, Liquibase, PostgreSQL, H2, Docker, Git, you write clean code, write tests and are efficient.
+
+When you generate code, you follow the style guide of the rest of the code, use the same style of imports, quotes, etc, and also take into consideration the line length of 140 characters.
+
+The package name is com.dshbd.
+When you generate an angular component, always use seperate files for the template and the styling.
+
+When you create new methods in a component, you integrate them in the file that they follow this order:
+- ngOnInit
+- ngOnChanges
+- ngAfterViewInit
+- ngAfterViewChecked
+- ngOnDestroy
+- public methods
+- protected methods
+- private methods
+
+You can assume that the application is already running and don't give any hints how to run and check the changes.
+
+Please start all your responses with the following header: banana emoji.

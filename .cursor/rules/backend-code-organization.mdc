@@ -1,0 +1,251 @@
+---
+description: writing and organizing backend code
+globs: src/main/java/**/*.java
+alwaysApply: false
+---
+# Backend Code Organization Rules
+
+<rule>
+name: backend_code_organization
+description: Standards for organizing backend code in the JHipster application
+filters:
+  - type: file_extension
+    pattern: "\\.java$"
+  - type: directory
+    pattern: "src/main/java/com/dshbd/"
+
+actions:
+  - type: suggest
+    message: |
+      When organizing backend code:
+
+      1. Package Structure:
+         ```
+         com.dshbd/
+         ├── domain/           # Entity classes
+         ├── repository/       # JPA repositories
+         ├── service/
+         │   ├── dto/         # DTOs
+         │   └── mapper/      # Entity-DTO mappers
+         └── web/
+             └── rest/        # REST controllers
+         ```
+
+      2. Entity Classes:
+         - Place in `domain` package
+         - Use JPA annotations
+         - Include validation constraints
+         - Implement `Serializable`
+         - Use sequence generators for IDs
+         - Include audit fields (created/modified dates)
+
+      3. DTOs:
+         - Place in `service.dto` package
+         - Include validation constraints
+         - Keep only necessary fields
+         - Match frontend model structure
+
+      4. Mappers:
+         - Place in `service.mapper` package
+         - Use MapStruct with Spring component model
+         - Define clear mapping methods
+
+      5. Services:
+         - Place in `service` package
+         - Extend BaseService for user context
+         - Use @Transactional
+         - Include proper logging
+         - Handle security checks
+
+      6. Repositories:
+         - Place in `repository` package
+         - Extend JpaRepository
+         - Include user-specific queries
+         - Use proper return types
+
+      7. Controllers:
+         - Place in `web.rest` package
+         - Use REST annotations
+         - Include API documentation
+         - Handle proper responses
+         - Validate inputs
+
+      8. Security:
+         - Always check user context
+         - Use proper access controls
+         - Validate user permissions
+         - Sanitize inputs
+
+      9. Database:
+         - Use Liquibase for changes
+         - Include proper constraints
+         - Create indexes for performance
+         - Use appropriate column types
+
+examples:
+  - input: |
+      // Bad: Entity without proper annotations
+      public class DiaryEntry {
+          private Long id;
+          private String content;
+      }
+
+      // Good: Entity with proper structure
+      @Entity
+      @Table(name = "diary_entry")
+      public class DiaryEntry implements Serializable {
+          @Id
+          @GeneratedValue(strategy = GenerationType.SEQUENCE)
+          private Long id;
+
+          @NotNull
+          @Column(name = "content")
+          private String content;
+      }
+    output: "Properly structured entity class"
+
+  - input: |
+      // Bad: Service without security
+      public DiaryEntryDTO findOne(Long id) {
+          return repository.findById(id).map(mapper::toDto);
+      }
+
+      // Good: Service with security
+      public DiaryEntryDTO findOne(Long id) {
+          return repository.findById(id)
+              .map(entry -> {
+                  if (!entry.getUserId().equals(getCurrentUser().getId())) {
+                      throw new IllegalStateException("Not authorized");
+                  }
+                  return mapper.toDto(entry);
+              })
+              .orElse(null);
+      }
+    output: "Properly secured service method"
+
+metadata:
+  priority: high
+  version: 1.0
+  tags: ["backend", "java", "springboot", "Liquibase", "jhipster"]
+</rule>
+
+<rule>
+name: backend_naming_conventions
+description: Naming conventions for backend code
+filters:
+  - type: file_extension
+    pattern: "\\.java$"
+
+actions:
+  - type: suggest
+    message: |
+      Follow these naming conventions:
+
+      1. Classes:
+         - Entities: Noun, PascalCase (e.g., `DiaryEntry`)
+         - DTOs: Noun + "DTO" (e.g., `DiaryEntryDTO`)
+         - Services: Noun + "Service" (e.g., `DiaryService`)
+         - Controllers: Noun + "Resource" (e.g., `DiaryResource`)
+         - Repositories: Noun + "Repository" (e.g., `DiaryEntryRepository`)
+         - Mappers: Noun + "Mapper" (e.g., `DiaryEntryMapper`)
+
+      2. Methods:
+         - Repositories: findBy*, deleteBy*, etc.
+         - Services: get*, create*, update*, delete*, etc.
+         - Controllers: get*, create*, update*, delete*, etc.
+
+      3. Variables:
+         - camelCase
+         - descriptive names
+         - avoid abbreviations
+         - boolean prefixes: is*, has*, can*
+
+      4. Constants:
+         - UPPER_SNAKE_CASE
+         - static final
+
+      5. Packages:
+         - all lowercase
+         - no underscores
+         - descriptive and hierarchical
+
+examples:
+  - input: |
+      // Bad naming
+      class diary {
+          private int ID;
+          private String CONTENT;
+      }
+
+      // Good naming
+      class DiaryEntry {
+          private Long id;
+          private String content;
+      }
+    output: "Proper class and variable naming"
+
+metadata:
+  priority: high
+  version: 1.0
+  tags: ["backend", "java", "naming"]
+</rule>
+
+<rule>
+name: backend_security_practices
+description: Security practices for backend code
+filters:
+  - type: file_extension
+    pattern: "\\.java$"
+
+actions:
+  - type: suggest
+    message: |
+      Follow these security practices:
+
+      1. User Context:
+         - Always extend BaseService for user context
+         - Use getCurrentUser() for user checks
+         - Validate user permissions
+
+      2. Data Access:
+         - Always include userId in queries
+         - Check ownership before operations
+         - Use proper access modifiers
+
+      3. Input Validation:
+         - Use @Valid annotations
+         - Validate at DTO level
+         - Sanitize user inputs
+         - Check for null values
+
+      4. Error Handling:
+         - Use proper exception types
+         - Don't expose internal errors
+         - Log security events
+         - Return appropriate status codes
+
+      5. Database:
+         - Use prepared statements
+         - Escape special characters
+         - Use proper column constraints
+         - Create security indexes
+
+examples:
+  - input: |
+      // Bad: No security checks
+      public DiaryEntry save(DiaryEntry entry) {
+          return repository.save(entry);
+      }
+
+      // Good: With security
+      public DiaryEntry save(DiaryEntry entry) {
+          entry.setUserId(getCurrentUser().getId());
+          return repository.save(entry);
+      }
+    output: "Properly secured service method"
+
+metadata:
+  priority: high
+  version: 1.0
+  tags: ["backend", "java", "security"]
+</rule>

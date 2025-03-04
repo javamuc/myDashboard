@@ -1,0 +1,258 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+---
+ description: Database and Liquibase best practices
+ globs: src/main/resources/config/liquibase/**/*.xml
+ alwaysApply: false
+ ---
+ # Database Practices Rules
+ 
+ <rule>
+ name: database_schema_design
+ description: Standards for database schema design and Liquibase changes
+ filters:
+   - type: file_extension
+     pattern: "\\.xml$"
+   - type: directory
+     pattern: "src/main/resources/config/liquibase/"
+ 
+ actions:
+   - type: suggest
+     message: |
+       When designing database schemas and writing Liquibase changes:
+ 
+       1. Table Naming:
+          - Use singular form (user, not users)
+          - Lowercase with underscores
+          - Descriptive but concise names
+          - Prefix for related tables
+          Example:
+          ```sql
+          diary_entry
+          diary_entry_tag
+          task_board
+          task_item
+          ```
+ 
+       2. Column Naming:
+          - Lowercase with underscores
+          - No table name in column
+          - Use standard prefixes (is_, has_)
+          - Consistent naming across tables
+          Example:
+          ```sql
+          id                  -- Primary key
+          created_date       -- Audit field
+          last_modified_date -- Audit field
+          is_active         -- Boolean flag
+          user_id           -- Foreign key
+          ```
+ 
+       3. Primary Keys:
+          - Always use id as name
+          - Use BIGINT type
+          - Use sequence generators
+          - Create as first column
+          Example:
+          ```xml
+          <column name="id" type="bigint">
+              <constraints primaryKey="true" nullable="false"/>
+          </column>
+          ```
+ 
+       4. Foreign Keys:
+          - Name: fk_[table]_[reference]_id
+          - Include ON DELETE clause
+          - Create index on FK columns
+          - Consider CASCADE rules
+          Example:
+          ```xml
+          <addForeignKeyConstraint
+              baseColumnNames="user_id"
+              baseTableName="diary_entry"
+              constraintName="fk_diary_entry_user_id"
+              referencedColumnNames="id"
+              referencedTableName="jhi_user"/>
+          ```
+ 
+       5. Indexes:
+          - Name: idx_[table]_[column(s)]
+          - Create for FK columns
+          - Create for search columns
+          - Consider compound indexes
+          Example:
+          ```xml
+          <createIndex indexName="idx_diary_entry_user_id"
+                      tableName="diary_entry">
+              <column name="user_id"/>
+          </createIndex>
+          ```
+ 
+       6. Data Types:
+          - Use appropriate types:
+            * BIGINT for IDs
+            * VARCHAR with limits
+            * TEXT for large content
+            * TIMESTAMP for dates
+            * BOOLEAN for flags
+          Example:
+          ```xml
+          <column name="content" type="varchar(4000)"/>
+          <column name="description" type="text"/>
+          <column name="created_date" type="timestamp"/>
+          <column name="is_active" type="boolean"/>
+          ```
+ 
+       7. Constraints:
+          - Name: [type]_[table]_[column]
+          - NOT NULL for required fields
+          - UNIQUE where appropriate
+          - CHECK constraints for validation
+          Example:
+          ```xml
+          <addNotNullConstraint
+              columnName="email"
+              tableName="user"
+              columnDataType="varchar(255)"/>
+          ```
+ 
+       8. Liquibase Best Practices:
+          - One change per changeset
+          - Clear author and id
+          - Include rollback
+          - Use contexts appropriately
+          - Comment complex changes
+          Example:
+          ```xml
+          <changeSet id="20240318000000-1" author="jhipster">
+              <comment>Creating diary entry table</comment>
+              <createTable tableName="diary_entry">
+                  ...
+              </createTable>
+              <rollback>
+                  <dropTable tableName="diary_entry"/>
+              </rollback>
+          </changeSet>
+          ```
+ 
+       9. Performance Considerations:
+          - Appropriate column types
+          - Strategic indexing
+          - Partition large tables
+          - Consider clustering
+          - Monitor index usage
+ 
+       10. Audit Fields:
+           - created_date (not null)
+           - created_by (not null)
+           - last_modified_date
+           - last_modified_by
+           Example:
+           ```xml
+           <column name="created_date" type="timestamp">
+               <constraints nullable="false"/>
+           </column>
+           <column name="created_by" type="varchar(50)">
+               <constraints nullable="false"/>
+           </column>
+           ```
+ 
+ examples:
+   - input: |
+       <!-- Bad: Poor naming and missing constraints -->
+       <changeSet id="1" author="dev">
+           <createTable tableName="USERS">
+               <column name="USER_ID" type="int"/>
+               <column name="USER_NAME" type="varchar(255)"/>
+           </createTable>
+       </changeSet>
+ 
+       <!-- Good: Proper naming and constraints -->
+       <changeSet id="20240318000000-1" author="jhipster">
+           <createTable tableName="user">
+               <column name="id" type="bigint">
+                   <constraints primaryKey="true" nullable="false"/>
+               </column>
+               <column name="username" type="varchar(255)">
+                   <constraints nullable="false" unique="true"/>
+               </column>
+               <column name="created_date" type="timestamp">
+                   <constraints nullable="false"/>
+               </column>
+           </createTable>
+       </changeSet>
+     output: "Properly structured database change"
+ 
+ metadata:
+   priority: high
+   version: 1.0
+   tags: ["database", "liquibase", "postgresql", "h2"]
+ </rule>
+ 
+ <rule>
+ name: database_migration_practices
+ description: Standards for database migrations and updates
+ filters:
+   - type: file_extension
+     pattern: "\\.xml$"
+ 
+ actions:
+   - type: suggest
+     message: |
+       When creating database migrations:
+ 
+       1. Changeset Naming:
+          - Format: YYYYMMDD[HH24MI]-[sequence]-[description]
+          - Include author
+          - Clear description
+          Example: "20240318000000-1-added-entity-DiaryEntry"
+ 
+       2. Migration Safety:
+          - Always include rollback
+          - Test migrations
+          - Backup data
+          - Consider data volume
+ 
+       3. Data Changes:
+          - Use loadData for CSV
+          - Include sample data
+          - Handle existing data
+          - Validate constraints
+ 
+       4. Version Control:
+          - One feature per file
+          - Clear commit messages
+          - Include related entities
+          - Document breaking changes
+ 
+ examples:
+   - input: |
+       <!-- Bad: No rollback -->
+       <changeSet id="1" author="dev">
+           <addColumn tableName="user">
+               <column name="email" type="varchar(255)"/>
+           </addColumn>
+       </changeSet>
+ 
+       <!-- Good: With rollback -->
+       <changeSet id="20240318000000-2" author="jhipster">
+           <addColumn tableName="user">
+               <column name="email" type="varchar(255)">
+                   <constraints nullable="false" unique="true"/>
+               </column>
+           </addColumn>
+           <rollback>
+               <dropColumn tableName="user" columnName="email"/>
+           </rollback>
+       </changeSet>
+     output: "Properly structured migration"
+ 
+ metadata:
+   priority: high
+   version: 1.0
+   tags: ["database", "liquibase", "migration"]
+ </rule>
+ 
