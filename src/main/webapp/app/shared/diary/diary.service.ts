@@ -1,14 +1,26 @@
 import { Injectable, signal } from '@angular/core';
 import { DiaryEntry, DiaryEmoticon, DiaryTag, NewDiaryEntry } from './diary.model';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
+import { map } from 'rxjs/operators';
+
+interface PaginatedResponse<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class DiaryService {
+  private resourceUrl: string;
+
   // State signals
   private isEditorOpen = signal<boolean>(false);
-  private entries = signal<DiaryEntry[]>([]);
   private selectedEmoticon = signal<DiaryEmoticon | null>(null);
   private selectedTags = signal<DiaryTag[]>([]);
   private isTagSelectorOpen = signal<boolean>(false);
@@ -45,13 +57,16 @@ export class DiaryService {
     { id: 9, name: 'Furious', emoji: '🤬', shortcut: '9' },
   ]);
 
+  constructor(
+    private http: HttpClient,
+    private applicationConfigService: ApplicationConfigService,
+  ) {
+    this.resourceUrl = this.applicationConfigService.getEndpointFor('api/diary-entries');
+  }
+
   // Getters
   getIsEditorOpen(): typeof this.isEditorOpen {
     return this.isEditorOpen;
-  }
-
-  getEntries(): typeof this.entries {
-    return this.entries;
   }
 
   getSelectedEmoticon(): typeof this.selectedEmoticon {
@@ -82,30 +97,39 @@ export class DiaryService {
     return this.emoticons;
   }
 
-  // Observable-based methods for DiaryComponent
+  // API methods
   getAllEntries(): Observable<DiaryEntry[]> {
-    return of(this.entries());
+    return this.http.get<PaginatedResponse<DiaryEntry>>(this.resourceUrl).pipe(
+      map((response: PaginatedResponse<DiaryEntry>) => {
+        if (response?.content) {
+          return response.content.map(entry => this.convertFromServer(entry));
+        }
+        return [];
+      }),
+    );
   }
 
   createEntry(entry: NewDiaryEntry): Observable<DiaryEntry> {
-    const newEntry = {
-      ...entry,
-      id: Date.now(), // Temporary ID until we have a backend
-      createdAt: new Date(),
+    const payload = {
+      content: entry.content,
+      emoticon: entry.emoticon.emoji,
+      tags: entry.tags.map(tag => tag.name),
     };
-
-    this.entries.update(entries => [newEntry, ...entries] as DiaryEntry[]);
-    return of(newEntry);
+    return this.http.post<any>(this.resourceUrl, payload).pipe(map(response => this.convertFromServer(response)));
   }
 
   updateEntry(entry: DiaryEntry): Observable<DiaryEntry> {
-    this.entries.update(entries => entries.map(e => (e.id === entry.id ? entry : e)));
-    return of(entry);
+    const payload = {
+      id: entry.id,
+      content: entry.content,
+      emoticon: entry.emoticon.emoji,
+      tags: entry.tags.map(tag => tag.name),
+    };
+    return this.http.put<any>(`${this.resourceUrl}/${entry.id}`, payload).pipe(map(response => this.convertFromServer(response)));
   }
 
-  deleteEntry(entryId: number): Observable<void> {
-    this.entries.update(entries => entries.filter(e => e.id !== entryId));
-    return of(undefined);
+  deleteEntry(entryId: number): Observable<unknown> {
+    return this.http.delete<unknown>(`${this.resourceUrl}/${entryId}`);
   }
 
   // Actions
@@ -146,32 +170,19 @@ export class DiaryService {
     }
   }
 
-  createDiaryEntry(content: string): void {
-    if (!this.selectedEmoticon()) {
-      return;
-    }
-
-    const newEntry: DiaryEntry = {
-      id: Date.now(), // Temporary ID until we have a backend
-      emoticon: this.selectedEmoticon()!,
-      tags: this.selectedTags(),
-      content,
-      createdAt: new Date(),
-    };
-
-    this.entries.update(entries => [newEntry, ...entries]);
-    this.resetState();
-  }
-
   startEditingEntry(entry: DiaryEntry): void {
     this.currentEditingEntry.set(entry);
     this.isEditingEntry.set(true);
-  }
-
-  updateDiaryEntry(entry: DiaryEntry, content: string): void {
-    const updatedEntry = { ...entry, content };
-    this.entries.update(entries => entries.map(e => (e.id === entry.id ? updatedEntry : e)));
-    this.stopEditingEntry();
+    // Set the emoticon and tags for editing
+    const emoticon = this.emoticons().find(e => e.emoji === entry.emoticon.emoji);
+    if (emoticon) {
+      this.selectedEmoticon.set(emoticon);
+    }
+    const tags = entry.tags.map(tag => {
+      const existingTag = this.diaryTags().find(t => t.name === tag.name);
+      return existingTag ?? { id: Math.random(), name: tag.name };
+    });
+    this.selectedTags.set(tags);
   }
 
   stopEditingEntry(): void {
@@ -199,5 +210,27 @@ export class DiaryService {
     this.isTagSelectorOpen.set(false);
     this.isEditingEntry.set(false);
     this.currentEditingEntry.set(null);
+  }
+
+  private convertFromServer(entry: any): DiaryEntry {
+    const emoticon = this.emoticons().find(e => e.emoji === entry.emoticon) ?? {
+      id: 0,
+      name: 'Unknown',
+      emoji: entry.emoticon,
+      shortcut: '',
+    };
+
+    const tags = entry.tags.map((tagName: string) => {
+      const existingTag = this.diaryTags().find(t => t.name === tagName);
+      return existingTag ?? { id: Math.random(), name: tagName };
+    });
+
+    return {
+      id: entry.id,
+      content: entry.content,
+      emoticon,
+      tags,
+      createdAt: new Date(entry.createdDate),
+    };
   }
 }

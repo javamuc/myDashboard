@@ -166,25 +166,6 @@ public class HabitDTO implements Serializable {
 
     @Override
     public String toString() {
-        return (
-            "HabitDTO{" +
-            "id=" +
-            getId() +
-            ", name='" +
-            getName() +
-            "'" +
-            ", description='" +
-            getDescription() +
-            "'" +
-            ", active='" +
-            isActive() +
-            "'" +
-            ", scheduleType='" +
-            getScheduleType() +
-            "'" +
-            ", userId=" +
-            getUserId() +
-            "}"
-        );
+        return ("HabitDTO{" + "id=" + getId() + "}");
     }
 }

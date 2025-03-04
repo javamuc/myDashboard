@@ -5,7 +5,6 @@ import com.dshbd.repository.NoteRepository;
 import com.dshbd.repository.UserRepository;
 import com.dshbd.service.dto.NoteDTO;
 import com.dshbd.service.mapper.NoteMapper;
-import com.dshbd.web.rest.NoteVM;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;

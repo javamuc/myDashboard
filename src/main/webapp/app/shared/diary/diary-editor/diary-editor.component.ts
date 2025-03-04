@@ -110,18 +110,16 @@ export class DiaryEditorComponent implements AfterViewInit {
     if (!this.isEditorOpen()) {
       return;
     }
-    if (/^[1-9]$/.test(event.key)) {
-      event.stopPropagation();
-      event.preventDefault();
-      return;
-    }
 
     const isTextInput = event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;
     const isTextArea = event.target === this.entryInput?.nativeElement;
+
+    // Skip all keyboard shortcuts if we're in the text area (except for specific ones we want to handle)
     if (isTextArea) {
-      console.warn('Text area event:', event);
       // Only handle Cmd+Enter and Escape in the text area
       if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+        event.preventDefault();
+        event.stopPropagation();
         if (this.isEditingEntry()) {
           this.saveEditedEntry();
         } else if (this.entryContent().trim()) {
@@ -131,6 +129,12 @@ export class DiaryEditorComponent implements AfterViewInit {
         // Handle Escape key for navigation
         this.handleTextareaKeydown(event);
       }
+      return;
+    }
+
+    if (/^[1-9]$/.test(event.key)) {
+      event.stopPropagation();
+      event.preventDefault();
       return;
     }
 
