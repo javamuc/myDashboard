@@ -464,6 +464,7 @@ public class ImportDataDTO {
 
         private List<ImportDiaryTagDTO> tags;
         private Instant createdDate;
+        private Instant lastModifiedDate;
 
         public String getContent() {
             return content;
@@ -495,6 +496,14 @@ public class ImportDataDTO {
 
         public void setCreatedDate(Instant createdDate) {
             this.createdDate = createdDate;
+        }
+
+        public Instant getLastModifiedDate() {
+            return lastModifiedDate;
+        }
+
+        public void setLastModifiedDate(Instant lastModifiedDate) {
+            this.lastModifiedDate = lastModifiedDate;
         }
     }
 

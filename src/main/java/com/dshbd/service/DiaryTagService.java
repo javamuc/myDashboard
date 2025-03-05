@@ -5,7 +5,6 @@ import com.dshbd.repository.DiaryEntryRepository;
 import com.dshbd.repository.DiaryTagRepository;
 import com.dshbd.service.dto.DiaryTagDTO;
 import com.dshbd.service.mapper.DiaryTagMapper;
-import com.dshbd.web.rest.errors.BadRequestAlertException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,12 +40,12 @@ public class DiaryTagService extends BaseService {
         // Check if user has reached the maximum number of active tags
         long activeTagsCount = diaryTagRepository.countByUserIdAndArchivedFalse(getUserId());
         if (activeTagsCount >= MAX_ACTIVE_TAGS) {
-            throw new BadRequestAlertException("Maximum number of active tags reached", "diaryTag", "maxTagsReached");
+            throw new IllegalStateException("Maximum number of active tags reached");
         }
 
         // Check if tag with same name already exists for user
         if (diaryTagRepository.existsByUserIdAndNameAndArchivedFalse(getUserId(), tagDTO.getName())) {
-            throw new BadRequestAlertException("Tag with this name already exists", "diaryTag", "nameExists");
+            throw new IllegalStateException("Tag with this name already exists: " + tagDTO.getName());
         }
 
         DiaryTag tag = diaryTagMapper.toEntity(tagDTO);
@@ -101,7 +100,7 @@ public class DiaryTagService extends BaseService {
         // Check if tag is used in any entries
         boolean isTagUsed = diaryEntryRepository.existsByTags(tag.getName());
         if (isTagUsed) {
-            throw new BadRequestAlertException("Cannot delete tag that is used in entries", "diaryTag", "tagInUse");
+            throw new IllegalStateException(String.format("Cannot delete tag that is used in entries: %s", tag.getName()));
         }
         diaryTagRepository.deleteById(id);
     }
