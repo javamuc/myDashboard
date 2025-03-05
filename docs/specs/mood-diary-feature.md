@@ -70,6 +70,15 @@ The Mood Diary feature allows users to track their daily emotions and experience
   - Creation date
   - Edit/Delete options
 
+#### 2.1 Entry List filtering
+
+- A button to filter the entries by emoticon. The button opens a drop down list of the icons, the button open with Enter or Space if it has focus
+  - The list that opens can be navigated with up and down arrow keys and an icon can be selected with the Enter or Space key
+  - The entries are filtered in the backend by that selected emoticon
+- A button to filter the entries by tags. The button opens the tag-selector component below it in an overlay.
+  - The user can use the keyboard shortcuts to select tags that the entries should be filtered by in the backend
+  - Escape or Enter closes the overlay
+
 ## Technical Implementation
 
 ### Frontend Components
@@ -176,11 +185,23 @@ The Mood Diary feature allows users to track their daily emotions and experience
 
 ## Future Enhancements
 
-1. Mood analytics and trends
-2. Entry search and filtering
-3. Tag analytics
-4. Image attachment support
-5. Rich text formatting
-6. Entry sharing capabilities
-7. Export functionality
-8. Mobile optimization
+1. Entry search and filtering
+2. Analytics & Insights
+   Mood trends over time
+   Activity statistics
+   Tag usage analytics
+   Writing streak tracking
+   Word count statistics
+3. Media Support
+   Photo attachments
+   Voice notes/audio recordings
+   Handwritten notes/drawings
+   File attachments
+4. Rich text formatting
+5. Entry sharing capabilities
+6. Export functionality
+7. Mobile optimization
+8. Collaborative journals
+9. Sharing of selected entries (social)
+10. Custom collections/folders
+11. Favorites/bookmarks

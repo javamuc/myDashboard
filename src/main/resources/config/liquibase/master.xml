@@ -33,4 +33,5 @@
     <include file="config/liquibase/changelog/20240328000000_update_task_description_length.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240328000001_add_columns_to_board.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20240318000000_added_entity_DiaryEntry.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240319000000_added_entity_DiaryTag.xml" relativeToChangelogFile="false"/>
 </databaseChangeLog>

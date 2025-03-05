@@ -4,20 +4,18 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "diary_entry")
-public class DiaryEntry implements Serializable {
+@Table(name = "diary_tag")
+public class DiaryTag implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "diary_entry_sequence")
-    @SequenceGenerator(name = "diary_entry_sequence", sequenceName = "diary_entry_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "diary_tag_sequence")
+    @SequenceGenerator(name = "diary_tag_sequence", sequenceName = "diary_tag_sequence", allocationSize = 1)
     private Long id;
 
     @NotNull
@@ -25,20 +23,11 @@ public class DiaryEntry implements Serializable {
     private Long userId;
 
     @NotNull
-    @Column(name = "content", nullable = false)
-    private String content;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @NotNull
-    @Column(name = "emoticon", nullable = false)
-    private String emoticon;
-
-    @ManyToMany
-    @JoinTable(
-        name = "diary_entry_tags",
-        joinColumns = @JoinColumn(name = "diary_entry_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
-    private Set<DiaryTag> tags = new HashSet<>();
+    @Column(name = "archived")
+    private boolean archived = false;
 
     @NotNull
     @Column(name = "created_date", nullable = false)
@@ -50,7 +39,6 @@ public class DiaryEntry implements Serializable {
     private Instant lastModifiedDate;
 
     // Getters and Setters
-
     public Long getId() {
         return id;
     }
@@ -67,28 +55,20 @@ public class DiaryEntry implements Serializable {
         this.userId = userId;
     }
 
-    public String getContent() {
-        return content;
+    public String getName() {
+        return name;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getEmoticon() {
-        return emoticon;
+    public boolean isArchived() {
+        return archived;
     }
 
-    public void setEmoticon(String emoticon) {
-        this.emoticon = emoticon;
-    }
-
-    public Set<DiaryTag> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<DiaryTag> tags) {
-        this.tags = tags;
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 
     public Instant getCreatedDate() {

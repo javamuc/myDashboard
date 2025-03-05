@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="20240319000000-1" author="san">
+        <createSequence sequenceName="diary_tag_sequence" startValue="1000" incrementBy="1"/>
+
+        <createTable tableName="diary_tag">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="archived" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+
+        <createIndex indexName="idx_diary_tag_user_id"
+                    tableName="diary_tag">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_diary_tag_user_id_name"
+                    tableName="diary_tag"
+                    unique="true">
+            <column name="user_id"/>
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Create default tags for existing users -->
+    <changeSet id="20240319000000-2" author="san">
+        <sql>
+            INSERT INTO diary_tag (id, user_id, name, archived, created_date)
+            SELECT nextval('diary_tag_sequence'), u.id, t.tag_name, false, now()
+            FROM jhi_user u
+            CROSS JOIN (
+                VALUES
+                    ('work'),
+                    ('family'),
+                    ('relationship'),
+                    ('friends'),
+                    ('myself'),
+                    ('school'),
+                    ('coworkers'),
+                    ('health'),
+                    ('college'),
+                    ('hobby'),
+                    ('travel'),
+                    ('fitness'),
+                    ('entertainment')
+            ) AS t(tag_name);
+        </sql>
+        <rollback>
+            DELETE FROM diary_tag WHERE name IN (
+                'work', 'family', 'relationship', 'friends', 'myself',
+                'school', 'coworkers', 'health', 'college', 'hobby',
+                'travel', 'fitness', 'entertainment'
+            );
+        </rollback>
+    </changeSet>
+
+    <!-- Add tag_id column if it doesn't exist -->
+    <changeSet id="20240319000000-3" author="san">
+        <addColumn tableName="diary_entry_tags">
+            <column name="tag_id" type="bigint"/>
+        </addColumn>
+    </changeSet>
+
+    <!-- Add not null constraint -->
+    <changeSet id="20240319000000-5" author="san">
+        <addNotNullConstraint tableName="diary_entry_tags"
+                            columnName="tag_id"
+                            columnDataType="bigint"/>
+    </changeSet>
+
+    <!-- Add foreign key constraint -->
+    <changeSet id="20240319000000-6" author="san">
+        <addForeignKeyConstraint baseColumnNames="tag_id"
+                                baseTableName="diary_entry_tags"
+                                constraintName="fk_diary_entry_tags_tag_id"
+                                referencedColumnNames="id"
+                                referencedTableName="diary_tag"/>
+    </changeSet>
+
+    <!-- Update primary key -->
+    <changeSet id="20240319000000-7" author="san">
+        <addPrimaryKey tableName="diary_entry_tags"
+                      columnNames="diary_entry_id, tag_id"/>
+    </changeSet>
+
+    <!-- Drop old tag column -->
+    <changeSet id="20240319000000-8" author="san">
+        <dropColumn tableName="diary_entry_tags" columnName="tag"/>
+    </changeSet>
+
+</databaseChangeLog>

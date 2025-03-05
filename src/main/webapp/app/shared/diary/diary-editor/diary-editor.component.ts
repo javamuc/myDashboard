@@ -193,7 +193,7 @@ export class DiaryEditorComponent implements AfterViewInit {
   }
 
   selectEmoticon(emoticon: DiaryEmoticon): void {
-    this.diaryService.selectEmoticon(emoticon);
+    this.diaryService.setSelectedEmoticon(emoticon);
   }
 
   toggleTag(tag: DiaryTag): void {
@@ -209,8 +209,7 @@ export class DiaryEditorComponent implements AfterViewInit {
       };
 
       this.saveEntry.emit(newEntry as DiaryEntry);
-      this.entryContent.set('');
-      this.diaryService.resetSelections();
+      this.diaryService.closeEditor();
     }
   }
 
@@ -240,9 +239,7 @@ export class DiaryEditorComponent implements AfterViewInit {
   }
 
   cancelEditing(): void {
-    this.diaryService.stopEditingEntry();
-    this.entryContent.set('');
-    this.diaryService.resetSelections();
+    this.diaryService.cancelEditingEntry();
     this.cancelEdit.emit();
   }
 

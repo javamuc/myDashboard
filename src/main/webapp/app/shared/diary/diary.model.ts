@@ -8,6 +8,9 @@ export interface DiaryEmoticon {
 export interface DiaryTag {
   id: number;
   name: string;
+  archived: boolean;
+  createdDate: Date;
+  lastModifiedDate?: Date;
 }
 
 export interface DiaryEntry {

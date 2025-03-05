@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { DiaryEntry, DiaryEmoticon, DiaryTag, NewDiaryEntry } from './diary.model';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { map } from 'rxjs/operators';
@@ -18,6 +18,7 @@ interface PaginatedResponse<T> {
 })
 export class DiaryService {
   private resourceUrl: string;
+  private tagResourceUrl: string;
 
   // State signals
   private isEditorOpen = signal<boolean>(false);
@@ -26,23 +27,7 @@ export class DiaryService {
   private isTagSelectorOpen = signal<boolean>(false);
   private isEditingEntry = signal<boolean>(false);
   private currentEditingEntry = signal<DiaryEntry | null>(null);
-
-  // Default diary tags
-  private diaryTags = signal<DiaryTag[]>([
-    { id: 1, name: 'work' },
-    { id: 2, name: 'family' },
-    { id: 3, name: 'relationship' },
-    { id: 4, name: 'friends' },
-    { id: 5, name: 'myself' },
-    { id: 6, name: 'school' },
-    { id: 7, name: 'coworkers' },
-    { id: 8, name: 'health' },
-    { id: 9, name: 'college' },
-    { id: 10, name: 'hobby' },
-    { id: 11, name: 'travel' },
-    { id: 12, name: 'fitness' },
-    { id: 13, name: 'entertainment' },
-  ]);
+  private diaryTags = signal<DiaryTag[]>([]);
 
   // Default emoticons
   private emoticons = signal<DiaryEmoticon[]>([
@@ -62,39 +47,8 @@ export class DiaryService {
     private applicationConfigService: ApplicationConfigService,
   ) {
     this.resourceUrl = this.applicationConfigService.getEndpointFor('api/diary-entries');
-  }
-
-  // Getters
-  getIsEditorOpen(): typeof this.isEditorOpen {
-    return this.isEditorOpen;
-  }
-
-  getSelectedEmoticon(): typeof this.selectedEmoticon {
-    return this.selectedEmoticon;
-  }
-
-  getSelectedTags(): typeof this.selectedTags {
-    return this.selectedTags;
-  }
-
-  getIsTagSelectorOpen(): typeof this.isTagSelectorOpen {
-    return this.isTagSelectorOpen;
-  }
-
-  getIsEditingEntry(): typeof this.isEditingEntry {
-    return this.isEditingEntry;
-  }
-
-  getCurrentEditingEntry(): typeof this.currentEditingEntry {
-    return this.currentEditingEntry;
-  }
-
-  getDiaryTags(): typeof this.diaryTags {
-    return this.diaryTags;
-  }
-
-  getEmoticons(): typeof this.emoticons {
-    return this.emoticons;
+    this.tagResourceUrl = this.applicationConfigService.getEndpointFor('api/diary-tags');
+    this.loadTags();
   }
 
   // API methods
@@ -113,7 +67,13 @@ export class DiaryService {
     const payload = {
       content: entry.content,
       emoticon: entry.emoticon.emoji,
-      tags: entry.tags.map(tag => tag.name),
+      tags: entry.tags.map(tag => ({
+        id: tag.id,
+        name: tag.name,
+        archived: tag.archived,
+        createdDate: tag.createdDate,
+        lastModifiedDate: tag.lastModifiedDate,
+      })),
     };
     return this.http.post<any>(this.resourceUrl, payload).pipe(map(response => this.convertFromServer(response)));
   }
@@ -123,7 +83,13 @@ export class DiaryService {
       id: entry.id,
       content: entry.content,
       emoticon: entry.emoticon.emoji,
-      tags: entry.tags.map(tag => tag.name),
+      tags: entry.tags.map(tag => ({
+        id: tag.id,
+        name: tag.name,
+        archived: tag.archived,
+        createdDate: tag.createdDate,
+        lastModifiedDate: tag.lastModifiedDate,
+      })),
     };
     return this.http.put<any>(`${this.resourceUrl}/${entry.id}`, payload).pipe(map(response => this.convertFromServer(response)));
   }
@@ -132,29 +98,109 @@ export class DiaryService {
     return this.http.delete<unknown>(`${this.resourceUrl}/${entryId}`);
   }
 
-  // Actions
+  // Tag methods
+  loadTags(): void {
+    this.http.get<DiaryTag[]>(`${this.tagResourceUrl}/active`).subscribe(tags => {
+      this.diaryTags.set(tags);
+    });
+  }
+
+  createTag(name: string): Observable<DiaryTag> {
+    return this.http.post<DiaryTag>(this.tagResourceUrl, { name }).pipe(
+      map(tag => {
+        this.diaryTags.update(tags => [...tags, tag]);
+        return tag;
+      }),
+    );
+  }
+
+  updateTag(tag: DiaryTag): Observable<DiaryTag> {
+    return this.http.put<DiaryTag>(`${this.tagResourceUrl}/${tag.id}`, tag).pipe(
+      map(updatedTag => {
+        this.diaryTags.update(tags => tags.map(t => (t.id === updatedTag.id ? updatedTag : t)));
+        return updatedTag;
+      }),
+    );
+  }
+
+  deleteTag(tagId: number): Observable<unknown> {
+    return this.http.delete<unknown>(`${this.tagResourceUrl}/${tagId}`).pipe(
+      map(() => {
+        this.diaryTags.update(tags => tags.filter(t => t.id !== tagId));
+      }),
+    );
+  }
+
+  archiveTag(tagId: number): Observable<DiaryTag> {
+    return this.http.put<DiaryTag>(`${this.tagResourceUrl}/${tagId}/archive`, {}).pipe(
+      map(archivedTag => {
+        this.diaryTags.update(tags => tags.filter(t => t.id !== tagId));
+        return archivedTag;
+      }),
+    );
+  }
+
+  // State management methods
+  getIsEditorOpen(): typeof this.isEditorOpen {
+    return this.isEditorOpen;
+  }
+
   openEditor(): void {
     this.isEditorOpen.set(true);
   }
 
   closeEditor(): void {
     this.isEditorOpen.set(false);
-    this.resetState();
+    this.selectedEmoticon.set(null);
+    this.selectedTags.set([]);
+    this.isTagSelectorOpen.set(false);
+    this.isEditingEntry.set(false);
+    this.currentEditingEntry.set(null);
   }
 
-  resetEditor(): void {
-    console.warn('DiaryService.resetEditor called');
-    this.resetState();
+  getSelectedEmoticon(): typeof this.selectedEmoticon {
+    return this.selectedEmoticon;
   }
 
-  selectEmoticon(emoticon: DiaryEmoticon): void {
-    console.warn('DiaryService.selectEmoticon called with emoticon:', emoticon);
+  setSelectedEmoticon(emoticon: DiaryEmoticon | null): void {
     this.selectedEmoticon.set(emoticon);
+  }
+
+  getSelectedTags(): typeof this.selectedTags {
+    return this.selectedTags;
   }
 
   setSelectedTags(tags: DiaryTag[]): void {
     console.warn('DiaryService.setSelectedTags called with tags:', tags);
     this.selectedTags.set(tags);
+  }
+
+  getIsTagSelectorOpen(): typeof this.isTagSelectorOpen {
+    return this.isTagSelectorOpen;
+  }
+
+  openTagSelector(): void {
+    this.isTagSelectorOpen.set(true);
+  }
+
+  closeTagSelector(): void {
+    this.isTagSelectorOpen.set(false);
+  }
+
+  getEmoticons(): typeof this.emoticons {
+    return this.emoticons;
+  }
+
+  getDiaryTags(): typeof this.diaryTags {
+    return this.diaryTags;
+  }
+
+  getIsEditingEntry(): typeof this.isEditingEntry {
+    return this.isEditingEntry;
+  }
+
+  getCurrentEditingEntry(): typeof this.currentEditingEntry {
+    return this.currentEditingEntry;
   }
 
   toggleTag(tag: DiaryTag): void {
@@ -178,38 +224,49 @@ export class DiaryService {
     if (emoticon) {
       this.selectedEmoticon.set(emoticon);
     }
-    const tags = entry.tags.map(tag => {
+
+    // Handle tags - create any new tags that don't exist yet
+    const existingTags: DiaryTag[] = [];
+    const newTagPromises: Promise<DiaryTag>[] = [];
+
+    entry.tags.forEach(tag => {
       const existingTag = this.diaryTags().find(t => t.name === tag.name);
-      return existingTag ?? { id: Math.random(), name: tag.name };
+      if (existingTag) {
+        existingTags.push(existingTag);
+      } else {
+        // Create new tag through the API
+        const promise = firstValueFrom(this.createTag(tag.name)).then(newTag => {
+          existingTags.push(newTag);
+          return newTag;
+        });
+        newTagPromises.push(promise);
+      }
     });
-    this.selectedTags.set(tags);
+
+    // Once all new tags are created, set the selected tags
+    if (newTagPromises.length > 0) {
+      Promise.all(newTagPromises).then(() => {
+        this.selectedTags.set(existingTags);
+      });
+    } else {
+      this.selectedTags.set(existingTags);
+    }
   }
 
-  stopEditingEntry(): void {
+  cancelEditingEntry(): void {
     this.currentEditingEntry.set(null);
     this.isEditingEntry.set(false);
-  }
-
-  addNewTag(name: string): void {
-    const currentTags = this.diaryTags();
-    const newId = Math.max(...currentTags.map(t => t.id)) + 1;
-    const newTag: DiaryTag = { id: newId, name };
-
-    this.diaryTags.update(tags => [...tags, newTag]);
-    // Also select the new tag
-    this.toggleTag(newTag);
-  }
-
-  resetSelections(): void {
     this.selectedEmoticon.set(null);
     this.selectedTags.set([]);
   }
 
-  private resetState(): void {
-    this.resetSelections();
-    this.isTagSelectorOpen.set(false);
-    this.isEditingEntry.set(false);
-    this.currentEditingEntry.set(null);
+  addNewTag(name: string): void {
+    if (name.trim()) {
+      this.createTag(name.trim()).subscribe(newTag => {
+        // Also select the new tag
+        this.toggleTag(newTag);
+      });
+    }
   }
 
   private convertFromServer(entry: any): DiaryEntry {
@@ -220,10 +277,27 @@ export class DiaryService {
       shortcut: '',
     };
 
-    const tags = entry.tags.map((tagName: string) => {
-      const existingTag = this.diaryTags().find(t => t.name === tagName);
-      return existingTag ?? { id: Math.random(), name: tagName };
-    });
+    // Ensure we're working with the proper tag objects from the backend
+    const tags = Array.isArray(entry.tags)
+      ? entry.tags.map((tag: DiaryTag) => {
+          if (typeof tag === 'string') {
+            // If it's just a string (legacy data), find or create a proper tag
+            const existingTag = this.diaryTags().find(t => t.name === tag);
+            if (existingTag) {
+              return existingTag;
+            }
+            // If we don't find the tag, we'll need to create it
+            return {
+              name: tag,
+              archived: false,
+              createdDate: new Date(),
+              lastModifiedDate: new Date(),
+            };
+          }
+          // If it's already a tag object, return it as is
+          return tag;
+        })
+      : [];
 
     return {
       id: entry.id,

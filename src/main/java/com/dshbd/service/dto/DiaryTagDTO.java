@@ -3,27 +3,21 @@ package com.dshbd.service.dto;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 
-public class DiaryEntryDTO implements Serializable {
+public class DiaryTagDTO implements Serializable {
 
     private Long id;
 
     @NotNull
-    private String content;
+    private String name;
 
-    @NotNull
-    private String emoticon;
-
-    private Set<DiaryTagDTO> tags = new HashSet<>();
+    private boolean archived;
 
     private Instant createdDate;
 
     private Instant lastModifiedDate;
 
     // Getters and Setters
-
     public Long getId() {
         return id;
     }
@@ -32,28 +26,20 @@ public class DiaryEntryDTO implements Serializable {
         this.id = id;
     }
 
-    public String getContent() {
-        return content;
+    public String getName() {
+        return name;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getEmoticon() {
-        return emoticon;
+    public boolean isArchived() {
+        return archived;
     }
 
-    public void setEmoticon(String emoticon) {
-        this.emoticon = emoticon;
-    }
-
-    public Set<DiaryTagDTO> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<DiaryTagDTO> tags) {
-        this.tags = tags;
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 
     public Instant getCreatedDate() {

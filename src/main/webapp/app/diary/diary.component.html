@@ -2,11 +2,11 @@
   <div class="diary-header">
     <h5>My Diary</h5>
     <div class="diary-actions">
-      <button class="btn btn-primary" (click)="createNewEntry()"><fa-icon icon="plus"></fa-icon> New Entry</button>
       <div class="search-container">
         <input type="text" class="form-control" placeholder="Search entries..." [(ngModel)]="searchTerm" />
         <fa-icon icon="search"></fa-icon>
       </div>
+      <button class="btn btn-primary" (click)="createNewEntry()"><fa-icon icon="plus"></fa-icon> New Entry</button>
     </div>
   </div>
 

@@ -1,9 +1,14 @@
 package com.dshbd.service;
 
 import com.dshbd.domain.DiaryEntry;
+import com.dshbd.domain.DiaryTag;
 import com.dshbd.repository.DiaryEntryRepository;
+import com.dshbd.repository.DiaryTagRepository;
 import com.dshbd.service.dto.DiaryEntryDTO;
 import com.dshbd.service.mapper.DiaryEntryMapper;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -18,11 +23,18 @@ public class DiaryService extends BaseService {
     private final Logger log = LoggerFactory.getLogger(DiaryService.class);
 
     private final DiaryEntryRepository diaryEntryRepository;
+    private final DiaryTagRepository diaryTagRepository;
     private final DiaryEntryMapper diaryEntryMapper;
 
-    public DiaryService(UserService userService, DiaryEntryRepository diaryEntryRepository, DiaryEntryMapper diaryEntryMapper) {
+    public DiaryService(
+        UserService userService,
+        DiaryEntryRepository diaryEntryRepository,
+        DiaryTagRepository diaryTagRepository,
+        DiaryEntryMapper diaryEntryMapper
+    ) {
         super(userService);
         this.diaryEntryRepository = diaryEntryRepository;
+        this.diaryTagRepository = diaryTagRepository;
         this.diaryEntryMapper = diaryEntryMapper;
     }
 
@@ -30,6 +42,24 @@ public class DiaryService extends BaseService {
         log.debug("Request to save DiaryEntry : {}", diaryEntryDTO);
         DiaryEntry diaryEntry = diaryEntryMapper.toEntity(diaryEntryDTO);
         diaryEntry.setUserId(getUserId());
+
+        // Find or create tags
+        Set<DiaryTag> tags = new HashSet<>();
+        for (DiaryTag tag : diaryEntry.getTags()) {
+            DiaryTag existingTag = diaryTagRepository
+                .findByUserIdAndName(getUserId(), tag.getName())
+                .orElseGet(() -> {
+                    DiaryTag newTag = new DiaryTag();
+                    newTag.setUserId(getUserId());
+                    newTag.setName(tag.getName());
+                    return diaryTagRepository.save(newTag);
+                });
+            if (!existingTag.isArchived()) {
+                tags.add(existingTag);
+            }
+        }
+        diaryEntry.setTags(tags);
+
         diaryEntry = diaryEntryRepository.save(diaryEntry);
         return diaryEntryMapper.toDto(diaryEntry);
     }
