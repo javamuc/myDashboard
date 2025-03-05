@@ -125,6 +125,7 @@ The Mood Diary feature allows users to track their daily emotions and experience
    GET    /api/diary-entries      # Get all entries (paginated)
    GET    /api/diary-entries/{id} # Get single entry
    DELETE /api/diary-entries/{id} # Delete entry
+   DELETE /api/diary-entries      # Delete all entries (Admin only)
    ```
 
 ## Security
@@ -134,6 +135,9 @@ The Mood Diary feature allows users to track their daily emotions and experience
 - All diary operations require authentication
 - Entries are user-specific
 - Users can only access their own entries
+- Admin role has additional privileges:
+  - Can delete all diary entries (bulk delete)
+  - Access to system-wide diary management
 
 ### Data Validation
 
