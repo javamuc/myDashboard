@@ -247,15 +247,23 @@ export class DataService {
       throw new Error('Import data is missing required fields');
     }
 
+    // Check that arrays are either undefined or valid arrays
     if (
-      !Array.isArray(importData.data.ideas) ||
-      !Array.isArray(importData.data.notes) ||
-      !Array.isArray(importData.data.boards) ||
-      !Array.isArray(importData.data.habits) ||
-      !Array.isArray(importData.data.diaryEntries)
+      (importData.data.ideas && !Array.isArray(importData.data.ideas)) ||
+      (importData.data.notes && !Array.isArray(importData.data.notes)) ||
+      (importData.data.boards && !Array.isArray(importData.data.boards)) ||
+      (importData.data.habits && !Array.isArray(importData.data.habits)) ||
+      (importData.data.diaryEntries && !Array.isArray(importData.data.diaryEntries))
     ) {
       throw new Error('Import data has invalid structure');
     }
+
+    // Initialize empty arrays for missing data
+    if (!importData.data.ideas) importData.data.ideas = [];
+    if (!importData.data.notes) importData.data.notes = [];
+    if (!importData.data.boards) importData.data.boards = [];
+    if (!importData.data.habits) importData.data.habits = [];
+    if (!importData.data.diaryEntries) importData.data.diaryEntries = [];
 
     // Version check
     const [majorImport] = importData.version.split('.');
