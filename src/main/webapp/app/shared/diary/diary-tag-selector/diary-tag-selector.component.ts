@@ -15,6 +15,7 @@ import { DiaryService } from '../diary.service';
 export class DiaryTagSelectorComponent implements OnInit, AfterViewInit {
   @Input() selectedTags: DiaryTag[] = [];
   @Input() isTagSelectorOpen = false;
+  @Input() canCreate = true;
   @Output() tagToggled = new EventEmitter<DiaryTag>();
   @Output() tagAdded = new EventEmitter<string>();
   @Output() enterPressed = new EventEmitter<void>();
@@ -65,7 +66,7 @@ export class DiaryTagSelectorComponent implements OnInit, AfterViewInit {
   }
 
   canAddMoreTags(): boolean {
-    return this.diaryTags().length < this.MAX_TAGS;
+    return this.diaryTags().length < this.MAX_TAGS && this.canCreate;
   }
 
   @HostListener('keydown', ['$event'])

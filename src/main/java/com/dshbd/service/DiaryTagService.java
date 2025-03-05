@@ -84,7 +84,7 @@ public class DiaryTagService extends BaseService {
     public List<DiaryTagDTO> getActiveTagsByUser() {
         log.debug("Request to get active DiaryTags for user : {}", getUserId());
         return diaryTagRepository
-            .findByUserIdAndArchivedFalseOrderByCreatedDateDesc(getUserId())
+            .findByUserIdAndArchivedFalseOrderByCreatedDateAsc(getUserId())
             .stream()
             .map(diaryTagMapper::toDto)
             .toList();
