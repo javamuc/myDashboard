@@ -9,7 +9,7 @@ alwaysApply: false
  alwaysApply: false
  ---
  # Database Practices Rules
- 
+
  <rule>
  name: database_schema_design
  description: Standards for database schema design and Liquibase changes
@@ -18,12 +18,12 @@ alwaysApply: false
      pattern: "\\.xml$"
    - type: directory
      pattern: "src/main/resources/config/liquibase/"
- 
+
  actions:
    - type: suggest
      message: |
        When designing database schemas and writing Liquibase changes:
- 
+
        1. Table Naming:
           - Use singular form (user, not users)
           - Lowercase with underscores
@@ -36,7 +36,7 @@ alwaysApply: false
           task_board
           task_item
           ```
- 
+
        2. Column Naming:
           - Lowercase with underscores
           - No table name in column
@@ -50,7 +50,7 @@ alwaysApply: false
           is_active         -- Boolean flag
           user_id           -- Foreign key
           ```
- 
+
        3. Primary Keys:
           - Always use id as name
           - Use BIGINT type
@@ -62,7 +62,7 @@ alwaysApply: false
               <constraints primaryKey="true" nullable="false"/>
           </column>
           ```
- 
+
        4. Foreign Keys:
           - Name: fk_[table]_[reference]_id
           - Include ON DELETE clause
@@ -77,7 +77,7 @@ alwaysApply: false
               referencedColumnNames="id"
               referencedTableName="jhi_user"/>
           ```
- 
+
        5. Indexes:
           - Name: idx_[table]_[column(s)]
           - Create for FK columns
@@ -90,7 +90,7 @@ alwaysApply: false
               <column name="user_id"/>
           </createIndex>
           ```
- 
+
        6. Data Types:
           - Use appropriate types:
             * BIGINT for IDs
@@ -105,7 +105,7 @@ alwaysApply: false
           <column name="created_date" type="timestamp"/>
           <column name="is_active" type="boolean"/>
           ```
- 
+
        7. Constraints:
           - Name: [type]_[table]_[column]
           - NOT NULL for required fields
@@ -118,7 +118,7 @@ alwaysApply: false
               tableName="user"
               columnDataType="varchar(255)"/>
           ```
- 
+
        8. Liquibase Best Practices:
           - One change per changeset
           - Clear author and id
@@ -137,14 +137,14 @@ alwaysApply: false
               </rollback>
           </changeSet>
           ```
- 
+
        9. Performance Considerations:
           - Appropriate column types
           - Strategic indexing
           - Partition large tables
           - Consider clustering
           - Monitor index usage
- 
+
        10. Audit Fields:
            - created_date (not null)
            - created_by (not null)
@@ -159,7 +159,7 @@ alwaysApply: false
                <constraints nullable="false"/>
            </column>
            ```
- 
+
  examples:
    - input: |
        <!-- Bad: Poor naming and missing constraints -->
@@ -169,7 +169,7 @@ alwaysApply: false
                <column name="USER_NAME" type="varchar(255)"/>
            </createTable>
        </changeSet>
- 
+
        <!-- Good: Proper naming and constraints -->
        <changeSet id="20240318000000-1" author="jhipster">
            <createTable tableName="user">
@@ -185,74 +185,120 @@ alwaysApply: false
            </createTable>
        </changeSet>
      output: "Properly structured database change"
- 
+
  metadata:
    priority: high
    version: 1.0
    tags: ["database", "liquibase", "postgresql", "h2"]
  </rule>
- 
+
  <rule>
  name: database_migration_practices
  description: Standards for database migrations and updates
  filters:
    - type: file_extension
      pattern: "\\.xml$"
- 
+
  actions:
    - type: suggest
      message: |
        When creating database migrations:
- 
-       1. Changeset Naming:
+
+       1. Existing Migration Files:
+          - NEVER modify existing changelog files
+          - Assume all migrations have been applied
+          - Create new migration files for changes
+          - Follow sequential naming pattern
+          Example:
+          ```
+          20240318000000_added_entity_DiaryEntry.xml  # Original file
+          20240319000000_update_diary_entry.xml       # New changes
+          ```
+
+       2. Changeset Naming:
           - Format: YYYYMMDD[HH24MI]-[sequence]-[description]
           - Include author
           - Clear description
           Example: "20240318000000-1-added-entity-DiaryEntry"
- 
-       2. Migration Safety:
+
+       3. Migration Safety:
           - Always include rollback
           - Test migrations
           - Backup data
           - Consider data volume
- 
-       3. Data Changes:
+
+       4. Data Changes:
           - Use loadData for CSV
           - Include sample data
           - Handle existing data
           - Validate constraints
- 
-       4. Version Control:
+
+       5. Version Control:
           - One feature per file
           - Clear commit messages
           - Include related entities
           - Document breaking changes
- 
+
+       6. Modifying Existing Tables:
+          - Create new migration file
+          - Reference original table
+          - Use appropriate operations
+          Example:
+          ```xml
+          <!-- New file: 20240320000000_update_diary_entry.xml -->
+          <changeSet id="20240320000000-1" author="dev">
+              <addColumn tableName="diary_entry">
+                  <column name="new_field" type="varchar(255)"/>
+              </addColumn>
+          </changeSet>
+          ```
+
+       7. Data Migration:
+          - Create separate migration file
+          - Handle null values
+          - Consider performance
+          - Include rollback
+          Example:
+          ```xml
+          <!-- New file: 20240320000001_migrate_diary_data.xml -->
+          <changeSet id="20240320000001-1" author="dev">
+              <sql>
+                  UPDATE diary_entry
+                  SET new_field = 'default'
+                  WHERE new_field IS NULL;
+              </sql>
+              <rollback>
+                  UPDATE diary_entry
+                  SET new_field = NULL;
+              </rollback>
+          </changeSet>
+          ```
+
  examples:
    - input: |
-       <!-- Bad: No rollback -->
-       <changeSet id="1" author="dev">
-           <addColumn tableName="user">
-               <column name="email" type="varchar(255)"/>
+       <!-- Bad: Modifying existing migration -->
+       <!-- In: 20240318000000_added_entity_DiaryEntry.xml -->
+       <changeSet id="20240318000000-1" author="dev">
+           <addColumn tableName="diary_entry">
+               <column name="new_field" type="varchar(255)"/>
            </addColumn>
        </changeSet>
- 
-       <!-- Good: With rollback -->
-       <changeSet id="20240318000000-2" author="jhipster">
-           <addColumn tableName="user">
-               <column name="email" type="varchar(255)">
-                   <constraints nullable="false" unique="true"/>
-               </column>
+
+       <!-- Good: Creating new migration -->
+       <!-- In: 20240320000000_update_diary_entry.xml -->
+       <changeSet id="20240320000000-1" author="dev">
+           <addColumn tableName="diary_entry">
+               <column name="new_field" type="varchar(255)"/>
            </addColumn>
            <rollback>
-               <dropColumn tableName="user" columnName="email"/>
+               <dropColumn tableName="diary_entry"
+                          columnName="new_field"/>
            </rollback>
        </changeSet>
-     output: "Properly structured migration"
- 
+     output: "Properly handled database changes"
+
  metadata:
    priority: high
    version: 1.0
    tags: ["database", "liquibase", "migration"]
  </rule>
- 

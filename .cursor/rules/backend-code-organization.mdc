@@ -12,7 +12,7 @@ filters:
   - type: file_extension
     pattern: "\\.java$"
   - type: directory
-    pattern: "src/main/java/com/dshbd/"
+    pattern: "src/main/java/"
 
 actions:
   - type: suggest
@@ -81,6 +81,8 @@ actions:
          - Include proper constraints
          - Create indexes for performance
          - Use appropriate column types
+
+      10. Always use the packege com.dshbd in this project for the Java classes
 
 examples:
   - input: |
