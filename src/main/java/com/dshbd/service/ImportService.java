@@ -94,7 +94,9 @@ public class ImportService extends BaseService {
                                         newTag.setName(tagDTO.getName());
                                         newTag.setArchived(tagDTO.isArchived());
                                         newTag.setCreatedDate(tagDTO.getCreatedDate() != null ? tagDTO.getCreatedDate() : Instant.now());
-                                        newTag.setLastModifiedDate(tagDTO.getLastModifiedDate());
+                                        newTag.setLastModifiedDate(
+                                            tagDTO.getLastModifiedDate() != null ? tagDTO.getLastModifiedDate() : Instant.now()
+                                        );
                                         newTag.setUserId(userId);
                                         return diaryTagRepository.save(newTag);
                                     });
@@ -115,6 +117,7 @@ public class ImportService extends BaseService {
                     entry.setContent(entryDTO.getContent());
                     entry.setEmoticon(entryDTO.getEmoticon());
                     entry.setCreatedDate(entryDTO.getCreatedDate() != null ? entryDTO.getCreatedDate() : Instant.now());
+                    entry.setLastModifiedDate(entryDTO.getLastModifiedDate() != null ? entryDTO.getLastModifiedDate() : Instant.now());
                     entry.setUserId(userId);
 
                     // Set tags

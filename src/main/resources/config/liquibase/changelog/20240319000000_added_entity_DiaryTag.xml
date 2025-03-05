@@ -76,15 +76,10 @@
     <!-- Add tag_id column if it doesn't exist -->
     <changeSet id="20240319000000-3" author="san">
         <addColumn tableName="diary_entry_tags">
-            <column name="tag_id" type="bigint"/>
+            <column name="tag_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
         </addColumn>
-    </changeSet>
-
-    <!-- Add not null constraint -->
-    <changeSet id="20240319000000-5" author="san">
-        <addNotNullConstraint tableName="diary_entry_tags"
-                            columnName="tag_id"
-                            columnDataType="bigint"/>
     </changeSet>
 
     <!-- Add foreign key constraint -->
