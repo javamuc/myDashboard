@@ -21,6 +21,7 @@ public class ImportDataDTO {
         private List<ImportNoteDTO> notes;
         private List<ImportBoardDTO> boards;
         private List<ImportHabitDTO> habits;
+        private List<ImportDiaryEntryDTO> diaryEntries;
 
         public List<ImportIdeaDTO> getIdeas() {
             return ideas;
@@ -52,6 +53,14 @@ public class ImportDataDTO {
 
         public void setHabits(List<ImportHabitDTO> habits) {
             this.habits = habits;
+        }
+
+        public List<ImportDiaryEntryDTO> getDiaryEntries() {
+            return diaryEntries;
+        }
+
+        public void setDiaryEntries(List<ImportDiaryEntryDTO> diaryEntries) {
+            this.diaryEntries = diaryEntries;
         }
     }
 
@@ -442,6 +451,92 @@ public class ImportDataDTO {
 
         public void setMinute(Integer minute) {
             this.minute = minute;
+        }
+    }
+
+    public static class ImportDiaryEntryDTO {
+
+        @NotNull
+        private String content;
+
+        @NotNull
+        private String emoticon;
+
+        private List<ImportDiaryTagDTO> tags;
+        private Instant createdDate;
+
+        public String getContent() {
+            return content;
+        }
+
+        public void setContent(String content) {
+            this.content = content;
+        }
+
+        public String getEmoticon() {
+            return emoticon;
+        }
+
+        public void setEmoticon(String emoticon) {
+            this.emoticon = emoticon;
+        }
+
+        public List<ImportDiaryTagDTO> getTags() {
+            return tags;
+        }
+
+        public void setTags(List<ImportDiaryTagDTO> tags) {
+            this.tags = tags;
+        }
+
+        public Instant getCreatedDate() {
+            return createdDate;
+        }
+
+        public void setCreatedDate(Instant createdDate) {
+            this.createdDate = createdDate;
+        }
+    }
+
+    public static class ImportDiaryTagDTO {
+
+        @NotNull
+        private String name;
+
+        private boolean archived;
+        private Instant createdDate;
+        private Instant lastModifiedDate;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public boolean isArchived() {
+            return archived;
+        }
+
+        public void setArchived(boolean archived) {
+            this.archived = archived;
+        }
+
+        public Instant getCreatedDate() {
+            return createdDate;
+        }
+
+        public void setCreatedDate(Instant createdDate) {
+            this.createdDate = createdDate;
+        }
+
+        public Instant getLastModifiedDate() {
+            return lastModifiedDate;
+        }
+
+        public void setLastModifiedDate(Instant lastModifiedDate) {
+            this.lastModifiedDate = lastModifiedDate;
         }
     }
 

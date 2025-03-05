@@ -1,6 +1,8 @@
 package com.dshbd.service;
 
 import com.dshbd.domain.Board;
+import com.dshbd.domain.DiaryEntry;
+import com.dshbd.domain.DiaryTag;
 import com.dshbd.domain.Habit;
 import com.dshbd.domain.HabitDaySchedule;
 import com.dshbd.domain.HabitSpecificTime;
@@ -8,6 +10,8 @@ import com.dshbd.domain.Idea;
 import com.dshbd.domain.Note;
 import com.dshbd.domain.Task;
 import com.dshbd.repository.BoardRepository;
+import com.dshbd.repository.DiaryEntryRepository;
+import com.dshbd.repository.DiaryTagRepository;
 import com.dshbd.repository.HabitDayScheduleRepository;
 import com.dshbd.repository.HabitRepository;
 import com.dshbd.repository.HabitSpecificTimeRepository;
@@ -16,8 +20,14 @@ import com.dshbd.repository.NoteRepository;
 import com.dshbd.repository.TaskRepository;
 import com.dshbd.service.dto.ImportDataDTO;
 import jakarta.transaction.Transactional;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,6 +44,8 @@ public class ImportService extends BaseService {
     private final HabitRepository habitRepository;
     private final HabitDayScheduleRepository habitDayScheduleRepository;
     private final HabitSpecificTimeRepository habitSpecificTimeRepository;
+    private final DiaryEntryRepository diaryEntryRepository;
+    private final DiaryTagRepository diaryTagRepository;
 
     public ImportService(
         IdeaRepository ideaRepository,
@@ -43,6 +55,8 @@ public class ImportService extends BaseService {
         HabitRepository habitRepository,
         HabitDayScheduleRepository habitDayScheduleRepository,
         HabitSpecificTimeRepository habitSpecificTimeRepository,
+        DiaryEntryRepository diaryEntryRepository,
+        DiaryTagRepository diaryTagRepository,
         UserService userService
     ) {
         super(userService);
@@ -53,6 +67,8 @@ public class ImportService extends BaseService {
         this.habitRepository = habitRepository;
         this.habitDayScheduleRepository = habitDayScheduleRepository;
         this.habitSpecificTimeRepository = habitSpecificTimeRepository;
+        this.diaryEntryRepository = diaryEntryRepository;
+        this.diaryTagRepository = diaryTagRepository;
     }
 
     @Transactional
@@ -60,6 +76,68 @@ public class ImportService extends BaseService {
         log.debug("Importing data: {}", importData);
 
         Long userId = getUserId();
+
+        // Import diary entries and tags
+        if (importData.getData().getDiaryEntries() != null) {
+            // First, import all tags to ensure they exist
+            Map<String, DiaryTag> tagCache = new HashMap<>();
+            for (ImportDataDTO.ImportDiaryEntryDTO entryDTO : importData.getData().getDiaryEntries()) {
+                if (entryDTO.getTags() != null) {
+                    for (ImportDataDTO.ImportDiaryTagDTO tagDTO : entryDTO.getTags()) {
+                        try {
+                            if (!tagCache.containsKey(tagDTO.getName())) {
+                                DiaryTag tag = diaryTagRepository
+                                    .findByUserIdAndName(userId, tagDTO.getName())
+                                    .orElseGet(() -> {
+                                        DiaryTag newTag = new DiaryTag();
+                                        newTag.setId(null);
+                                        newTag.setName(tagDTO.getName());
+                                        newTag.setArchived(tagDTO.isArchived());
+                                        newTag.setCreatedDate(tagDTO.getCreatedDate() != null ? tagDTO.getCreatedDate() : Instant.now());
+                                        newTag.setLastModifiedDate(tagDTO.getLastModifiedDate());
+                                        newTag.setUserId(userId);
+                                        return diaryTagRepository.save(newTag);
+                                    });
+                                tagCache.put(tag.getName(), tag);
+                            }
+                        } catch (Exception e) {
+                            log.error("Error importing diary tag: {}", tagDTO.getName(), e);
+                        }
+                    }
+                }
+            }
+
+            // Then import diary entries
+            for (ImportDataDTO.ImportDiaryEntryDTO entryDTO : importData.getData().getDiaryEntries()) {
+                try {
+                    DiaryEntry entry = new DiaryEntry();
+                    entry.setId(null);
+                    entry.setContent(entryDTO.getContent());
+                    entry.setEmoticon(entryDTO.getEmoticon());
+                    entry.setCreatedDate(entryDTO.getCreatedDate() != null ? entryDTO.getCreatedDate() : Instant.now());
+                    entry.setUserId(userId);
+
+                    // Set tags
+                    if (entryDTO.getTags() != null) {
+                        Set<DiaryTag> tags = entryDTO
+                            .getTags()
+                            .stream()
+                            .map(tagDTO -> tagCache.get(tagDTO.getName()))
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toSet());
+                        entry.setTags(tags);
+                    }
+
+                    diaryEntryRepository.save(entry);
+                    log.debug("Imported diary entry with content: {}", entry.getContent());
+                } catch (Exception e) {
+                    log.error("Error importing diary entry: {}", entryDTO.getContent(), e);
+                }
+            }
+            diaryEntryRepository.flush();
+            diaryTagRepository.flush();
+        }
+
         // Import ideas
         if (importData.getData().getIdeas() != null) {
             for (ImportDataDTO.ImportIdeaDTO ideaDTO : importData.getData().getIdeas()) {

@@ -5,10 +5,12 @@ import { NoteService } from 'app/notes/note.service';
 import { BoardService } from 'app/shared/board/board.service';
 import { TaskService } from 'app/shared/task/task.service';
 import { HabitService } from 'app/habit/habit.service';
+import { DiaryService } from 'app/shared/diary/diary.service';
 import { Board } from 'app/shared/board/board.model';
 import { Task, TaskStatus } from 'app/shared/task/task.model';
 import { Note } from 'app/notes/note.model';
 import { Idea } from 'app/shared/idea/idea.model';
+import { DiaryEntry, DiaryTag } from 'app/shared/diary/diary.model';
 import { Habit, HabitDaySchedule, HabitSpecificTime, DayOfWeek, DayScheduleType, ScheduleType } from 'app/habit/habit.model';
 import { HttpClient } from '@angular/common/http';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
@@ -72,6 +74,20 @@ interface ExportableHabit extends Omit<Habit, 'id' | 'userId'> {
   lastModifiedDate?: string;
 }
 
+interface ExportableDiaryTag {
+  name: string;
+  archived: boolean;
+  createdDate: string;
+  lastModifiedDate?: string;
+}
+
+interface ExportableDiaryEntry {
+  content: string;
+  emoticon: string;
+  tags: ExportableDiaryTag[];
+  createdDate: string;
+}
+
 export interface ExportData {
   version: string;
   exportDate: string;
@@ -80,6 +96,7 @@ export interface ExportData {
     notes: ExportableNote[];
     boards: ExportableBoard[];
     habits: ExportableHabit[];
+    diaryEntries: ExportableDiaryEntry[];
   };
 }
 
@@ -94,6 +111,7 @@ export class DataService {
     private boardService: BoardService,
     private taskService: TaskService,
     private habitService: HabitService,
+    private diaryService: DiaryService,
     private http: HttpClient,
     applicationConfigService: ApplicationConfigService,
   ) {
@@ -102,12 +120,13 @@ export class DataService {
 
   async exportData(): Promise<ExportData> {
     try {
-      const { ideas, notes, boards, habits } = await firstValueFrom(
+      const { ideas, notes, boards, habits, diaryEntries } = await firstValueFrom(
         forkJoin({
           ideas: this.ideaService.query(),
           notes: this.noteService.query(),
           boards: this.boardService.query(),
           habits: this.habitService.query(),
+          diaryEntries: this.diaryService.getAllEntries(),
         }),
       );
 
@@ -172,6 +191,17 @@ export class DataService {
             createdDate: habit.createdDate,
             lastModifiedDate: habit.lastModifiedDate,
           })),
+          diaryEntries: diaryEntries.map(entry => ({
+            content: entry.content,
+            emoticon: entry.emoticon.emoji,
+            tags: entry.tags.map(tag => ({
+              name: tag.name,
+              archived: tag.archived,
+              createdDate: tag.createdDate instanceof Date ? tag.createdDate.toISOString() : tag.createdDate,
+              lastModifiedDate: tag.lastModifiedDate instanceof Date ? tag.lastModifiedDate.toISOString() : tag.lastModifiedDate,
+            })),
+            createdDate: entry.createdAt instanceof Date ? entry.createdAt.toISOString() : entry.createdAt,
+          })),
         },
       };
     } catch (error) {
@@ -221,7 +251,8 @@ export class DataService {
       !Array.isArray(importData.data.ideas) ||
       !Array.isArray(importData.data.notes) ||
       !Array.isArray(importData.data.boards) ||
-      !Array.isArray(importData.data.habits)
+      !Array.isArray(importData.data.habits) ||
+      !Array.isArray(importData.data.diaryEntries)
     ) {
       throw new Error('Import data has invalid structure');
     }
