@@ -6,7 +6,7 @@ import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-
 import { TaskCardComponent } from '../../task-card/task-card.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Subject, takeUntil } from 'rxjs';
-import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
+import { TaskEditorService } from 'app/layouts/task-editor-container/task-editor-container.service';
 import { Board } from '../../board/board.model';
 
 @Component({
@@ -31,14 +31,14 @@ export class BacklogBoardComponent implements OnInit, OnDestroy {
   }
   private _backlogTasks: Task[] = [];
   private readonly taskService = inject(TaskService);
-  private readonly sidebarService = inject(SidebarService);
+  private readonly taskEditorService = inject(TaskEditorService);
   private destroy$ = new Subject<void>();
   private activeTask?: Task;
   private activeBoard?: Board;
 
   ngOnInit(): void {
     // Subscribe to active board changes
-    // this.sidebarService
+    // this.taskEditorService
     //   .getActiveBoard()
     //   .pipe(takeUntil(this.destroy$))
     //   .subscribe(board => {
@@ -49,7 +49,7 @@ export class BacklogBoardComponent implements OnInit, OnDestroy {
     //   });
 
     // Subscribe to active task changes
-    this.sidebarService
+    this.taskEditorService
       .getTaskData()
       .pipe(takeUntil(this.destroy$))
       .subscribe(task => {
@@ -143,7 +143,7 @@ export class BacklogBoardComponent implements OnInit, OnDestroy {
       this.backlogTasks.splice(newPosition, 0, task);
 
       // Update the task's status
-      this.sidebarService.changeTaskStatus(task, 'backlog');
+      this.taskEditorService.changeTaskStatus(task, 'backlog');
 
       // Update all positions in the backend
       this.updateTaskPositions();

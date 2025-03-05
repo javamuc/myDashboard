@@ -2,7 +2,7 @@ import { Component, Input, HostListener, OnInit, AfterViewInit, ViewChild, Eleme
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { Task, TaskStatus } from '../task/task.model';
-import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
+import { TaskEditorService } from 'app/layouts/task-editor-container/task-editor-container.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { AlertService } from 'app/core/util/alert.service';
@@ -22,22 +22,22 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() boardName: string | undefined;
   @ViewChild('taskCard') taskCard!: ElementRef;
   private destroy$ = new Subject<void>();
-  private sidebarIsOpen = signal(false);
+  private taskEditorIsOpen = signal(false);
   private taskData = signal<Task | undefined>(undefined);
   private activeBoard = signal<Board | undefined>(undefined);
   private readonly alertService = inject(AlertService);
   private readonly router = inject(Router);
 
-  constructor(private sidebarService: SidebarService) {}
+  constructor(private taskEditorService: TaskEditorService) {}
 
   ngOnInit(): void {
     const tags = this.getHashtags();
     if (tags.length > 0) {
-      this.sidebarService.addTags(tags);
+      this.taskEditorService.addTags(tags);
     }
 
     // Subscribe to active board changes
-    this.sidebarService
+    this.taskEditorService
       .getActiveBoard()
       .pipe(takeUntil(this.destroy$))
       .subscribe(board => {
@@ -46,15 +46,15 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.sidebarService
+    this.taskEditorService
       .getIsOpen()
       .pipe(takeUntil(this.destroy$))
       .subscribe(isOpen => {
-        this.sidebarIsOpen.set(isOpen);
+        this.taskEditorIsOpen.set(isOpen);
         this.focusTaskCard();
       });
 
-    this.sidebarService
+    this.taskEditorService
       .getTaskData()
       .pipe(takeUntil(this.destroy$))
       .subscribe(task => {
@@ -78,12 +78,12 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
     event.stopPropagation();
     // If this task is already selected, open the sidebar
     if (this.taskData()?.id === this.task.id) {
-      this.sidebarService.setIsOpen(true);
+      this.taskEditorService.setIsOpen(true);
     }
     // Otherwise just select the task
     else {
-      this.sidebarService.setTaskData(this.task);
-      this.sidebarService.setBoardId(this.task.boardId);
+      this.taskEditorService.setTaskData(this.task);
+      this.taskEditorService.setBoardId(this.task.boardId);
     }
   }
 
@@ -113,7 +113,7 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           const canChangeStatus = newStatus && this.canChangeStatus(newStatus);
           if (canChangeStatus) {
-            this.sidebarService.changeTaskStatus(this.task, newStatus!);
+            this.taskEditorService.changeTaskStatus(this.task, newStatus!);
           }
           break;
         }
@@ -129,7 +129,7 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
           if (newStatus && this.canChangeStatus(newStatus)) {
-            this.sidebarService.changeTaskStatus(this.task, newStatus);
+            this.taskEditorService.changeTaskStatus(this.task, newStatus);
           }
           break;
         }
@@ -183,7 +183,7 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
             newP = 1;
           }
           this.task.priority = newP;
-          this.sidebarService.requestTaskUpdate(this.task);
+          this.taskEditorService.requestTaskUpdate(this.task);
           break;
         }
       }
@@ -226,7 +226,7 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onTagClick(tag: string, event: Event): void {
     event.stopPropagation(); // Prevent task from opening
-    this.sidebarService.addTagFilter(tag);
+    this.taskEditorService.addTagFilter(tag);
   }
 
   getTagTextColor(tag: string): string {
@@ -238,7 +238,7 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private focusTaskCard(): void {
-    if (!this.sidebarIsOpen() && this.taskData()?.id === this.task.id) {
+    if (!this.taskEditorIsOpen() && this.taskData()?.id === this.task.id) {
       this.taskCard.nativeElement.focus();
     }
   }
@@ -253,32 +253,13 @@ export class TaskCardComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private canChangeStatus(newStatus: TaskStatus): boolean {
-    const board = this.activeBoard();
-    if (!board) {
+    if (this.activeBoard() === undefined) {
       this.alertService.addAlert({
         type: 'warning',
-        message: 'No board found',
+        message: 'No active board found',
       });
       return false;
     }
-    const tasksInTargetStatus = board.tasks.filter(t => t.status === newStatus).length;
-
-    if (newStatus === 'in-progress' && tasksInTargetStatus >= board.progressLimit) {
-      this.alertService.addAlert({
-        type: 'warning',
-        message: `Cannot move task to In Progress: Board limit of ${board.progressLimit} tasks reached`,
-      });
-      return false;
-    }
-
-    if (newStatus === 'to-do' && tasksInTargetStatus >= board.toDoLimit) {
-      this.alertService.addAlert({
-        type: 'warning',
-        message: `Cannot move task to To Do: Board limit of ${board.toDoLimit} tasks reached`,
-      });
-      return false;
-    }
-
     return true;
   }
 }

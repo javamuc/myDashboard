@@ -1,0 +1,5 @@
+<div class="overlay-backdrop" *ngIf="isOpen">
+  <div [@fadeInOut]="isOpen ? 'open' : 'closed'" class="overlay-container" [class.open]="isOpen">
+    <jhi-task-editor></jhi-task-editor>
+  </div>
+</div>

@@ -2,9 +2,9 @@ import { Component, ElementRef, HostListener, OnInit, Renderer2, RendererFactory
 import { Router, RouterOutlet } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import dayjs from 'dayjs/esm';
-import { SidebarComponent } from '../sidebar/sidebar.component';
+import { TaskEditorContainerComponent } from '../task-editor-container/task-editor-container.component';
 import { AsyncPipe } from '@angular/common';
-import { SidebarService } from '../sidebar/sidebar.service';
+import { TaskEditorService } from '../task-editor-container/task-editor-container.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
 import FooterComponent from '../footer/footer.component';
@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
   selector: 'jhi-main',
   templateUrl: './main.component.html',
   providers: [AppPageTitleStrategy],
-  imports: [RouterOutlet, FooterComponent, PageRibbonComponent, SidebarComponent, AsyncPipe],
+  imports: [RouterOutlet, FooterComponent, PageRibbonComponent, TaskEditorContainerComponent, AsyncPipe],
   standalone: true,
 })
 export default class MainComponent implements OnInit {
@@ -26,7 +26,7 @@ export default class MainComponent implements OnInit {
   private readonly accountService = inject(AccountService);
   private readonly translateService = inject(TranslateService);
   private readonly rootRenderer = inject(RendererFactory2);
-  private readonly sidebarService = inject(SidebarService);
+  private readonly taskEditorService = inject(TaskEditorService);
 
   constructor(private elementRef: ElementRef) {
     this.renderer = this.rootRenderer.createRenderer(document.querySelector('html'), null);
@@ -44,10 +44,10 @@ export default class MainComponent implements OnInit {
   }
 
   protected isOpen(): Observable<boolean> {
-    return this.sidebarService.getIsOpen();
+    return this.taskEditorService.getIsOpen();
   }
 
-  protected onSidebarClose(): void {
-    this.sidebarService.setIsOpen(false);
+  protected onTaskEditorClose(): void {
+    this.taskEditorService.setIsOpen(false);
   }
 }

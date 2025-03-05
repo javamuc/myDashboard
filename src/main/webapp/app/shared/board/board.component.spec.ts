@@ -7,7 +7,6 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { BoardComponent } from './board.component';
 import { BoardService } from './board.service';
-import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
 import { TaskService } from 'app/shared/task/task.service';
 import { AlertService } from 'app/core/util/alert.service';
 import { Board } from './board.model';
@@ -21,11 +20,12 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { CookieService } from '../cookie/cookie.service';
+import { TaskEditorService } from 'app/layouts/task-editor-container';
 describe('BoardComponent', () => {
   let component: BoardComponent;
   let fixture: ComponentFixture<BoardComponent>;
   let boardService: BoardService;
-  let sidebarService: SidebarService;
+  let taskEditorService: TaskEditorService;
   let taskService: TaskService;
   let alertService: AlertService;
   let cookieService: any;
@@ -131,7 +131,7 @@ describe('BoardComponent', () => {
           },
         },
         {
-          provide: SidebarService,
+          provide: TaskEditorService,
           useValue: {
             getBoardId: jest.fn().mockReturnValue(boardIdSubject.asObservable()),
             getTaskData: jest.fn().mockReturnValue(taskDataSubject.asObservable()),
@@ -171,7 +171,7 @@ describe('BoardComponent', () => {
     fixture = TestBed.createComponent(BoardComponent);
     component = fixture.componentInstance;
     boardService = TestBed.inject(BoardService);
-    sidebarService = TestBed.inject(SidebarService);
+    taskEditorService = TestBed.inject(TaskEditorService);
     taskService = TestBed.inject(TaskService);
     alertService = TestBed.inject(AlertService);
     cookieService = TestBed.inject(CookieService);
@@ -202,7 +202,7 @@ describe('BoardComponent', () => {
       const mockTask = { ...mockTasks[0] };
       taskDataSubject.next(mockTask);
       tick();
-      expect(sidebarService.getTaskData).toHaveBeenCalled();
+      expect(taskEditorService.getTaskData).toHaveBeenCalled();
     }));
   });
 
@@ -247,7 +247,7 @@ describe('BoardComponent', () => {
       component.onBoardSelect(mockBoards[1]);
       tick();
 
-      expect(sidebarService.setActiveBoard).toHaveBeenCalledWith({ ...mockBoards[1], tasks: mockTasks });
+      expect(taskEditorService.setActiveBoard).toHaveBeenCalledWith({ ...mockBoards[1], tasks: mockTasks });
       expect(cookieService.setLastBoardId).toHaveBeenCalledWith(2);
       expect(taskService.getBoardTasks).toHaveBeenCalledWith(2);
     }));

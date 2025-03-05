@@ -1,17 +1,17 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TaskEditorComponent } from 'app/shared/task/task-editor.component';
-import { slideInOut } from './sidebar.animations';
+import { fadeInOut } from './task-editor-container.animations';
 
 @Component({
-  selector: 'jhi-sidebar',
-  templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss'],
+  selector: 'jhi-task-editor-container',
+  templateUrl: './task-editor-container.component.html',
+  styleUrls: ['./task-editor-container.component.scss'],
   standalone: true,
   imports: [CommonModule, TaskEditorComponent],
-  animations: [slideInOut],
+  animations: [fadeInOut],
 })
-export class SidebarComponent {
+export class TaskEditorContainerComponent {
   @Input() isOpen = false;
   @Output() isOpenChange = new EventEmitter<boolean>();
 

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output, ViewChild, ElementRef, OnChange
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Task } from '../task.model';
-import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
+import { TaskEditorService } from 'app/layouts/task-editor-container/task-editor-container.service';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, switchMap, distinctUntilChanged } from 'rxjs/operators';
 
@@ -27,7 +27,7 @@ export class TaskDescriptionComponent implements OnChanges, OnInit, OnDestroy {
   private tagInputSubject = new Subject<{ tag: string; start: number }>();
   private subscription?: Subscription;
 
-  constructor(private sidebarService: SidebarService) {}
+  constructor(private taskEditorService: TaskEditorService) {}
 
   ngOnInit(): void {
     this.subscription = this.tagInputSubject
@@ -35,7 +35,7 @@ export class TaskDescriptionComponent implements OnChanges, OnInit, OnDestroy {
         debounceTime(150),
         distinctUntilChanged((prev, curr) => prev.tag === curr.tag),
         switchMap(({ tag, start }) =>
-          this.sidebarService.getTags().pipe(
+          this.taskEditorService.getTags().pipe(
             switchMap(tags =>
               Promise.resolve({
                 suggestions: Array.from(tags)
@@ -74,7 +74,7 @@ export class TaskDescriptionComponent implements OnChanges, OnInit, OnDestroy {
   onBlur(): void {
     const hashtags = this.getHashtags();
     if (hashtags.length > 0) {
-      this.sidebarService.addTags(hashtags);
+      this.taskEditorService.addTags(hashtags);
     }
   }
 

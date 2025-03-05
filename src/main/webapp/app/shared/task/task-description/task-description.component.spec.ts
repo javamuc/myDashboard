@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { TaskDescriptionComponent } from './task-description.component';
-import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
+import { TaskEditorService } from 'app/layouts/task-editor-container/task-editor-container.service';
 import { Task } from '../task.model';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -10,7 +10,7 @@ import { ElementRef } from '@angular/core';
 describe('TaskDescriptionComponent', () => {
   let component: TaskDescriptionComponent;
   let fixture: ComponentFixture<TaskDescriptionComponent>;
-  let sidebarService: jest.Mocked<SidebarService>;
+  let taskEditorService: TaskEditorService;
 
   const mockTask: Task = {
     id: 1,
@@ -26,17 +26,17 @@ describe('TaskDescriptionComponent', () => {
   };
 
   beforeEach(async () => {
-    const mockSidebarService = {
-      getTags: jest.fn().mockReturnValue(of(['#test', '#task', '#important'])),
+    const mockTaskEditorService = {
+      getTags: jest.fn().mockReturnValue(of(new Set(['#test', '#task', '#important']))),
       addTags: jest.fn(),
     };
 
     await TestBed.configureTestingModule({
       imports: [TaskDescriptionComponent, FormsModule],
-      providers: [{ provide: SidebarService, useValue: mockSidebarService }],
+      providers: [{ provide: TaskEditorService, useValue: mockTaskEditorService }],
     }).compileComponents();
 
-    sidebarService = TestBed.inject(SidebarService) as jest.Mocked<SidebarService>;
+    taskEditorService = TestBed.inject(TaskEditorService);
     fixture = TestBed.createComponent(TaskDescriptionComponent);
     component = fixture.componentInstance;
     component.task = { ...mockTask };
@@ -58,9 +58,9 @@ describe('TaskDescriptionComponent', () => {
     expect(component.descriptionChange.emit).toHaveBeenCalled();
   });
 
-  it('should add tags to sidebar service on blur', () => {
+  it('should add tags to task editor service on blur', () => {
     component.onBlur();
-    expect(sidebarService.addTags).toHaveBeenCalledWith(['#test']);
+    expect(taskEditorService.addTags).toHaveBeenCalledWith(['#test']);
   });
 
   describe('Tag suggestions', () => {
@@ -117,8 +117,8 @@ describe('TaskDescriptionComponent', () => {
       textarea.selectionStart = textarea.value.length;
       component.cursorPosition = textarea.value.length;
 
-      // Mock the tag suggestions to have a controlled set
-      sidebarService.getTags.mockReturnValueOnce(of(new Set(['#test', '#task'])));
+      // Set up tag suggestions directly
+      (taskEditorService.getTags as jest.Mock).mockReturnValue(of(new Set(['#test', '#task'])));
 
       // Trigger input event to show suggestions
       component.onInput({ target: textarea } as unknown as Event);

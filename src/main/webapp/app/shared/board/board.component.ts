@@ -18,7 +18,7 @@ import { Board, BoardFilter, BoardSort, BoardView } from './board.model';
 import { NewTask, Task, TaskStatus } from '../task/task.model';
 import SharedModule from 'app/shared/shared.module';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
+import { TaskEditorService } from 'app/layouts/task-editor-container/task-editor-container.service';
 import { BoardService } from './board.service';
 import { TaskService } from '../task/task.service';
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -130,7 +130,7 @@ export class BoardComponent implements OnInit, OnDestroy {
 
   taskCreateSubject = new Subject<Task>();
   taskDeletedSubject = new Subject<Task>();
-  private readonly sidebarService = inject(SidebarService);
+  private readonly taskEditorService = inject(TaskEditorService);
   private readonly boardService = inject(BoardService);
   private readonly taskService = inject(TaskService);
   private readonly alertService = inject(AlertService);
@@ -156,28 +156,28 @@ export class BoardComponent implements OnInit, OnDestroy {
 
     this.loadBoards();
 
-    this.sidebarService
+    this.taskEditorService
       .getTaskData()
       .pipe(takeUntil(this.destroy$))
       .subscribe(task => {
         this.task.set(task);
       });
 
-    this.sidebarService
+    this.taskEditorService
       .getIsOpen()
       .pipe(takeUntil(this.destroy$))
       .subscribe(isOpen => {
         this.sidebarOpen.set(isOpen);
       });
 
-    this.sidebarService
+    this.taskEditorService
       .getTaskUpdateRequests()
       .pipe(takeUntil(this.destroy$))
       .subscribe(task => {
         this.taskUpdateSubject.next(task);
       });
 
-    this.sidebarService
+    this.taskEditorService
       .getTaskStatusUpdateRequests()
       .pipe(takeUntil(this.destroy$))
       .subscribe(task => {
@@ -185,7 +185,7 @@ export class BoardComponent implements OnInit, OnDestroy {
       });
 
     // Subscribe to task deletion requests
-    this.sidebarService
+    this.taskEditorService
       .getTaskDeleteRequests()
       .pipe(takeUntil(this.destroy$))
       .subscribe(task => {
@@ -197,7 +197,7 @@ export class BoardComponent implements OnInit, OnDestroy {
       });
 
     // Subscribe to tag filter changes
-    this.sidebarService
+    this.taskEditorService
       .getTagFilter()
       .pipe(takeUntil(this.destroy$))
       .subscribe(tag => {
@@ -217,7 +217,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   }
 
   taskDeleted(task: Task): void {
-    this.sidebarService.setIsOpen(false);
+    this.taskEditorService.setIsOpen(false);
     this.activeBoard.update(board => {
       if (!board) return board;
       const tasks = [...board.tasks];
@@ -227,11 +227,11 @@ export class BoardComponent implements OnInit, OnDestroy {
       }
       if (tasks[index]) {
         console.warn('task found in board after deletion', tasks[index]);
-        this.sidebarService.setTaskData(tasks[index]);
+        this.taskEditorService.setTaskData(tasks[index]);
         this.task.set(tasks[index]);
       } else {
         console.warn('No task found in board after deletion');
-        this.sidebarService.setTaskData(undefined);
+        this.taskEditorService.setTaskData(undefined);
         this.task.set(undefined);
       }
       return { ...board, tasks };
@@ -246,8 +246,8 @@ export class BoardComponent implements OnInit, OnDestroy {
       return { ...board, tasks };
     });
 
-    this.sidebarService.setTaskData(task);
-    this.sidebarService.setIsOpen(true);
+    this.taskEditorService.setTaskData(task);
+    this.taskEditorService.setIsOpen(true);
     this.taskCreateSubject.next(task);
   }
 
@@ -270,7 +270,7 @@ export class BoardComponent implements OnInit, OnDestroy {
       transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
 
       // Update the task's status using the centralized method
-      this.sidebarService.changeTaskStatus(task, newStatus);
+      this.taskEditorService.changeTaskStatus(task, newStatus);
     }
   }
 
@@ -356,7 +356,7 @@ export class BoardComponent implements OnInit, OnDestroy {
   clearSearch(): void {
     this.setSearchTerm('');
     this.searchInput.nativeElement.value = '';
-    this.sidebarService.clearTagFilter();
+    this.taskEditorService.clearTagFilter();
   }
 
   onBoardSelect(board: Board): void {
@@ -368,7 +368,7 @@ export class BoardComponent implements OnInit, OnDestroy {
           tasks,
         };
         this.activeBoard.set(boardWithTasks);
-        this.sidebarService.setActiveBoard(boardWithTasks);
+        this.taskEditorService.setActiveBoard(boardWithTasks);
       });
     }
   }
@@ -400,7 +400,7 @@ export class BoardComponent implements OnInit, OnDestroy {
       if (this.taskIsUnedited()) {
         this.deleteTask();
       }
-      this.sidebarService.setIsOpen(false);
+      this.taskEditorService.setIsOpen(false);
       return;
     }
     // Only trigger if no input/textarea is focused (except for Escape key)

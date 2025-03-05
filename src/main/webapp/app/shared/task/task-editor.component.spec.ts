@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { TaskEditorComponent } from './task-editor.component';
-import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
 import { Task } from './task.model';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
@@ -8,11 +7,12 @@ import { of } from 'rxjs';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TaskDescriptionComponent } from './task-description/task-description.component';
 import { faTrash, faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { TaskEditorService } from 'app/layouts/task-editor-container/task-editor-container.service';
 
 describe('TaskEditorComponent', () => {
   let component: TaskEditorComponent;
   let fixture: ComponentFixture<TaskEditorComponent>;
-  let sidebarService: jest.Mocked<SidebarService>;
+  let taskEditorService: TaskEditorService;
 
   const mockTask: Task = {
     id: 1,
@@ -28,7 +28,7 @@ describe('TaskEditorComponent', () => {
   };
 
   beforeEach(async () => {
-    const mockSidebarService = {
+    const mockTaskEditorService = {
       getTaskData: jest.fn().mockReturnValue(of(mockTask)),
       requestTaskUpdate: jest.fn(),
       requestTaskDeletion: jest.fn(),
@@ -36,13 +36,13 @@ describe('TaskEditorComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [TaskEditorComponent, FormsModule, FontAwesomeModule, TaskDescriptionComponent],
-      providers: [{ provide: SidebarService, useValue: mockSidebarService }],
+      providers: [{ provide: TaskEditorService, useValue: mockTaskEditorService }],
     }).compileComponents();
 
     const library = TestBed.inject(FaIconLibrary);
     library.addIcons(faPlus, faSearch, faTrash);
 
-    sidebarService = TestBed.inject(SidebarService) as jest.Mocked<SidebarService>;
+    taskEditorService = TestBed.inject(TaskEditorService);
     fixture = TestBed.createComponent(TaskEditorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -53,7 +53,7 @@ describe('TaskEditorComponent', () => {
   });
 
   it('should load task data on init', () => {
-    expect(sidebarService.getTaskData).toHaveBeenCalled();
+    expect(taskEditorService.getTaskData).toHaveBeenCalled();
     expect(component.task()).toEqual(mockTask);
   });
 
@@ -72,20 +72,20 @@ describe('TaskEditorComponent', () => {
     component.task.set(updatedTask);
     component.onTaskChange();
 
-    expect(sidebarService.requestTaskUpdate).toHaveBeenCalledWith(updatedTask);
+    expect(taskEditorService.requestTaskUpdate).toHaveBeenCalledWith(updatedTask);
   });
 
   it('should update task when update method is called', () => {
     const updatedTask = { ...mockTask, title: 'Updated Title' };
     component.update(updatedTask);
 
-    expect(sidebarService.requestTaskUpdate).toHaveBeenCalledWith(updatedTask);
+    expect(taskEditorService.requestTaskUpdate).toHaveBeenCalledWith(updatedTask);
   });
 
   it('should delete task when deleteTask is called', () => {
     component.deleteTask();
 
-    expect(sidebarService.requestTaskDeletion).toHaveBeenCalledWith(mockTask);
+    expect(taskEditorService.requestTaskDeletion).toHaveBeenCalledWith(mockTask);
   });
 
   it('should handle task status changes', () => {
@@ -93,7 +93,7 @@ describe('TaskEditorComponent', () => {
     component.task.set(updatedTask);
     component.onTaskChange();
 
-    expect(sidebarService.requestTaskUpdate).toHaveBeenCalledWith(updatedTask);
+    expect(taskEditorService.requestTaskUpdate).toHaveBeenCalledWith(updatedTask);
   });
 
   it('should display correct task statuses', () => {
@@ -110,7 +110,7 @@ describe('TaskEditorComponent', () => {
       fixture.detectChanges();
 
       expect(component.task()?.title).toBe(newTitle);
-      expect(sidebarService.requestTaskUpdate).toHaveBeenCalledWith({
+      expect(taskEditorService.requestTaskUpdate).toHaveBeenCalledWith({
         ...mockTask,
         title: newTitle,
       });

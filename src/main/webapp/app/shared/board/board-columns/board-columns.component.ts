@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { Task, TaskStatus } from '../../task/task.model';
 import { TaskCardComponent } from '../../task-card/task-card.component';
-import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
+import { TaskEditorService } from 'app/layouts/task-editor-container/task-editor-container.service';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -26,7 +26,7 @@ export class BoardColumnsComponent implements OnInit, OnDestroy {
   sidebarOpen = signal<boolean>(false);
   private destroy$ = new Subject<void>();
 
-  constructor(private sidebarService: SidebarService) {}
+  constructor(private taskEditorService: TaskEditorService) {}
 
   ngOnInit(): void {
     this.taskCreateSubject.pipe(takeUntil(this.destroy$)).subscribe(task => {
@@ -35,13 +35,13 @@ export class BoardColumnsComponent implements OnInit, OnDestroy {
       }, 100); // Small delay to ensure the task is rendered
     });
     // Subscribe to active task changes
-    this.sidebarService
+    this.taskEditorService
       .getTaskData()
       .pipe(takeUntil(this.destroy$))
       .subscribe(task => {
         this.activeTaskId.set(task?.id);
       });
-    this.sidebarService
+    this.taskEditorService
       .getIsOpen()
       .pipe(takeUntil(this.destroy$))
       .subscribe(isOpen => {

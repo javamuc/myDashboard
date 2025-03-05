@@ -5,7 +5,7 @@ import { AlertService } from 'app/core/util/alert.service';
 import { Board } from 'app/shared/board/board.model';
 
 @Injectable({ providedIn: 'root' })
-export class SidebarService {
+export class TaskEditorService {
   private readonly boardIdSubject = new BehaviorSubject<number | undefined>(undefined);
   private readonly isOpenSubject = new BehaviorSubject<boolean>(false);
   private readonly taskDataSubject = new BehaviorSubject<Task | undefined>(undefined);

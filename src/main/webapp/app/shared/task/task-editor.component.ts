@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, inject, ViewChild, ElementRef, AfterViewI
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Task, TaskStatus } from './task.model';
-import { SidebarService } from 'app/layouts/sidebar/sidebar.service';
+import { TaskEditorService } from 'app/layouts/task-editor-container/task-editor-container.service';
 import { Subject, takeUntil } from 'rxjs';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { TaskDescriptionComponent } from './task-description/task-description.component';
@@ -21,10 +21,10 @@ export class TaskEditorComponent implements OnInit, OnDestroy, AfterViewInit {
   task = signal<Task | undefined>(undefined);
 
   private destroy$ = new Subject<void>();
-  private readonly sidebarService = inject(SidebarService);
+  private readonly taskEditorService = inject(TaskEditorService);
 
   ngOnInit(): void {
-    this.sidebarService
+    this.taskEditorService
       .getTaskData()
       .pipe(takeUntil(this.destroy$))
       .subscribe(task => {
@@ -42,13 +42,13 @@ export class TaskEditorComponent implements OnInit, OnDestroy, AfterViewInit {
     const updatedTask: Task = {
       ...this.task()!,
     };
-    this.sidebarService.requestTaskUpdate(updatedTask);
+    this.taskEditorService.requestTaskUpdate(updatedTask);
   }
 
   update(task: Task): void {
     console.warn('update', task);
     // Instead of immediately saving, push to the subject
-    this.sidebarService.requestTaskUpdate(task);
+    this.taskEditorService.requestTaskUpdate(task);
   }
 
   ngOnDestroy(): void {
@@ -57,6 +57,6 @@ export class TaskEditorComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   deleteTask(): void {
-    this.sidebarService.requestTaskDeletion(this.task()!);
+    this.taskEditorService.requestTaskDeletion(this.task()!);
   }
 }

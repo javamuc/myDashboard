@@ -18,7 +18,7 @@
 </div>
 
 @if ((isOpen() | async) ?? false) {
-  <jhi-sidebar [isOpen]="(isOpen() | async) ?? false" (isOpenChange)="onSidebarClose()"></jhi-sidebar>
+  <jhi-task-editor-container [isOpen]="(isOpen() | async) ?? false" (isOpenChange)="onTaskEditorClose()"></jhi-task-editor-container>
 }
 
 <jhi-footer></jhi-footer>
