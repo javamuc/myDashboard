@@ -11,8 +11,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DiaryEntryRepository extends JpaRepository<DiaryEntry, Long> {
     Page<DiaryEntry> findByUserIdOrderByCreatedDateDesc(Long userId, Pageable pageable);
+
     void deleteByUserIdAndId(Long userId, Long id);
 
     @Query("SELECT CASE WHEN COUNT(d) > 0 THEN true ELSE false END FROM DiaryEntry d JOIN d.tags t WHERE t = :tagName")
     boolean existsByTags(@Param("tagName") String tagName);
+
+    void deleteAllByUserId(Long userId);
 }

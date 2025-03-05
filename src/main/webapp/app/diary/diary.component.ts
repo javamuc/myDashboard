@@ -7,11 +7,23 @@ import { DiaryEntry, DiaryTag } from '../shared/diary/diary.model';
 import { DiaryEditorComponent } from '../shared/diary/diary-editor/diary-editor.component';
 import { DiaryEntryComponent } from '../shared/diary/diary-entry/diary-entry.component';
 import { DiaryTagSelectorComponent } from '../shared/diary/diary-tag-selector/diary-tag-selector.component';
+import { firstValueFrom } from 'rxjs';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ConfirmationDialogComponent } from 'app/shared/confirmation-dialog/confirmation-dialog.component';
+import HasAnyAuthorityDirective from 'app/shared/auth/has-any-authority.directive';
 
 @Component({
   selector: 'jhi-diary',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule, FormsModule, DiaryEditorComponent, DiaryEntryComponent, DiaryTagSelectorComponent],
+  imports: [
+    CommonModule,
+    FontAwesomeModule,
+    FormsModule,
+    DiaryEditorComponent,
+    DiaryEntryComponent,
+    DiaryTagSelectorComponent,
+    HasAnyAuthorityDirective,
+  ],
   templateUrl: './diary.component.html',
   styleUrls: ['./diary.component.scss'],
 })
@@ -23,6 +35,7 @@ export class DiaryComponent implements OnInit {
   selectedTags: DiaryTag[] = [];
 
   private diaryService = inject(DiaryService);
+  private modalService = inject(NgbModal);
 
   ngOnInit(): void {
     this.loadEntries();
@@ -97,6 +110,25 @@ export class DiaryComponent implements OnInit {
   onKeyDown(event: KeyboardEvent): void {
     if (event.key === 'n' && !this.diaryService.getIsEditorOpen()()) {
       this.createNewEntry();
+    }
+  }
+
+  async deleteAllEntries(): Promise<void> {
+    const modalRef = this.modalService.open(ConfirmationDialogComponent);
+    modalRef.componentInstance.title = 'Delete All Entries';
+    modalRef.componentInstance.message = 'Are you sure you want to delete all diary entries? This action cannot be undone.';
+    modalRef.componentInstance.confirmButtonText = 'Delete All';
+    modalRef.componentInstance.confirmButtonClass = 'btn-danger';
+
+    try {
+      const confirmed = await modalRef.result;
+      if (confirmed) {
+        await firstValueFrom(this.diaryService.deleteAll());
+        // Refresh the entries list
+        this.loadEntries();
+      }
+    } catch (error) {
+      console.error('Error deleting entries:', error);
     }
   }
 }

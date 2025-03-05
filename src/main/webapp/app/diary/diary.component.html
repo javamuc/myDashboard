@@ -7,6 +7,9 @@
         <fa-icon icon="search"></fa-icon>
       </div>
       <button class="btn btn-primary" (click)="createNewEntry()"><fa-icon icon="plus"></fa-icon> New Entry</button>
+      <button *jhiHasAnyAuthority="'ROLE_ADMIN'" class="btn btn-danger ms-2" (click)="deleteAllEntries()" data-cy="deleteAllEntries">
+        <fa-icon icon="trash"></fa-icon> Delete All
+      </button>
     </div>
   </div>
 

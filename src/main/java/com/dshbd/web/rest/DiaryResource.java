@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -64,6 +65,20 @@ public class DiaryResource {
     public ResponseEntity<Void> deleteDiaryEntry(@PathVariable Long id) {
         log.debug("REST request to delete DiaryEntry : {}", id);
         diaryService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * {@code DELETE  /diary-entries/all} : Delete all diary entries.
+     * Only accessible by administrators.
+     *
+     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
+     */
+    @DeleteMapping("/diary-entries/all")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Void> deleteAllEntries() {
+        log.debug("REST request to delete all DiaryEntries");
+        diaryService.deleteAllEntries();
         return ResponseEntity.noContent().build();
     }
 }

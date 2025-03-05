@@ -269,6 +269,10 @@ export class DiaryService {
     }
   }
 
+  deleteAll(): Observable<unknown> {
+    return this.http.delete<unknown>(`${this.resourceUrl}/all`);
+  }
+
   private convertFromServer(entry: any): DiaryEntry {
     const emoticon = this.emoticons().find(e => e.emoji === entry.emoticon) ?? {
       id: 0,

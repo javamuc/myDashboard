@@ -84,8 +84,19 @@ public class DiaryService extends BaseService {
             .orElse(null);
     }
 
+    @Transactional
     public void delete(Long id) {
         log.debug("Request to delete DiaryEntry : {}", id);
         diaryEntryRepository.deleteByUserIdAndId(getUserId(), id);
+    }
+
+    /**
+     * Delete all diary entries.
+     * This is an administrative operation that removes all diary entries from the database.
+     */
+    @Transactional
+    public void deleteAllEntries() {
+        log.debug("Request to delete all DiaryEntries");
+        diaryEntryRepository.deleteAllByUserId(getUserId());
     }
 }

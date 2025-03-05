@@ -1,0 +1,337 @@
+{
+  "version": "1.0",
+  "exportDate": "2024-03-19T10:00:00.000Z",
+  "data": {
+    "diaryEntries": [
+      {
+        "content": "Had a breakthrough at work today! Finally solved that persistent bug in the authentication system.",
+        "emoticon": "😇",
+        "tags": [
+          {
+            "name": "work",
+            "archived": false,
+            "createdDate": "2024-03-18T15:30:00.000Z"
+          },
+          {
+            "name": "coding",
+            "archived": false,
+            "createdDate": "2024-03-18T15:30:00.000Z"
+          }
+        ],
+        "createdDate": "2024-03-18T15:30:00.000Z"
+      },
+      {
+        "content": "Second entry for today - Evening reflection: The team's reaction to the bug fix was priceless!",
+        "emoticon": "😍",
+        "tags": [
+          {
+            "name": "work",
+            "archived": false,
+            "createdDate": "2024-03-18T20:45:00.000Z"
+          }
+        ],
+        "createdDate": "2024-03-18T20:45:00.000Z"
+      },
+      {
+        "content": "Started a new book series today - 'The Quantum Thief'. Sci-fi at its finest!",
+        "emoticon": "🙂",
+        "tags": [
+          {
+            "name": "reading",
+            "archived": false,
+            "createdDate": "2024-03-17T22:15:00.000Z"
+          },
+          {
+            "name": "hobbies",
+            "archived": false,
+            "createdDate": "2024-03-17T22:15:00.000Z"
+          }
+        ],
+        "createdDate": "2024-03-17T22:15:00.000Z"
+      },
+      {
+        "content": "Feeling uncertain about the new project requirements. Need to discuss with the team.",
+        "emoticon": "🤔",
+        "tags": [
+          {
+            "name": "work",
+            "archived": false,
+            "createdDate": "2024-02-15T18:30:00.000Z"
+          }
+        ],
+        "createdDate": "2024-02-15T18:30:00.000Z"
+      },
+      {
+        "content": "Flight got delayed again. Not the best start to the vacation.",
+        "emoticon": "😕",
+        "tags": [
+          {
+            "name": "travel",
+            "archived": false,
+            "createdDate": "2024-01-05T10:20:00.000Z"
+          }
+        ],
+        "createdDate": "2024-01-05T10:20:00.000Z"
+      },
+      {
+        "content": "Third consecutive meeting that could have been an email.",
+        "emoticon": "😑",
+        "tags": [
+          {
+            "name": "work",
+            "archived": false,
+            "createdDate": "2024-01-01T14:15:00.000Z"
+          }
+        ],
+        "createdDate": "2024-01-01T14:15:00.000Z"
+      },
+      {
+        "content": "Massive headache today. Can't focus on anything.",
+        "emoticon": "😵",
+        "tags": [
+          {
+            "name": "health",
+            "archived": false,
+            "createdDate": "2023-12-15T17:00:00.000Z"
+          }
+        ],
+        "createdDate": "2023-12-15T17:00:00.000Z"
+      },
+      {
+        "content": "Someone took my clearly labeled lunch from the office fridge!",
+        "emoticon": "😠",
+        "tags": [
+          {
+            "name": "work",
+            "archived": false,
+            "createdDate": "2023-09-03T14:20:00.000Z"
+          },
+          {
+            "name": "coworkers",
+            "archived": false,
+            "createdDate": "2023-09-03T14:20:00.000Z"
+          }
+        ],
+        "createdDate": "2023-09-03T14:20:00.000Z"
+      },
+      {
+        "content": "Internet went down during the crucial client presentation!",
+        "emoticon": "🤬",
+        "tags": [
+          {
+            "name": "work",
+            "archived": false,
+            "createdDate": "2023-06-18T11:45:00.000Z"
+          }
+        ],
+        "createdDate": "2023-06-18T11:45:00.000Z"
+      },
+      {
+        "content": "Second entry today - Finally got the internet back and nailed the presentation!",
+        "emoticon": "😇",
+        "tags": [
+          {
+            "name": "work",
+            "archived": false,
+            "createdDate": "2023-06-18T16:30:00.000Z"
+          },
+          {
+            "name": "success",
+            "archived": false,
+            "createdDate": "2023-06-18T16:30:00.000Z"
+          }
+        ],
+        "createdDate": "2023-06-18T16:30:00.000Z"
+      },
+      {
+        "content": "First day at the new gym! Feeling motivated but sore.",
+        "emoticon": "😍",
+        "tags": [
+          {
+            "name": "fitness",
+            "archived": false,
+            "createdDate": "2024-02-15T18:30:00.000Z"
+          }
+        ],
+        "createdDate": "2024-02-15T18:30:00.000Z"
+      },
+      {
+        "content": "Holiday planning for summer vacation in Greece! Can't wait!",
+        "emoticon": "😍",
+        "tags": [
+          {
+            "name": "travel",
+            "archived": false,
+            "createdDate": "2024-01-05T10:20:00.000Z"
+          },
+          {
+            "name": "planning",
+            "archived": false,
+            "createdDate": "2024-01-05T10:20:00.000Z"
+          }
+        ],
+        "createdDate": "2024-01-05T10:20:00.000Z"
+      },
+      {
+        "content": "Celebrated New Year's Eve with family. Perfect start to 2024!",
+        "emoticon": "😑",
+        "tags": [
+          {
+            "name": "family",
+            "archived": false,
+            "createdDate": "2024-01-01T00:15:00.000Z"
+          },
+          {
+            "name": "celebration",
+            "archived": false,
+            "createdDate": "2024-01-01T00:15:00.000Z"
+          }
+        ],
+        "createdDate": "2024-01-01T00:15:00.000Z"
+      },
+      {
+        "content": "Last day at old job. Feeling nostalgic but excited for new opportunities!",
+        "emoticon": "😑",
+        "tags": [
+          {
+            "name": "work",
+            "archived": false,
+            "createdDate": "2023-12-15T17:00:00.000Z"
+          },
+          {
+            "name": "career",
+            "archived": false,
+            "createdDate": "2023-12-15T17:00:00.000Z"
+          }
+        ],
+        "createdDate": "2023-12-15T17:00:00.000Z"
+      },
+      {
+        "content": "Found an old photo album from college. So many memories!",
+        "emoticon": "😑",
+        "tags": [
+          {
+            "name": "memories",
+            "archived": false,
+            "createdDate": "2023-09-03T14:20:00.000Z"
+          }
+        ],
+        "createdDate": "2023-09-03T14:20:00.000Z"
+      },
+      {
+        "content": "First attempt at baking sourdough bread. It's... interesting.",
+        "emoticon": "😵",
+        "tags": [
+          {
+            "name": "cooking",
+            "archived": false,
+            "createdDate": "2023-06-18T11:45:00.000Z"
+          },
+          {
+            "name": "hobbies",
+            "archived": false,
+            "createdDate": "2023-06-18T11:45:00.000Z"
+          }
+        ],
+        "createdDate": "2023-06-18T11:45:00.000Z"
+      },
+      {
+        "content": "Second bread attempt today - much better! The crust is perfect.",
+        "emoticon": "😵",
+        "tags": [
+          {
+            "name": "cooking",
+            "archived": false,
+            "createdDate": "2023-06-18T16:30:00.000Z"
+          },
+          {
+            "name": "success",
+            "archived": false,
+            "createdDate": "2023-06-18T16:30:00.000Z"
+          }
+        ],
+        "createdDate": "2023-06-18T16:30:00.000Z"
+      },
+      {
+        "content": "Started learning Spanish! ¡Hola mundo!",
+        "emoticon": "😵",
+        "tags": [
+          {
+            "name": "learning",
+            "archived": false,
+            "createdDate": "2023-03-01T09:00:00.000Z"
+          }
+        ],
+        "createdDate": "2023-03-01T09:00:00.000Z"
+      },
+      {
+        "content": "Adopted a cat today! Meet Luna 🐱",
+        "emoticon": "😇",
+        "tags": [
+          {
+            "name": "pets",
+            "archived": false,
+            "createdDate": "2022-11-12T13:45:00.000Z"
+          },
+          {
+            "name": "family",
+            "archived": false,
+            "createdDate": "2022-11-12T13:45:00.000Z"
+          }
+        ],
+        "createdDate": "2022-11-12T13:45:00.000Z"
+      },
+      {
+        "content": "Completed my first marathon! Time: 4:23:15",
+        "emoticon": "😇",
+        "tags": [
+          {
+            "name": "fitness",
+            "archived": false,
+            "createdDate": "2022-05-22T16:00:00.000Z"
+          },
+          {
+            "name": "achievement",
+            "archived": false,
+            "createdDate": "2022-05-22T16:00:00.000Z"
+          }
+        ],
+        "createdDate": "2022-05-22T16:00:00.000Z"
+      },
+      {
+        "content": "Looking back at old entries. Can't believe it's been two years since I started coding!",
+        "emoticon": "😇",
+        "tags": [
+          {
+            "name": "reflection",
+            "archived": false,
+            "createdDate": "2022-01-15T21:30:00.000Z"
+          },
+          {
+            "name": "coding",
+            "archived": false,
+            "createdDate": "2022-01-15T21:30:00.000Z"
+          }
+        ],
+        "createdDate": "2022-01-15T21:30:00.000Z"
+      },
+      {
+        "content": "First day working remotely. Home office setup complete!",
+        "emoticon": "😕",
+        "tags": [
+          {
+            "name": "work",
+            "archived": false,
+            "createdDate": "2021-06-01T09:00:00.000Z"
+          },
+          {
+            "name": "remote",
+            "archived": true,
+            "createdDate": "2021-06-01T09:00:00.000Z"
+          }
+        ],
+        "createdDate": "2021-06-01T09:00:00.000Z"
+      }
+    ]
+  }
+}
