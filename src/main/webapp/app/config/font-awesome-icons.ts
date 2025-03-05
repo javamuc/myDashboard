@@ -68,6 +68,7 @@ import {
   faUsersCog,
   faWind,
   faWrench,
+  faSmile,
 } from '@fortawesome/free-solid-svg-icons';
 export const fontAwesomeIcons = [
   faAlignLeft,
@@ -116,6 +117,7 @@ export const fontAwesomeIcons = [
   faSearch,
   faSignInAlt,
   faSignOutAlt,
+  faSmile,
   faSort,
   faSortDown,
   faSortUp,

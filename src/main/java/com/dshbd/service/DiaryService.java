@@ -71,6 +71,30 @@ public class DiaryService extends BaseService {
     }
 
     @Transactional(readOnly = true)
+    public Page<DiaryEntryDTO> findByEmoticon(String emoticon, Pageable pageable) {
+        log.debug("Request to get DiaryEntries by emoticon: {}", emoticon);
+        return diaryEntryRepository
+            .findByUserIdAndEmoticonOrderByCreatedDateDesc(getUserId(), emoticon, pageable)
+            .map(diaryEntryMapper::toDto);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<DiaryEntryDTO> findByTags(Set<String> tagNames, Pageable pageable) {
+        log.debug("Request to get DiaryEntries by tags: {}", tagNames);
+        return diaryEntryRepository
+            .findByUserIdAndTagsNameInOrderByCreatedDateDesc(getUserId(), tagNames, pageable)
+            .map(diaryEntryMapper::toDto);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<DiaryEntryDTO> findByEmoticonAndTags(String emoticon, Set<String> tagNames, Pageable pageable) {
+        log.debug("Request to get DiaryEntries by emoticon: {} and tags: {}", emoticon, tagNames);
+        return diaryEntryRepository
+            .findByUserIdAndEmoticonAndTagsNameInOrderByCreatedDateDesc(getUserId(), emoticon, tagNames, pageable)
+            .map(diaryEntryMapper::toDto);
+    }
+
+    @Transactional(readOnly = true)
     public DiaryEntryDTO findOne(Long id) {
         log.debug("Request to get DiaryEntry : {}", id);
         return diaryEntryRepository

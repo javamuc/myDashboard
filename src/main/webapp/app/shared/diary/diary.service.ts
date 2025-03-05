@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { DiaryEntry, DiaryEmoticon, DiaryTag, NewDiaryEntry } from './diary.model';
 import { Observable, firstValueFrom } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { map } from 'rxjs/operators';
 
@@ -52,8 +52,17 @@ export class DiaryService {
   }
 
   // API methods
-  getAllEntries(): Observable<DiaryEntry[]> {
-    return this.http.get<PaginatedResponse<DiaryEntry>>(this.resourceUrl).pipe(
+  getAllEntries(emoticon?: string, tags?: string[]): Observable<DiaryEntry[]> {
+    let params = new HttpParams();
+    if (emoticon) {
+      params = params.set('emoticon', emoticon);
+    }
+    if (tags && tags.length > 0) {
+      tags.forEach(tag => {
+        params = params.append('tags', tag);
+      });
+    }
+    return this.http.get<PaginatedResponse<DiaryEntry>>(this.resourceUrl, { params }).pipe(
       map((response: PaginatedResponse<DiaryEntry>) => {
         if (response?.content) {
           return response.content.map(entry => this.convertFromServer(entry));
@@ -100,9 +109,13 @@ export class DiaryService {
 
   // Tag methods
   loadTags(): void {
-    this.http.get<DiaryTag[]>(`${this.tagResourceUrl}/active`).subscribe(tags => {
-      this.diaryTags.set(tags);
-    });
+    // Only load tags if we don't have any yet
+    if (this.diaryTags().length === 0) {
+      this.http.get<DiaryTag[]>(`${this.tagResourceUrl}/active`).subscribe(tags => {
+        console.warn('Loaded tags:', tags);
+        this.diaryTags.set(tags);
+      });
+    }
   }
 
   createTag(name: string): Observable<DiaryTag> {

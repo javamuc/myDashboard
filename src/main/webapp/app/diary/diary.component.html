@@ -3,10 +3,69 @@
     <h5>My Diary</h5>
     <div class="diary-actions">
       <div class="search-container">
-        <input type="text" class="form-control" placeholder="Search entries..." [(ngModel)]="searchTerm" />
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search entries..."
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="updateFilteredEntries()"
+        />
         <fa-icon icon="search"></fa-icon>
       </div>
-      <button class="btn btn-primary" (click)="createNewEntry()"><fa-icon icon="plus"></fa-icon> New Entry</button>
+      <div class="filter-buttons">
+        <div class="dropdown" [class.show]="isEmoticonSelectorOpen()">
+          <button
+            class="btn btn-outline-primary"
+            (click)="toggleEmoticonSelector()"
+            (keydown.enter)="toggleEmoticonSelector()"
+            (keydown.space)="toggleEmoticonSelector()"
+          >
+            <fa-icon icon="smile"></fa-icon> Filter by Emoticon
+          </button>
+          <div class="dropdown-menu" [class.show]="isEmoticonSelectorOpen()">
+            <button
+              class="dropdown-item"
+              (click)="selectEmoticon(undefined)"
+              (keydown.enter)="selectEmoticon(undefined)"
+              (keydown.space)="selectEmoticon(undefined)"
+            >
+              All Emoticons
+            </button>
+            @for (emoticon of emoticons; track emoticon.id) {
+              <button
+                class="dropdown-item"
+                (click)="selectEmoticon(emoticon.emoji)"
+                (keydown.enter)="selectEmoticon(emoticon.emoji)"
+                (keydown.space)="selectEmoticon(emoticon.emoji)"
+              >
+                {{ emoticon.emoji }} {{ emoticon.name }}
+              </button>
+            }
+          </div>
+        </div>
+        <div class="dropdown" [class.show]="isTagSelectorOpen()">
+          <button
+            class="btn btn-outline-primary ms-2"
+            (click)="toggleTagSelector()"
+            (keydown.enter)="toggleTagSelector()"
+            (keydown.space)="toggleTagSelector()"
+          >
+            Filter by Tags
+          </button>
+          <div class="dropdown-menu" [class.show]="isTagSelectorOpen()">
+            @if (isTagSelectorOpen()) {
+              <jhi-diary-tag-selector
+                [selectedTags]="selectedTags"
+                [isTagSelectorOpen]="isTagSelectorOpen()"
+                (tagToggled)="toggleTag($event)"
+                #tagSelector
+              >
+              </jhi-diary-tag-selector>
+            }
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary ms-2" (click)="createNewEntry()"><fa-icon icon="plus"></fa-icon> New Entry</button>
       <button *jhiHasAnyAuthority="'ROLE_ADMIN'" class="btn btn-danger ms-2" (click)="deleteAllEntries()" data-cy="deleteAllEntries">
         <fa-icon icon="trash"></fa-icon> Delete All
       </button>

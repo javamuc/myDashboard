@@ -5,6 +5,7 @@ import com.dshbd.service.dto.DiaryEntryDTO;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -48,9 +49,22 @@ public class DiaryResource {
     }
 
     @GetMapping("/diary-entries")
-    public ResponseEntity<Page<DiaryEntryDTO>> getAllDiaryEntries(Pageable pageable) {
-        log.debug("REST request to get a page of DiaryEntries");
-        Page<DiaryEntryDTO> page = diaryService.findAll(pageable);
+    public ResponseEntity<Page<DiaryEntryDTO>> getAllDiaryEntries(
+        @RequestParam(required = false) String emoticon,
+        @RequestParam(required = false) Set<String> tags,
+        Pageable pageable
+    ) {
+        log.debug("REST request to get a page of DiaryEntries with filters: emoticon={}, tags={}", emoticon, tags);
+        Page<DiaryEntryDTO> page;
+        if (emoticon != null && tags != null && !tags.isEmpty()) {
+            page = diaryService.findByEmoticonAndTags(emoticon, tags, pageable);
+        } else if (emoticon != null) {
+            page = diaryService.findByEmoticon(emoticon, pageable);
+        } else if (tags != null && !tags.isEmpty()) {
+            page = diaryService.findByTags(tags, pageable);
+        } else {
+            page = diaryService.findAll(pageable);
+        }
         return ResponseEntity.ok().body(page);
     }
 

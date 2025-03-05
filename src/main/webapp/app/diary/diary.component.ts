@@ -1,16 +1,16 @@
-import { Component, HostListener, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { FormsModule } from '@angular/forms';
-import { DiaryService } from '../shared/diary/diary.service';
-import { DiaryEntry, DiaryTag } from '../shared/diary/diary.model';
 import { DiaryEditorComponent } from '../shared/diary/diary-editor/diary-editor.component';
 import { DiaryEntryComponent } from '../shared/diary/diary-entry/diary-entry.component';
 import { DiaryTagSelectorComponent } from '../shared/diary/diary-tag-selector/diary-tag-selector.component';
+import HasAnyAuthorityDirective from 'app/shared/auth/has-any-authority.directive';
+import { DiaryService } from 'app/shared/diary/diary.service';
+import { DiaryEntry, DiaryEmoticon, DiaryTag } from 'app/shared/diary/diary.model';
 import { firstValueFrom } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmationDialogComponent } from 'app/shared/confirmation-dialog/confirmation-dialog.component';
-import HasAnyAuthorityDirective from 'app/shared/auth/has-any-authority.directive';
 
 @Component({
   selector: 'jhi-diary',
@@ -29,21 +29,45 @@ import HasAnyAuthorityDirective from 'app/shared/auth/has-any-authority.directiv
 })
 export class DiaryComponent implements OnInit {
   diaryEntries: DiaryEntry[] = [];
+  filteredEntries: DiaryEntry[] = [];
   isEditing = false;
   selectedEntry: DiaryEntry | null = null;
   searchTerm = '';
+  selectedEmoticon: string | undefined = undefined;
   selectedTags: DiaryTag[] = [];
+  isEmoticonSelectorOpen = signal(false);
+  isTagSelectorOpen = signal(false);
 
-  private diaryService = inject(DiaryService);
-  private modalService = inject(NgbModal);
+  constructor(
+    public diaryService: DiaryService,
+    private modalService: NgbModal,
+  ) {}
+
+  get emoticons(): DiaryEmoticon[] {
+    return this.diaryService.getEmoticons()();
+  }
 
   ngOnInit(): void {
+    // Ensure tags are loaded before loading entries
     this.loadEntries();
   }
 
-  loadEntries(): void {
-    this.diaryService.getAllEntries().subscribe(entries => {
-      this.diaryEntries = entries;
+  async loadEntries(): Promise<void> {
+    const entries = await firstValueFrom(
+      this.diaryService.getAllEntries(
+        this.selectedEmoticon,
+        this.selectedTags.map(tag => tag.name),
+      ),
+    );
+    this.diaryEntries = entries;
+    this.updateFilteredEntries();
+  }
+
+  updateFilteredEntries(): void {
+    this.filteredEntries = this.diaryEntries.filter(entry => {
+      // Filter by search term
+      const matchesSearch = this.searchTerm === '' || entry.content.toLowerCase().includes(this.searchTerm.toLowerCase());
+      return matchesSearch;
     });
   }
 
@@ -85,25 +109,40 @@ export class DiaryComponent implements OnInit {
     this.diaryService.closeEditor();
   }
 
-  onTagSelected(tag: DiaryTag): void {
-    const index = this.selectedTags.indexOf(tag);
-    if (index === -1) {
-      this.selectedTags.push(tag);
-    } else {
-      this.selectedTags.splice(index, 1);
+  toggleEmoticonSelector(): void {
+    this.isEmoticonSelectorOpen.set(!this.isEmoticonSelectorOpen());
+    if (this.isEmoticonSelectorOpen()) {
+      this.isTagSelectorOpen.set(false);
     }
   }
 
-  get filteredEntries(): DiaryEntry[] {
-    return this.diaryEntries.filter(entry => {
-      // Filter by search term
-      const matchesSearch = this.searchTerm === '' || entry.content.toLowerCase().includes(this.searchTerm.toLowerCase());
+  toggleTagSelector(): void {
+    this.isTagSelectorOpen.set(!this.isTagSelectorOpen());
+    if (this.isTagSelectorOpen()) {
+      this.isEmoticonSelectorOpen.set(false);
+    }
+  }
 
-      // Filter by selected tags
-      const matchesTags = this.selectedTags.length === 0 || this.selectedTags.every(tag => entry.tags.some(t => t.name === tag.name));
+  selectEmoticon(emoticon: string | undefined): void {
+    this.selectedEmoticon = emoticon;
+    this.isEmoticonSelectorOpen.set(false);
+    this.loadEntries();
+  }
 
-      return matchesSearch && matchesTags;
-    });
+  toggleTag(tag: DiaryTag): void {
+    const index = this.selectedTags.findIndex(t => t.id === tag.id);
+    if (index >= 0) {
+      this.selectedTags.splice(index, 1);
+    } else {
+      this.selectedTags.push(tag);
+    }
+    this.loadEntries();
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapePressed(): void {
+    this.isEmoticonSelectorOpen.set(false);
+    this.isTagSelectorOpen.set(false);
   }
 
   @HostListener('document:keydown.n', ['$event'])

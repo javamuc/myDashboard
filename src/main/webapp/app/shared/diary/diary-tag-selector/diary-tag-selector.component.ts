@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, OnInit, Output, inject } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, HostListener, Input, OnInit, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -12,7 +12,7 @@ import { DiaryService } from '../diary.service';
   standalone: true,
   imports: [CommonModule, FormsModule, FontAwesomeModule],
 })
-export class DiaryTagSelectorComponent implements OnInit {
+export class DiaryTagSelectorComponent implements OnInit, AfterViewInit {
   @Input() selectedTags: DiaryTag[] = [];
   @Input() isTagSelectorOpen = false;
   @Output() tagToggled = new EventEmitter<DiaryTag>();
@@ -40,13 +40,18 @@ export class DiaryTagSelectorComponent implements OnInit {
   newTagName = '';
 
   ngOnInit(): void {
-    this.organizeTags();
+    this.diaryService.loadTags();
     // Focus the component after initialization
+  }
+
+  ngAfterViewInit(): void {
+    this.organizeTags();
     setTimeout(() => this.focusComponent());
   }
 
   organizeTags(): void {
     const tags = this.diaryTags();
+    console.warn('Organizing tags:', tags);
     this.firstRowTags = tags.slice(0, 6);
     this.secondRowTags = tags.slice(6, 12);
     this.thirdRowTags = tags.slice(12, 18);

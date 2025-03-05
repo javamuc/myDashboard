@@ -122,25 +122,16 @@ export class IdeaListComponent implements OnInit, OnDestroy {
     this.selectedIdea = null;
   }
 
+  @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    // Add debugging
-    console.warn('Document click event:', event.target);
-    console.warn('showBoardSelector:', this.showBoardSelector);
-    if (this.boardSelector) {
-      console.warn('boardSelector element:', this.boardSelector.nativeElement);
-      console.warn('Contains target?', this.boardSelector.nativeElement.contains(event.target));
-    }
-
     // Ignore clicks on buttons that trigger the board selector
     const target = event.target as HTMLElement;
     if (target.closest('button') && target.closest('button')?.title === 'Convert to Task') {
-      console.warn('Ignoring click on Convert to Task button');
       return;
     }
 
     // Close board selector when clicking outside
     if (this.showBoardSelector && this.boardSelector && !this.boardSelector.nativeElement.contains(event.target)) {
-      console.warn('Closing board selector due to outside click');
       this.closeBoardSelector();
     }
   }
