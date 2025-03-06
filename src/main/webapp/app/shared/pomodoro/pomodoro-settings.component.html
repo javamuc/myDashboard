@@ -1,0 +1,85 @@
+<div class="pomodoro-settings-container">
+  <div class="time-settings">
+    <div class="setting-group">
+      <div class="setting-row">
+        <label>Work Time</label>
+        <div class="time-inputs">
+          <input type="number" class="form-control" [(ngModel)]="workMinutes" min="0" max="99" />
+          <span>:</span>
+          <input type="number" class="form-control" [(ngModel)]="workSeconds" min="0" max="59" />
+        </div>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <div class="setting-row">
+        <label>Break Time</label>
+        <div class="time-inputs">
+          <input type="number" class="form-control" [(ngModel)]="breakMinutes" min="0" max="99" />
+          <span>:</span>
+          <input type="number" class="form-control" [(ngModel)]="breakSeconds" min="0" max="59" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="repeat-settings">
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="repeatEnabled" [(ngModel)]="repeatEnabled" />
+      <label class="form-check-label" for="repeatEnabled"> <fa-icon icon="sync"></fa-icon> Repeat </label>
+      <fa-icon
+        icon="question-circle"
+        class="help-icon"
+        placement="right"
+        ngbTooltip="Set to 0 for indefinite repeats, or 1-100 for a specific number of cycles"
+      ></fa-icon>
+    </div>
+
+    <div class="repeat-count">
+      <input type="number" class="form-control" [(ngModel)]="repeatCount" [disabled]="!repeatEnabled" min="0" max="100" />
+    </div>
+  </div>
+
+  <div class="profile-settings">
+    <div class="profile-dropdown">
+      <label>Select Profile</label>
+      <div ngbDropdown class="d-inline-block">
+        <button class="btn btn-outline-light dropdown-toggle" id="profileDropdown" ngbDropdownToggle>
+          {{ getSelectedProfileName() }}
+        </button>
+        <div ngbDropdownMenu aria-labelledby="profileDropdown">
+          <button *ngFor="let profile of profiles" ngbDropdownItem (click)="selectProfile(profile.id)" class="dropdown-item">
+            <span>{{ profile.name }}</span>
+            <fa-icon icon="edit" class="edit-icon ms-2" (click)="startEditingProfile(profile.id, $event)"></fa-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile editing modal -->
+    <div *ngIf="editingProfileId !== undefined" class="profile-edit-overlay" (click)="cancelEditing($event)">
+      <div class="profile-edit-container" (click)="$event.stopPropagation()">
+        <label>Profile Name:</label>
+        <input
+          #nameInput
+          type="text"
+          class="form-control"
+          [value]="getProfileName(editingProfileId)"
+          (keydown)="handleKeyDown($event, getProfile(editingProfileId), nameInput)"
+          autofocus
+        />
+        <div class="edit-actions">
+          <button class="btn btn-sm btn-secondary" (click)="cancelEditing($event)">Cancel</button>
+          <button class="btn btn-sm btn-primary" (click)="saveProfileName(getProfile(editingProfileId), nameInput.value, $event)">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="settings-actions">
+    <button class="btn btn-secondary" (click)="cancel()">Cancel</button>
+    <button class="btn btn-primary" (click)="saveSettings()">Save</button>
+  </div>
+</div>

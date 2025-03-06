@@ -1,7 +1,52 @@
-<div class="pomodoro-container">
-  <div class="timer">{{ formatTime() }}</div>
-  <div class="controls">
-    <button class="start-button" (click)="startTimer()" [disabled]="isRunning">Start Timer</button>
-    <button class="reset-button" (click)="resetTimer()">Reset</button>
+<div class="pomodoro-container" [class]="getTimerBackgroundClass()">
+  <div class="pomodoro-card" [class.flipped]="isFlipped()">
+    <!-- Front side (Timer) -->
+    <div class="card-face front">
+      <!-- Profile dropdown -->
+      <div class="profile-selector" ngbDropdown>
+        <button class="btn btn-link dropdown-toggle" ngbDropdownToggle>
+          {{ getActiveProfileName() }}
+        </button>
+        <div class="dropdown-menu" ngbDropdownMenu>
+          <button *ngFor="let profile of profiles" class="dropdown-item" (click)="selectProfile(profile.id)">
+            {{ profile.name }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Settings button -->
+      <button class="settings-button" (click)="toggleSettings()">
+        <fa-icon icon="cog"></fa-icon>
+      </button>
+
+      <!-- Timer display -->
+      <div class="timer-display">
+        <div class="timer" [class.dimmed]="timerType === 'break'">
+          {{ formatTime(timeLeft) }}
+        </div>
+
+        <div class="break-timer" [class.active]="timerType === 'break'">
+          {{ formatTime(breakTimeLeft) }}
+        </div>
+      </div>
+
+      <!-- Repeat indicator -->
+      <div class="repeat-indicator" *ngIf="repeatEnabled">
+        <fa-icon icon="sync"></fa-icon>
+        <span *ngIf="repeatCount > 0">{{ cyclesCompleted }}/{{ repeatCount }}</span>
+        <span *ngIf="repeatCount === 0">∞</span>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <button class="start-button" (click)="startTimer()" [disabled]="isRunning">Start Timer</button>
+        <button class="reset-button" (click)="resetTimer()">Reset</button>
+      </div>
+    </div>
+
+    <!-- Back side (Settings) -->
+    <div class="card-face back">
+      <jhi-pomodoro-settings (flipBack)="handleFlipBack($event)"></jhi-pomodoro-settings>
+    </div>
   </div>
 </div>

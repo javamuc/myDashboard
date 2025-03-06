@@ -40,6 +40,7 @@ import {
   faPlay,
   faPlus,
   faQuestion,
+  faQuestionCircle,
   faRoad,
   faSave,
   faSearch,
@@ -69,6 +70,7 @@ import {
   faWind,
   faWrench,
   faSmile,
+  faCog,
 } from '@fortawesome/free-solid-svg-icons';
 export const fontAwesomeIcons = [
   faAlignLeft,
@@ -112,6 +114,7 @@ export const fontAwesomeIcons = [
   faPlay,
   faPlus,
   faQuestion,
+  faQuestionCircle,
   faRoad,
   faSave,
   faSearch,
@@ -139,6 +142,7 @@ export const fontAwesomeIcons = [
   faUserPlus,
   faUsers,
   faUsersCog,
+  faCog,
   faWind,
   faWrench,
 ];
