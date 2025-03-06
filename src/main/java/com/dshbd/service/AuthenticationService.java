@@ -1,16 +1,18 @@
 package com.dshbd.service;
 
+import com.dshbd.config.ApplicationProperties;
 import com.dshbd.domain.User;
 import com.dshbd.repository.UserRepository;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service for handling authentication-related operations.
+ * Service for managing authentication-related operations.
  */
 @Service
 @Transactional
@@ -19,60 +21,96 @@ public class AuthenticationService {
     private final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
 
     private final UserRepository userRepository;
-    private final AccountLockoutSettings accountLockoutSettings;
+    private final ApplicationProperties applicationProperties;
 
-    public AuthenticationService(UserRepository userRepository, AccountLockoutSettings accountLockoutSettings) {
+    public AuthenticationService(UserRepository userRepository, ApplicationProperties applicationProperties) {
         this.userRepository = userRepository;
-        this.accountLockoutSettings = accountLockoutSettings;
+        this.applicationProperties = applicationProperties;
     }
 
     /**
-     * Process a failed login attempt for a user.
-     * Increments the failed attempts counter and locks the account if the maximum number of attempts is reached.
+     * Record a failed login attempt for a user.
      *
-     * @param username the username of the user
+     * @param login the login of the user
+     * @return true if the account is now locked, false otherwise
      */
-    public void processFailedLogin(String username) {
-        userRepository
-            .findOneByLogin(username.toLowerCase())
-            .ifPresent(user -> {
-                int failedAttempts = user.getFailedAttempts() != null ? user.getFailedAttempts() + 1 : 1;
-                user.setFailedAttempts(failedAttempts);
+    public boolean recordFailedLoginAttempt(String login) {
+        log.debug("Recording failed login attempt for user: {}", login);
 
-                if (failedAttempts >= accountLockoutSettings.getMaxFailedAttempts()) {
-                    Instant lockUntil = Instant.now().plus(accountLockoutSettings.getLockDurationMinutes(), ChronoUnit.MINUTES);
-                    user.setAccountLockedUntil(lockUntil);
-                    log.warn("User account locked: {} until {}", username, lockUntil);
-                }
+        Optional<User> userOptional = userRepository.findOneByLogin(login);
+        if (userOptional.isEmpty()) {
+            // User not found, nothing to do
+            return false;
+        }
 
-                userRepository.save(user);
-            });
-    }
+        User user = userOptional.get();
+        int maxFailedAttempts = applicationProperties.getSecurity().getAccountLockout().getMaxFailedAttempts();
 
-    /**
-     * Reset the failed attempts counter for a user after a successful login.
-     *
-     * @param username the username of the user
-     */
-    public void resetFailedAttempts(String username) {
-        userRepository
-            .findOneByLogin(username.toLowerCase())
-            .ifPresent(user -> {
-                if (user.getFailedAttempts() != null && user.getFailedAttempts() > 0) {
-                    user.setFailedAttempts(0);
-                    user.setAccountLockedUntil(null);
-                    userRepository.save(user);
-                }
-            });
+        // Increment failed attempts
+        int failedAttempts = user.getFailedAttempts() != null ? user.getFailedAttempts() + 1 : 1;
+        user.setFailedAttempts(failedAttempts);
+
+        // Check if account should be locked
+        if (failedAttempts >= maxFailedAttempts) {
+            int lockDurationMinutes = applicationProperties.getSecurity().getAccountLockout().getLockDurationMinutes();
+            Instant lockTime = Instant.now().plus(lockDurationMinutes, ChronoUnit.MINUTES);
+            user.setAccountLockedUntil(lockTime);
+            log.warn("User account {} locked until {}", login, lockTime);
+            userRepository.save(user);
+            return true;
+        }
+
+        userRepository.save(user);
+        return false;
     }
 
     /**
      * Check if a user account is locked.
      *
-     * @param username the username of the user
+     * @param login the login of the user
      * @return true if the account is locked, false otherwise
      */
-    public boolean isAccountLocked(String username) {
-        return userRepository.findOneByLogin(username.toLowerCase()).map(User::isAccountLocked).orElse(false);
+    public boolean isAccountLocked(String login) {
+        log.debug("Checking if account is locked for user: {}", login);
+
+        Optional<User> userOptional = userRepository.findOneByLogin(login);
+        if (userOptional.isEmpty()) {
+            // User not found, consider not locked
+            return false;
+        }
+
+        User user = userOptional.get();
+        Instant lockedUntil = user.getAccountLockedUntil();
+
+        if (lockedUntil != null && lockedUntil.isAfter(Instant.now())) {
+            log.debug("User account {} is locked until {}", login, lockedUntil);
+            return true;
+        }
+
+        // If the lock has expired, clear the lock and failed attempts
+        if (lockedUntil != null) {
+            user.setAccountLockedUntil(null);
+            user.setFailedAttempts(0);
+            userRepository.save(user);
+        }
+
+        return false;
+    }
+
+    /**
+     * Reset failed login attempts for a user after successful login.
+     *
+     * @param login the login of the user
+     */
+    public void resetFailedLoginAttempts(String login) {
+        log.debug("Resetting failed login attempts for user: {}", login);
+
+        Optional<User> userOptional = userRepository.findOneByLogin(login);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setFailedAttempts(0);
+            user.setAccountLockedUntil(null);
+            userRepository.save(user);
+        }
     }
 }

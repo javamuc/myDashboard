@@ -93,6 +93,9 @@ management:
 spring:
   application:
     name: myDashboard
+  cache:
+    jcache:
+      config: classpath:config/ehcache/ehcache.xml
   docker:
     compose:
       enabled: true
@@ -236,6 +239,7 @@ application:
 # Bucket4j rate limiting configuration
 bucket4j:
   enabled: true
+  cache-to-use: jcache
   filters:
     - cache-name: rate-limit-buckets
       url: .*

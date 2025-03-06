@@ -38,6 +38,9 @@ public class CacheConfiguration {
     @Bean
     public JCacheManagerCustomizer cacheManagerCustomizer() {
         return cm -> {
+            // Create cache configurations
+            createCache(cm, "rate-limit-buckets");
+            createCache(cm, "rate-limit-auth-buckets");
             createCache(cm, com.dshbd.repository.UserRepository.USERS_BY_LOGIN_CACHE);
             createCache(cm, com.dshbd.repository.UserRepository.USERS_BY_EMAIL_CACHE);
             createCache(cm, com.dshbd.domain.Authority.class.getName());

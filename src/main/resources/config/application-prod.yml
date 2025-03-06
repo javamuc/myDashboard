@@ -132,6 +132,7 @@ application:
 # Bucket4j rate limiting configuration for production
 bucket4j:
   enabled: true
+  cache-to-use: jcache
   filters:
     - cache-name: rate-limit-buckets
       url: .*

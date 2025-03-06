@@ -78,7 +78,7 @@ public class AuthenticateController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             // Reset failed attempts on successful login
-            authenticationService.resetFailedAttempts(loginVM.getUsername());
+            authenticationService.resetFailedLoginAttempts(loginVM.getUsername());
 
             String jwt = this.createToken(authentication, loginVM.isRememberMe());
             HttpHeaders httpHeaders = new HttpHeaders();
@@ -86,7 +86,7 @@ public class AuthenticateController {
             return new ResponseEntity<>(new JWTToken(jwt), httpHeaders, HttpStatus.OK);
         } catch (BadCredentialsException e) {
             // Increment failed attempts
-            authenticationService.processFailedLogin(loginVM.getUsername());
+            authenticationService.recordFailedLoginAttempt(loginVM.getUsername());
             throw e;
         }
     }

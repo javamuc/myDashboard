@@ -87,6 +87,7 @@ This document outlines the security measures that should be in place before the 
   - Authentication endpoint: 5 requests per minute per IP address
   - Configurable via application properties with different settings for dev and prod environments
   - Returns HTTP 429 (Too Many Requests) with a JSON error message when limit is exceeded
+  - Configured with JCache/Ehcache for storing rate limiting data
 
 ## Clickjacking Protection
 
