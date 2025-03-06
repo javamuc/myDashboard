@@ -29,7 +29,7 @@ This document outlines the security measures that should be in place before the 
 
 | Security Measure       | Description                                              | Verification Method          | Status                                                                                      |
 | ---------------------- | -------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------- |
-| 14. Rate Limiting      | Implement API rate limiting to prevent abuse             | Check API configuration      | Needs Attention - No evidence of rate limiting implementation                               |
+| 14. Rate Limiting      | Implement API rate limiting to prevent abuse             | Check API configuration      | Verified - Rate limiting is implemented using bucket4j-spring-boot-starter                  |
 | 15. API Authentication | Ensure all API endpoints require authentication          | Check API controllers        | Verified - Security configuration requires authentication for API endpoints                 |
 | 16. Secure Headers     | Implement secure HTTP headers                            | Check security configuration | Verified - Content Security Policy is configured in SecurityConfiguration.java              |
 | 17. Error Handling     | Ensure proper error handling without leaking information | Check global error handlers  | Verified - ExceptionTranslator handles errors and customizes responses based on environment |
@@ -73,8 +73,17 @@ This document outlines the security measures that should be in place before the 
 
 1. **Account Lockout**: No evidence of account lockout mechanism was found. Implementing account lockout after a certain number of failed login attempts would help prevent brute force attacks. **IMPLEMENTED**
 
-2. **Rate Limiting**: No evidence of API rate limiting was found. Implementing rate limiting would help prevent abuse and denial of service attacks.
+2. **Rate Limiting**: No evidence of API rate limiting was found. Implementing rate limiting would help prevent abuse and denial of service attacks. **IMPLEMENTED**
 
 3. **Sensitive Data Encryption**: Consider encrypting sensitive data at rest in the database for additional protection.
 
 4. **Security Testing**: Conduct thorough security testing including penetration testing and automated security scanning before the beta launch.
+
+## Rate Limiting
+
+- [x] Implement rate limiting to prevent brute force attacks
+  - Implemented using bucket4j-spring-boot-starter
+  - General API rate limiting: 20 requests per minute per IP address
+  - Authentication endpoint: 5 requests per minute per IP address
+  - Configurable via application properties with different settings for dev and prod environments
+  - Returns HTTP 429 (Too Many Requests) with a JSON error message when limit is exceeded
