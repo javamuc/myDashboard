@@ -4,6 +4,7 @@ import { AuthInterceptor } from 'app/core/interceptor/auth.interceptor';
 import { AuthExpiredInterceptor } from 'app/core/interceptor/auth-expired.interceptor';
 import { ErrorHandlerInterceptor } from 'app/core/interceptor/error-handler.interceptor';
 import { NotificationInterceptor } from 'app/core/interceptor/notification.interceptor';
+import { CsrfInterceptor } from 'app/core/interceptor/csrf.interceptor';
 
 export const httpInterceptorProviders = [
   {
@@ -24,6 +25,11 @@ export const httpInterceptorProviders = [
   {
     provide: HTTP_INTERCEPTORS,
     useClass: NotificationInterceptor,
+    multi: true,
+  },
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: CsrfInterceptor,
     multi: true,
   },
 ];
