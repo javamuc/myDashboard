@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, ViewChild, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChild, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -12,7 +12,7 @@ import { NewIdea } from './idea.model';
   standalone: true,
   imports: [CommonModule, FormsModule, FontAwesomeModule],
 })
-export class QuickIdeaComponent {
+export class QuickIdeaComponent implements AfterViewInit, OnDestroy {
   @ViewChild('ideaInput') ideaInput!: ElementRef<HTMLTextAreaElement>;
 
   isOpen = signal(false);
@@ -25,8 +25,18 @@ export class QuickIdeaComponent {
     // Open overlay with Cmd+I (Mac) or Ctrl+I (Windows)
     if ((event.metaKey || event.ctrlKey) && event.key === 'i') {
       event.preventDefault();
-      this.openOverlay();
+      this.toggleOverlay(event);
     }
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.ideaInput.nativeElement.focus();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.closeOverlay();
   }
 
   toggleOverlay(event: Event): void {
@@ -59,9 +69,6 @@ export class QuickIdeaComponent {
   private openOverlay(): void {
     this.isOpen.set(true);
     this.content = '';
-    setTimeout(() => {
-      this.ideaInput.nativeElement.focus();
-    });
   }
 
   private closeOverlay(): void {
