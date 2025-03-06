@@ -3,6 +3,8 @@ package com.dshbd.web.rest;
 import static com.dshbd.security.SecurityUtils.AUTHORITIES_KEY;
 import static com.dshbd.security.SecurityUtils.JWT_ALGORITHM;
 
+import com.dshbd.service.AuthenticationService;
+import com.dshbd.web.rest.errors.AccountLockedException;
 import com.dshbd.web.rest.vm.LoginVM;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
@@ -17,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -46,25 +49,46 @@ public class AuthenticateController {
     private long tokenValidityInSecondsForRememberMe;
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final AuthenticationService authenticationService;
 
-    public AuthenticateController(JwtEncoder jwtEncoder, AuthenticationManagerBuilder authenticationManagerBuilder) {
+    public AuthenticateController(
+        JwtEncoder jwtEncoder,
+        AuthenticationManagerBuilder authenticationManagerBuilder,
+        AuthenticationService authenticationService
+    ) {
         this.jwtEncoder = jwtEncoder;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.authenticationService = authenticationService;
     }
 
     @PostMapping("/authenticate")
     public ResponseEntity<JWTToken> authorize(@Valid @RequestBody LoginVM loginVM) {
+        // Check if account is locked
+        if (authenticationService.isAccountLocked(loginVM.getUsername())) {
+            throw new AccountLockedException("Account is locked due to too many failed login attempts");
+        }
+
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
             loginVM.getUsername(),
             loginVM.getPassword()
         );
 
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = this.createToken(authentication, loginVM.isRememberMe());
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setBearerAuth(jwt);
-        return new ResponseEntity<>(new JWTToken(jwt), httpHeaders, HttpStatus.OK);
+        try {
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // Reset failed attempts on successful login
+            authenticationService.resetFailedAttempts(loginVM.getUsername());
+
+            String jwt = this.createToken(authentication, loginVM.isRememberMe());
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setBearerAuth(jwt);
+            return new ResponseEntity<>(new JWTToken(jwt), httpHeaders, HttpStatus.OK);
+        } catch (BadCredentialsException e) {
+            // Increment failed attempts
+            authenticationService.processFailedLogin(loginVM.getUsername());
+            throw e;
+        }
     }
 
     /**

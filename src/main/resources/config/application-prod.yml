@@ -122,3 +122,8 @@ jhipster:
 # ===================================================================
 
 # application:
+application:
+  security:
+    account-lockout:
+      max-failed-attempts: 3
+      lock-duration-minutes: 15

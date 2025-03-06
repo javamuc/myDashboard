@@ -78,6 +78,12 @@ public class User extends AbstractAuditingEntity<Long> {
     @Column(name = "reset_date")
     private Instant resetDate = null;
 
+    @Column(name = "failed_attempts")
+    private Integer failedAttempts = 0;
+
+    @Column(name = "account_locked_until")
+    private Instant accountLockedUntil;
+
     @JsonIgnore
     @ManyToMany
     @JoinTable(
@@ -191,6 +197,26 @@ public class User extends AbstractAuditingEntity<Long> {
 
     public void setAuthorities(Set<Authority> authorities) {
         this.authorities = authorities;
+    }
+
+    public Integer getFailedAttempts() {
+        return failedAttempts;
+    }
+
+    public void setFailedAttempts(Integer failedAttempts) {
+        this.failedAttempts = failedAttempts;
+    }
+
+    public Instant getAccountLockedUntil() {
+        return accountLockedUntil;
+    }
+
+    public void setAccountLockedUntil(Instant accountLockedUntil) {
+        this.accountLockedUntil = accountLockedUntil;
+    }
+
+    public boolean isAccountLocked() {
+        return accountLockedUntil != null && accountLockedUntil.isAfter(Instant.now());
     }
 
     @Override

@@ -114,55 +114,95 @@ export const httpInterceptorProviders = [
 ];
 ```
 
-## 2. Account Lockout
+## 2. Account Lockout ✅ IMPLEMENTED
 
-**Current Status**: No evidence of account lockout mechanism.
+**Current Status**: Account lockout has been implemented with configurable settings for different environments.
 
-**Recommendation**:
+**Implementation Details**:
 
-1. Implement a failed login attempt counter in the `User` entity:
+1. Added fields to the `User` entity to track failed login attempts and account lockout:
 
 ```java
-@Entity
-public class User {
+@Column(name = "failed_attempts")
+private Integer failedAttempts = 0;
 
-  // Existing fields...
+@Column(name = "account_locked_until")
+private Instant accountLockedUntil;
 
-  @Column(name = "failed_attempts")
-  private Integer failedAttempts = 0;
-
-  @Column(name = "account_locked_until")
-  private Instant accountLockedUntil;
-
-  // Getters and setters...
-
-  public boolean isAccountLocked() {
-    return accountLockedUntil != null && accountLockedUntil.isAfter(Instant.now());
-  }
+public boolean isAccountLocked() {
+  return accountLockedUntil != null && accountLockedUntil.isAfter(Instant.now());
 }
 
 ```
 
-2. Update the authentication service to handle failed login attempts:
+2. Created a Liquibase migration to add the new columns to the database:
+
+```xml
+<changeSet id="20240501000000-1" author="jhipster">
+    <addColumn tableName="jhi_user">
+        <column name="failed_attempts" type="integer" defaultValue="0">
+            <constraints nullable="false"/>
+        </column>
+        <column name="account_locked_until" type="timestamp"/>
+    </addColumn>
+</changeSet>
+```
+
+3. Created a configuration class for account lockout properties:
+
+```java
+@Configuration
+@ConfigurationProperties(prefix = "application.security.account-lockout", ignoreUnknownFields = false)
+public class AccountLockoutProperties {
+
+  private int maxFailedAttempts = 3;
+  private int lockDurationMinutes = 15;
+  // Getters and setters
+}
+
+```
+
+4. Configured different settings for development and production environments:
+
+```yaml
+# application.yml (default)
+application:
+  security:
+    account-lockout:
+      max-failed-attempts: 3
+      lock-duration-minutes: 15
+
+# application-dev.yml
+application:
+  security:
+    account-lockout:
+      max-failed-attempts: 2
+      lock-duration-minutes: 1
+```
+
+5. Created an authentication service to handle account lockout:
 
 ```java
 @Service
+@Transactional
 public class AuthenticationService {
 
-  private static final int MAX_FAILED_ATTEMPTS = 5;
-  private static final int LOCK_TIME_MINUTES = 30;
+  private final UserRepository userRepository;
+  private final AccountLockoutProperties accountLockoutProperties;
 
-  // Existing dependencies...
+  // Constructor
 
   public void processFailedLogin(String username) {
     userRepository
-      .findOneByLogin(username)
+      .findOneByLogin(username.toLowerCase())
       .ifPresent(user -> {
-        user.setFailedAttempts(user.getFailedAttempts() + 1);
+        int failedAttempts = user.getFailedAttempts() != null ? user.getFailedAttempts() + 1 : 1;
+        user.setFailedAttempts(failedAttempts);
 
-        if (user.getFailedAttempts() >= MAX_FAILED_ATTEMPTS) {
-          user.setAccountLockedUntil(Instant.now().plus(LOCK_TIME_MINUTES, ChronoUnit.MINUTES));
-          log.warn("User account locked: {}", username);
+        if (failedAttempts >= accountLockoutProperties.getMaxFailedAttempts()) {
+          Instant lockUntil = Instant.now().plus(accountLockoutProperties.getLockDurationMinutes(), ChronoUnit.MINUTES);
+          user.setAccountLockedUntil(lockUntil);
+          log.warn("User account locked: {} until {}", username, lockUntil);
         }
 
         userRepository.save(user);
@@ -170,45 +210,37 @@ public class AuthenticationService {
   }
 
   public void resetFailedAttempts(String username) {
-    userRepository
-      .findOneByLogin(username)
-      .ifPresent(user -> {
-        user.setFailedAttempts(0);
-        user.setAccountLockedUntil(null);
-        userRepository.save(user);
-      });
+    // Reset failed attempts after successful login
+  }
+
+  public boolean isAccountLocked(String username) {
+    // Check if account is locked
   }
 }
 
 ```
 
-3. Update the authentication controller to use these methods:
+6. Updated the authentication controller to use the authentication service:
 
 ```java
-@RestController
-public class AuthenticateController {
+@PostMapping("/authenticate")
+public ResponseEntity<JWTToken> authorize(@Valid @RequestBody LoginVM loginVM) {
+  // Check if account is locked
+  if (authenticationService.isAccountLocked(loginVM.getUsername())) {
+    throw new AccountLockedException("Account is locked due to too many failed login attempts");
+  }
 
-  // Existing dependencies...
+  try {
+    // Authenticate user
+    Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-  @PostMapping("/api/authenticate")
-  public ResponseEntity<JWTToken> authorize(@Valid @RequestBody LoginVM loginVM) {
-    // Check if account is locked
-    Optional<User> userOpt = userRepository.findOneByLogin(loginVM.getUsername());
-    if (userOpt.isPresent() && userOpt.get().isAccountLocked()) {
-      throw new AccountLockedException("Account is locked due to too many failed attempts");
-    }
-
-    try {
-      // Existing authentication logic...
-
-      // Reset failed attempts on successful login
-      authenticationService.resetFailedAttempts(loginVM.getUsername());
-      // Return token...
-    } catch (BadCredentialsException e) {
-      // Increment failed attempts
-      authenticationService.processFailedLogin(loginVM.getUsername());
-      throw e;
-    }
+    // Reset failed attempts on successful login
+    authenticationService.resetFailedAttempts(loginVM.getUsername());
+    // Generate and return JWT token
+  } catch (BadCredentialsException e) {
+    // Increment failed attempts
+    authenticationService.processFailedLogin(loginVM.getUsername());
+    throw e;
   }
 }
 
@@ -316,8 +348,7 @@ public class SecurityConfiguration {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http// Existing configuration...
-    .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class); // Existing configuration...
 
     return http.build();
   }
@@ -482,7 +513,7 @@ public class SecurityTests {
 1. **High Priority (Implement Before Beta)**
 
    - ~~CSRF Protection~~ ✅ IMPLEMENTED
-   - Account Lockout
+   - ~~Account Lockout~~ ✅ IMPLEMENTED
    - Rate Limiting
 
 2. **Medium Priority (Implement During Beta)**
