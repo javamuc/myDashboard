@@ -27,12 +27,12 @@ This document outlines the security measures that should be in place before the 
 
 ## API Security
 
-| Security Measure       | Description                                              | Verification Method          | Status                                                                                      |
-| ---------------------- | -------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------- |
-| 14. Rate Limiting      | Implement API rate limiting to prevent abuse             | Check API configuration      | Verified - Rate limiting is implemented using bucket4j-spring-boot-starter                  |
-| 15. API Authentication | Ensure all API endpoints require authentication          | Check API controllers        | Verified - Security configuration requires authentication for API endpoints                 |
-| 16. Secure Headers     | Implement secure HTTP headers                            | Check security configuration | Verified - Content Security Policy is configured in SecurityConfiguration.java              |
-| 17. Error Handling     | Ensure proper error handling without leaking information | Check global error handlers  | Verified - ExceptionTranslator handles errors and customizes responses based on environment |
+| Security Measure       | Description                                              | Verification Method          | Status                                                                                              |
+| ---------------------- | -------------------------------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------------------- |
+| 14. Rate Limiting      | Implement API rate limiting to prevent abuse             | Check API configuration      | Verified - Rate limiting is implemented using bucket4j-spring-boot-starter                          |
+| 15. API Authentication | Ensure all API endpoints require authentication          | Check API controllers        | Verified - Security configuration requires authentication for API endpoints                         |
+| 16. Secure Headers     | Implement secure HTTP headers                            | Check security configuration | Verified - Content Security Policy and X-Frame-Options are configured in SecurityConfiguration.java |
+| 17. Error Handling     | Ensure proper error handling without leaking information | Check global error handlers  | Verified - ExceptionTranslator handles errors and customizes responses based on environment         |
 
 ## Infrastructure Security
 
@@ -87,3 +87,11 @@ This document outlines the security measures that should be in place before the 
   - Authentication endpoint: 5 requests per minute per IP address
   - Configurable via application properties with different settings for dev and prod environments
   - Returns HTTP 429 (Too Many Requests) with a JSON error message when limit is exceeded
+
+## Clickjacking Protection
+
+- [x] Prevent the application from being displayed in iframes
+  - Implemented X-Frame-Options: DENY header in SecurityConfiguration.java
+  - Added frame-ancestors 'none' directive to Content Security Policy
+  - Applied consistently across all environments (dev, prod)
+  - Protects against clickjacking attacks where attackers embed your site in an iframe
