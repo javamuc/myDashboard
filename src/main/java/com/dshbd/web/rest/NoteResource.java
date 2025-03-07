@@ -40,7 +40,7 @@ public class NoteResource {
     }
 
     @PostMapping("/notes")
-    public ResponseEntity<NoteDTO> createNote(@Valid @RequestBody NoteVM noteVM) throws URISyntaxException {
+    public ResponseEntity<NoteDTO> createNote(@Valid @RequestBody NewNoteDto noteVM) throws URISyntaxException {
         log.debug("REST request to save Note : {}", noteVM);
 
         NoteDTO result = noteService.createNote(noteVM.getTitle(), noteVM.getContent());

@@ -1,6 +1,6 @@
 package com.dshbd.web.rest;
 
-public class NoteVM {
+public class NewNoteDto {
 
     private String title;
 

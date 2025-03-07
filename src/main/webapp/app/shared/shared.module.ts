@@ -8,6 +8,7 @@ import FindLanguageFromKeyPipe from './language/find-language-from-key.pipe';
 import TranslateDirective from './language/translate.directive';
 import { AlertComponent } from './alert/alert.component';
 import { AlertErrorComponent } from './alert/alert-error.component';
+import { NotesListWidgetComponent } from './notes-widget/notes-list-widget.component';
 
 /**
  * Application wide Module
@@ -22,6 +23,7 @@ import { AlertErrorComponent } from './alert/alert-error.component';
     AlertErrorComponent,
     FindLanguageFromKeyPipe,
     TranslateDirective,
+    NotesListWidgetComponent,
   ],
   exports: [
     CommonModule,
@@ -32,6 +34,7 @@ import { AlertErrorComponent } from './alert/alert-error.component';
     TranslateModule,
     FindLanguageFromKeyPipe,
     TranslateDirective,
+    NotesListWidgetComponent,
   ],
 })
 export default class SharedModule {}

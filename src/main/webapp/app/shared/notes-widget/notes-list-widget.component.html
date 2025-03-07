@@ -1,0 +1,22 @@
+<div class="notes-widget">
+  <h4 class="notes-widget__title">Recent Notes</h4>
+
+  <div *ngIf="loading" class="notes-widget__loading">Loading recent notes...</div>
+
+  <div *ngIf="!loading && recentNotes.length === 0" class="notes-widget__empty">No notes found</div>
+
+  <ul *ngIf="!loading && recentNotes.length > 0" class="notes-widget__list">
+    <li *ngFor="let note of recentNotes" class="notes-widget__item" (click)="openNote(note.id)">
+      <div class="notes-widget__item-content">
+        <div class="notes-widget__item-title">
+          <fa-icon [icon]="faEdit" class="notes-widget__icon"></fa-icon>
+          {{ note.title || 'Untitled Note' }}
+        </div>
+        <div class="notes-widget__item-date">
+          <fa-icon [icon]="faClock" class="notes-widget__icon-small"></fa-icon>
+          <div class="card-date">{{ note.lastModifiedDate | date: 'short' }}</div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
