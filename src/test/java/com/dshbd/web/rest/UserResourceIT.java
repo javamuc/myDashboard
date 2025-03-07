@@ -2,8 +2,13 @@ package com.dshbd.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.dshbd.IntegrationTest;
 import com.dshbd.domain.User;
@@ -14,7 +19,9 @@ import com.dshbd.service.dto.AdminUserDTO;
 import com.dshbd.service.mapper.UserMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -26,6 +33,7 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -153,7 +161,12 @@ class UserResourceIT {
 
         var returnedUserDTO = om.readValue(
             restUserMockMvc
-                .perform(post("/api/admin/users").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userDTO)))
+                .perform(
+                    post("/api/admin/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(om.writeValueAsBytes(userDTO))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                )
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
@@ -189,7 +202,12 @@ class UserResourceIT {
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restUserMockMvc
-            .perform(post("/api/admin/users").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userDTO)))
+            .perform(
+                post("/api/admin/users")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(userDTO))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the User in the database
@@ -215,7 +233,12 @@ class UserResourceIT {
 
         // Create the User
         restUserMockMvc
-            .perform(post("/api/admin/users").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userDTO)))
+            .perform(
+                post("/api/admin/users")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(userDTO))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the User in the database
@@ -241,7 +264,12 @@ class UserResourceIT {
 
         // Create the User
         restUserMockMvc
-            .perform(post("/api/admin/users").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userDTO)))
+            .perform(
+                post("/api/admin/users")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(userDTO))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the User in the database
@@ -256,7 +284,9 @@ class UserResourceIT {
 
         // Get all the users
         restUserMockMvc
-            .perform(get("/api/admin/users?sort=id,desc").accept(MediaType.APPLICATION_JSON))
+            .perform(
+                get("/api/admin/users?sort=id,desc").accept(MediaType.APPLICATION_JSON).with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].login").value(hasItem(DEFAULT_LOGIN)))
@@ -277,7 +307,7 @@ class UserResourceIT {
 
         // Get the user
         restUserMockMvc
-            .perform(get("/api/admin/users/{login}", user.getLogin()))
+            .perform(get("/api/admin/users/{login}", user.getLogin()).with(SecurityMockMvcRequestPostProcessors.csrf()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.login").value(user.getLogin()))
@@ -322,7 +352,12 @@ class UserResourceIT {
         userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
 
         restUserMockMvc
-            .perform(put("/api/admin/users").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userDTO)))
+            .perform(
+                put("/api/admin/users")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(userDTO))
+            )
             .andExpect(status().isOk());
 
         // Validate the User in the database
@@ -363,7 +398,12 @@ class UserResourceIT {
         userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
 
         restUserMockMvc
-            .perform(put("/api/admin/users").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userDTO)))
+            .perform(
+                put("/api/admin/users")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(userDTO))
+            )
             .andExpect(status().isOk());
 
         // Validate the User in the database
@@ -415,7 +455,12 @@ class UserResourceIT {
         userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
 
         restUserMockMvc
-            .perform(put("/api/admin/users").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userDTO)))
+            .perform(
+                put("/api/admin/users")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(userDTO))
+            )
             .andExpect(status().isBadRequest());
     }
 
@@ -455,7 +500,12 @@ class UserResourceIT {
         userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
 
         restUserMockMvc
-            .perform(put("/api/admin/users").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userDTO)))
+            .perform(
+                put("/api/admin/users")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(userDTO))
+            )
             .andExpect(status().isBadRequest());
     }
 
@@ -468,7 +518,11 @@ class UserResourceIT {
 
         // Delete the user
         restUserMockMvc
-            .perform(delete("/api/admin/users/{login}", user.getLogin()).accept(MediaType.APPLICATION_JSON))
+            .perform(
+                delete("/api/admin/users/{login}", user.getLogin())
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                    .accept(MediaType.APPLICATION_JSON)
+            )
             .andExpect(status().isNoContent());
 
         assertThat(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).get(user.getLogin(), User.class)).isNull();

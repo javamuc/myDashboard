@@ -1,6 +1,5 @@
-package com.dshbd.config;
+package com.dshbd.service;
 
-import com.dshbd.service.AccountLockoutSettings;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,12 +8,11 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @ConfigurationProperties(prefix = "application.security.account-lockout", ignoreUnknownFields = false)
-public class AccountLockoutProperties implements AccountLockoutSettings {
+public class AccountLockoutProperties {
 
     private int maxFailedAttempts = 3;
     private int lockDurationMinutes = 15;
 
-    @Override
     public int getMaxFailedAttempts() {
         return maxFailedAttempts;
     }
@@ -23,7 +21,6 @@ public class AccountLockoutProperties implements AccountLockoutSettings {
         this.maxFailedAttempts = maxFailedAttempts;
     }
 
-    @Override
     public int getLockDurationMinutes() {
         return lockDurationMinutes;
     }

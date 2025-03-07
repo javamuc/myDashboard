@@ -2,7 +2,7 @@ package com.dshbd.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.dshbd.service.AccountLockoutSettings;
+import com.dshbd.service.AccountLockoutProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,13 +11,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 class AccountLockoutPropertiesTest {
 
     @Autowired
-    private AccountLockoutSettings accountLockoutSettings;
+    private ApplicationProperties applicationProperties;
 
     @Test
     void shouldLoadDefaultProperties() {
         // Default values from application.yml should be loaded
-        assertThat(accountLockoutSettings.getMaxFailedAttempts()).isGreaterThan(0);
-        assertThat(accountLockoutSettings.getLockDurationMinutes()).isGreaterThan(0);
+        assertThat(applicationProperties.getSecurity().getAccountLockout().getMaxFailedAttempts()).isGreaterThan(0);
+        assertThat(applicationProperties.getSecurity().getAccountLockout().getLockDurationMinutes()).isGreaterThan(0);
     }
 
     @Test

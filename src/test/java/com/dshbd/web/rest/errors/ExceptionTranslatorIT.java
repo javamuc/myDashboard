@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 
 /**
@@ -37,7 +38,12 @@ class ExceptionTranslatorIT {
     @Test
     void testMethodArgumentNotValid() throws Exception {
         mockMvc
-            .perform(post("/api/exception-translator-test/method-argument").content("{}").contentType(MediaType.APPLICATION_JSON))
+            .perform(
+                post("/api/exception-translator-test/method-argument")
+                    .content("{}")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isBadRequest())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
             .andExpect(jsonPath("$.message").value(ErrorConstants.ERR_VALIDATION))
@@ -88,7 +94,7 @@ class ExceptionTranslatorIT {
     @Test
     void testMethodNotSupported() throws Exception {
         mockMvc
-            .perform(post("/api/exception-translator-test/access-denied"))
+            .perform(post("/api/exception-translator-test/access-denied").with(SecurityMockMvcRequestPostProcessors.csrf()))
             .andExpect(status().isMethodNotAllowed())
             .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
             .andExpect(jsonPath("$.message").value("error.http.405"))

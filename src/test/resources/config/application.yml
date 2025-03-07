@@ -89,7 +89,9 @@ jhipster:
 # https://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
-# application:
+bucket4j:
+  enabled: false
+
 management:
   health:
     mail:

@@ -1,8 +1,11 @@
 package com.dshbd.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.dshbd.IntegrationTest;
 import com.dshbd.config.Constants;
@@ -17,7 +20,10 @@ import com.dshbd.web.rest.vm.KeyAndPasswordVM;
 import com.dshbd.web.rest.vm.ManagedUserVM;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -30,6 +36,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -142,7 +149,12 @@ class AccountResourceIT {
         assertThat(userRepository.findOneByLogin("test-register-valid")).isEmpty();
 
         restAccountMockMvc
-            .perform(post("/api/register").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(validUser)))
+            .perform(
+                post("/api/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(validUser))
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isCreated());
 
         assertThat(userRepository.findOneByLogin("test-register-valid")).isPresent();
@@ -165,7 +177,12 @@ class AccountResourceIT {
         invalidUser.setAuthorities(Collections.singleton(AuthoritiesConstants.USER));
 
         restAccountMockMvc
-            .perform(post("/api/register").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(invalidUser)))
+            .perform(
+                post("/api/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(invalidUser))
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isBadRequest());
 
         Optional<User> user = userRepository.findOneByEmailIgnoreCase("funky@example.com");
@@ -185,7 +202,12 @@ class AccountResourceIT {
     @Transactional
     void testRegisterInvalidUsers(ManagedUserVM invalidUser) throws Exception {
         restAccountMockMvc
-            .perform(post("/api/register").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(invalidUser)))
+            .perform(
+                post("/api/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(invalidUser))
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isBadRequest());
 
         Optional<User> user = userRepository.findOneByLogin("bob");
@@ -244,12 +266,22 @@ class AccountResourceIT {
 
         // First user
         restAccountMockMvc
-            .perform(post("/api/register").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(firstUser)))
+            .perform(
+                post("/api/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(firstUser))
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isCreated());
 
         // Second (non activated) user
         restAccountMockMvc
-            .perform(post("/api/register").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(secondUser)))
+            .perform(
+                post("/api/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(secondUser))
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isCreated());
 
         Optional<User> testUser = userRepository.findOneByEmailIgnoreCase("alice2@example.com");
@@ -259,7 +291,12 @@ class AccountResourceIT {
 
         // Second (already activated) user
         restAccountMockMvc
-            .perform(post("/api/register").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(secondUser)))
+            .perform(
+                post("/api/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(secondUser))
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().is4xxClientError());
 
         userService.deleteUser("alice");
@@ -281,7 +318,12 @@ class AccountResourceIT {
 
         // Register first user
         restAccountMockMvc
-            .perform(post("/api/register").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(firstUser)))
+            .perform(
+                post("/api/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(firstUser))
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isCreated());
 
         Optional<User> testUser1 = userRepository.findOneByLogin("test-register-duplicate-email");
@@ -300,7 +342,12 @@ class AccountResourceIT {
 
         // Register second (non activated) user
         restAccountMockMvc
-            .perform(post("/api/register").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(secondUser)))
+            .perform(
+                post("/api/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(secondUser))
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isCreated());
 
         Optional<User> testUser2 = userRepository.findOneByLogin("test-register-duplicate-email");
@@ -323,7 +370,12 @@ class AccountResourceIT {
 
         // Register third (not activated) user
         restAccountMockMvc
-            .perform(post("/api/register").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userWithUpperCaseEmail)))
+            .perform(
+                post("/api/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(userWithUpperCaseEmail))
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isCreated());
 
         Optional<User> testUser4 = userRepository.findOneByLogin("test-register-duplicate-email-3");
@@ -335,7 +387,12 @@ class AccountResourceIT {
 
         // Register 4th (already activated) user
         restAccountMockMvc
-            .perform(post("/api/register").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(secondUser)))
+            .perform(
+                post("/api/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(secondUser))
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().is4xxClientError());
 
         userService.deleteUser("test-register-duplicate-email-3");
@@ -356,7 +413,12 @@ class AccountResourceIT {
         validUser.setAuthorities(Collections.singleton(AuthoritiesConstants.ADMIN));
 
         restAccountMockMvc
-            .perform(post("/api/register").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(validUser)))
+            .perform(
+                post("/api/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(validUser))
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isCreated());
 
         Optional<User> userDup = userRepository.findOneWithAuthoritiesByLogin("badguy");
@@ -417,7 +479,12 @@ class AccountResourceIT {
         userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.ADMIN));
 
         restAccountMockMvc
-            .perform(post("/api/account").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userDTO)))
+            .perform(
+                post("/api/account")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(userDTO))
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isOk());
 
         User updatedUser = userRepository.findOneWithAuthoritiesByLogin(user.getLogin()).orElse(null);
@@ -456,7 +523,12 @@ class AccountResourceIT {
         userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.ADMIN));
 
         restAccountMockMvc
-            .perform(post("/api/account").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userDTO)))
+            .perform(
+                post("/api/account")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(userDTO))
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isBadRequest());
 
         assertThat(userRepository.findOneByEmailIgnoreCase("invalid email")).isNotPresent();
@@ -494,7 +566,12 @@ class AccountResourceIT {
         userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.ADMIN));
 
         restAccountMockMvc
-            .perform(post("/api/account").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userDTO)))
+            .perform(
+                post("/api/account")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(userDTO))
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isBadRequest());
 
         User updatedUser = userRepository.findOneByLogin("save-existing-email").orElseThrow();
@@ -526,7 +603,12 @@ class AccountResourceIT {
         userDTO.setAuthorities(Collections.singleton(AuthoritiesConstants.ADMIN));
 
         restAccountMockMvc
-            .perform(post("/api/account").contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(userDTO)))
+            .perform(
+                post("/api/account")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(om.writeValueAsBytes(userDTO))
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isOk());
 
         User updatedUser = userRepository.findOneByLogin("save-existing-email-and-login").orElse(null);
@@ -549,6 +631,7 @@ class AccountResourceIT {
         restAccountMockMvc
             .perform(
                 post("/api/account/change-password")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(om.writeValueAsBytes(new PasswordChangeDTO("1" + currentPassword, "new password")))
             )
@@ -575,6 +658,7 @@ class AccountResourceIT {
         restAccountMockMvc
             .perform(
                 post("/api/account/change-password")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(om.writeValueAsBytes(new PasswordChangeDTO(currentPassword, "new password")))
             )
@@ -602,6 +686,7 @@ class AccountResourceIT {
         restAccountMockMvc
             .perform(
                 post("/api/account/change-password")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(om.writeValueAsBytes(new PasswordChangeDTO(currentPassword, newPassword)))
             )
@@ -629,6 +714,7 @@ class AccountResourceIT {
         restAccountMockMvc
             .perform(
                 post("/api/account/change-password")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(om.writeValueAsBytes(new PasswordChangeDTO(currentPassword, newPassword)))
             )
@@ -654,6 +740,7 @@ class AccountResourceIT {
         restAccountMockMvc
             .perform(
                 post("/api/account/change-password")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(om.writeValueAsBytes(new PasswordChangeDTO(currentPassword, "")))
             )
@@ -677,7 +764,11 @@ class AccountResourceIT {
         userRepository.saveAndFlush(user);
 
         restAccountMockMvc
-            .perform(post("/api/account/reset-password/init").content("password-reset@example.com"))
+            .perform(
+                post("/api/account/reset-password/init")
+                    .content("password-reset@example.com")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isOk());
 
         userService.deleteUser("password-reset");
@@ -695,7 +786,11 @@ class AccountResourceIT {
         userRepository.saveAndFlush(user);
 
         restAccountMockMvc
-            .perform(post("/api/account/reset-password/init").content("password-reset-upper-case@EXAMPLE.COM"))
+            .perform(
+                post("/api/account/reset-password/init")
+                    .content("password-reset-upper-case@EXAMPLE.COM")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isOk());
 
         userService.deleteUser("password-reset-upper-case");
@@ -704,7 +799,11 @@ class AccountResourceIT {
     @Test
     void testRequestPasswordResetWrongEmail() throws Exception {
         restAccountMockMvc
-            .perform(post("/api/account/reset-password/init").content("password-reset-wrong-email@example.com"))
+            .perform(
+                post("/api/account/reset-password/init")
+                    .content("password-reset-wrong-email@example.com")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+            )
             .andExpect(status().isOk());
     }
 
@@ -726,6 +825,7 @@ class AccountResourceIT {
         restAccountMockMvc
             .perform(
                 post("/api/account/reset-password/finish")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(om.writeValueAsBytes(keyAndPassword))
             )
@@ -755,6 +855,7 @@ class AccountResourceIT {
         restAccountMockMvc
             .perform(
                 post("/api/account/reset-password/finish")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(om.writeValueAsBytes(keyAndPassword))
             )
@@ -776,6 +877,7 @@ class AccountResourceIT {
         restAccountMockMvc
             .perform(
                 post("/api/account/reset-password/finish")
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(om.writeValueAsBytes(keyAndPassword))
             )

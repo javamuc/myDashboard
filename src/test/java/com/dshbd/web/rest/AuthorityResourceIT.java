@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,7 +90,12 @@ class AuthorityResourceIT {
         // Create the Authority
         var returnedAuthority = om.readValue(
             restAuthorityMockMvc
-                .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(authority)))
+                .perform(
+                    post(ENTITY_API_URL)
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(om.writeValueAsBytes(authority))
+                )
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse()
@@ -114,7 +120,12 @@ class AuthorityResourceIT {
 
         // An entity with an existing ID cannot be created, so this API call must fail
         restAuthorityMockMvc
-            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(authority)))
+            .perform(
+                post(ENTITY_API_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                    .content(om.writeValueAsBytes(authority))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the Authority in the database
@@ -169,7 +180,11 @@ class AuthorityResourceIT {
 
         // Delete the authority
         restAuthorityMockMvc
-            .perform(delete(ENTITY_API_URL_ID, authority.getName()).accept(MediaType.APPLICATION_JSON))
+            .perform(
+                delete(ENTITY_API_URL_ID, authority.getName())
+                    .with(SecurityMockMvcRequestPostProcessors.csrf())
+                    .accept(MediaType.APPLICATION_JSON)
+            )
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

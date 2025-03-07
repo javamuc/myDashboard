@@ -11,9 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.dshbd.IntegrationTest;
+import com.dshbd.config.ApplicationProperties;
 import com.dshbd.domain.User;
 import com.dshbd.repository.UserRepository;
-import com.dshbd.service.AccountLockoutSettings;
 import com.dshbd.web.rest.vm.LoginVM;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
@@ -47,7 +47,7 @@ class AuthenticateControllerIT {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private AccountLockoutSettings accountLockoutSettings;
+    private ApplicationProperties applicationProperties;
 
     private static final String TEST_USER_LOGIN = "test-account-lockout";
     private static final String TEST_USER_PASSWORD = "password";
@@ -141,7 +141,7 @@ class AuthenticateControllerIT {
         login.setPassword("wrong-password");
 
         // Make failed login attempts up to the maximum allowed
-        for (int i = 0; i < accountLockoutSettings.getMaxFailedAttempts(); i++) {
+        for (int i = 0; i < applicationProperties.getSecurity().getAccountLockout().getMaxFailedAttempts(); i++) {
             mockMvc
                 .perform(post("/api/authenticate").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsBytes(login)))
                 .andExpect(status().isUnauthorized());
@@ -214,7 +214,7 @@ class AuthenticateControllerIT {
 
         // Lock the account but set it to expire in the past
         User user = userRepository.findOneByLogin(TEST_USER_LOGIN.toLowerCase()).get();
-        user.setFailedAttempts(accountLockoutSettings.getMaxFailedAttempts());
+        user.setFailedAttempts(applicationProperties.getSecurity().getAccountLockout().getMaxFailedAttempts());
         user.setAccountLockedUntil(Instant.now().minusSeconds(60)); // Expired 1 minute ago
         userRepository.save(user);
 

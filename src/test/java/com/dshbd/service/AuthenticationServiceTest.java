@@ -3,8 +3,14 @@ package com.dshbd.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import com.dshbd.config.ApplicationProperties;
+import com.dshbd.config.ApplicationProperties.Security;
+import com.dshbd.config.ApplicationProperties.Security.AccountLockout;
 import com.dshbd.domain.User;
 import com.dshbd.repository.UserRepository;
 import java.time.Instant;
@@ -23,7 +29,7 @@ class AuthenticationServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private AccountLockoutSettings accountLockoutSettings;
+    private AccountLockoutProperties accountLockup;
 
     private AuthenticationService authenticationService;
 
@@ -31,7 +37,7 @@ class AuthenticationServiceTest {
 
     @BeforeEach
     void setUp() {
-        authenticationService = new AuthenticationService(userRepository, accountLockoutSettings);
+        authenticationService = new AuthenticationServiceImpl(userRepository, accountLockup);
 
         testUser = new User();
         testUser.setId(1L);
@@ -44,10 +50,10 @@ class AuthenticationServiceTest {
     void shouldIncrementFailedAttemptsOnProcessFailedLogin() {
         // Arrange
         when(userRepository.findOneByLogin(anyString())).thenReturn(Optional.of(testUser));
-        when(accountLockoutSettings.getMaxFailedAttempts()).thenReturn(3);
+        when(accountLockup.getMaxFailedAttempts()).thenReturn(3);
 
         // Act
-        authenticationService.processFailedLogin("test-user");
+        authenticationService.recordFailedLoginAttempt("test-user");
 
         // Assert
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
@@ -62,13 +68,12 @@ class AuthenticationServiceTest {
     void shouldLockAccountWhenMaxFailedAttemptsReached() {
         // Arrange
         testUser.setFailedAttempts(2); // One attempt away from being locked
-
+        when(accountLockup.getMaxFailedAttempts()).thenReturn(3);
+        when(accountLockup.getLockDurationMinutes()).thenReturn(1);
         when(userRepository.findOneByLogin(anyString())).thenReturn(Optional.of(testUser));
-        when(accountLockoutSettings.getMaxFailedAttempts()).thenReturn(3);
-        when(accountLockoutSettings.getLockDurationMinutes()).thenReturn(15);
 
         // Act
-        authenticationService.processFailedLogin("test-user");
+        authenticationService.recordFailedLoginAttempt("test-user");
 
         // Assert
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
@@ -88,7 +93,7 @@ class AuthenticationServiceTest {
         when(userRepository.findOneByLogin(anyString())).thenReturn(Optional.of(testUser));
 
         // Act
-        authenticationService.resetFailedAttempts("test-user");
+        authenticationService.resetFailedLoginAttempts("test-user");
 
         // Assert
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
@@ -159,7 +164,7 @@ class AuthenticationServiceTest {
         when(userRepository.findOneByLogin(anyString())).thenReturn(Optional.empty());
 
         // Act
-        authenticationService.processFailedLogin("non-existent-user");
+        authenticationService.recordFailedLoginAttempt("non-existent-user");
 
         // Assert
         verify(userRepository, never()).save(any(User.class));
