@@ -1,0 +1,114 @@
+.account-locked-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 2rem;
+}
+
+.locked-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+
+.coffee-mug {
+  margin-bottom: 1.5rem;
+  color: #6f4e37; /* Coffee brown color */
+  animation: steam 2s ease-in-out infinite;
+}
+
+@keyframes steam {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.locked-title {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #e74c3c; /* Red color for emphasis */
+}
+
+.locked-message {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: #555;
+}
+
+.pomodoro-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.timer-container,
+.work-timer {
+  padding: 1rem;
+  border-radius: 6px;
+}
+
+.timer-container {
+  background-color: #e8f4f8; /* Light blue for break timer */
+}
+
+.work-timer {
+  background-color: #f8e8e8; /* Light red for work timer */
+  opacity: 0.6; /* Dimmed since it's not active */
+}
+
+.timer-label {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+  color: #666;
+}
+
+.timer-display {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.timer-progress {
+  margin-top: 0.5rem;
+}
+
+.progress {
+  height: 8px;
+  border-radius: 4px;
+}
+
+.locked-footer {
+  color: #666;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .locked-card {
+    padding: 1.5rem;
+  }
+
+  .timer-display {
+    font-size: 2rem;
+  }
+
+  .locked-message {
+    font-size: 1rem;
+  }
+}

@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 
 import { CsrfService } from './csrf.service';
 
@@ -11,8 +13,7 @@ describe('CsrfService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [CsrfService],
+      providers: [CsrfService, provideHttpClient(), provideHttpClientTesting()],
     });
 
     service = TestBed.inject(CsrfService);

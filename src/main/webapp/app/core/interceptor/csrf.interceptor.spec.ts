@@ -1,9 +1,12 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController } from '@angular/common/http/testing';
 import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { CsrfInterceptor } from './csrf.interceptor';
 import { CsrfService } from '../auth/csrf.service';
+import { csrfInterceptor } from './csrf.interceptor';
 
 describe('CsrfInterceptor', () => {
   let httpClient: HttpClient;
@@ -12,15 +15,7 @@ describe('CsrfInterceptor', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
-        CsrfService,
-        {
-          provide: HTTP_INTERCEPTORS,
-          useClass: CsrfInterceptor,
-          multi: true,
-        },
-      ],
+      providers: [CsrfService, provideHttpClient(withInterceptors([csrfInterceptor])), provideHttpClientTesting()],
     });
 
     httpClient = TestBed.inject(HttpClient);

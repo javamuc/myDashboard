@@ -15,6 +15,7 @@ export default class LoginComponent implements OnInit, AfterViewInit {
   username = viewChild.required<ElementRef>('username');
 
   authenticationError = signal(false);
+  accountLocked = signal(false);
 
   loginForm = new FormGroup({
     username: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -43,12 +44,30 @@ export default class LoginComponent implements OnInit, AfterViewInit {
     this.loginService.login(this.loginForm.getRawValue()).subscribe({
       next: () => {
         this.authenticationError.set(false);
+        this.accountLocked.set(false);
         if (!this.router.getCurrentNavigation()) {
           // There were no routing during login (eg from navigationToStoredUrl)
           this.router.navigate(['']);
         }
       },
-      error: () => this.authenticationError.set(true),
+      error: err => {
+        if (err?.error?.message?.includes('Account is locked')) {
+          this.accountLocked.set(true);
+
+          // Try to extract lock duration from the response or use default (15 minutes)
+          let lockDurationMinutes = 15;
+          if (err.error.lockDurationMinutes) {
+            lockDurationMinutes = err.error.lockDurationMinutes;
+          }
+
+          // Store lock duration in seconds
+          const lockDurationSeconds = lockDurationMinutes * 60;
+          localStorage.setItem('accountLockDuration', lockDurationSeconds.toString());
+          this.router.navigate(['/account/account-locked']);
+        } else {
+          this.authenticationError.set(true);
+        }
+      },
     });
   }
 }

@@ -3,6 +3,7 @@ package com.dshbd.web.rest;
 import static com.dshbd.security.SecurityUtils.AUTHORITIES_KEY;
 import static com.dshbd.security.SecurityUtils.JWT_ALGORITHM;
 
+import com.dshbd.service.AccountLockoutProperties;
 import com.dshbd.service.AuthenticationService;
 import com.dshbd.web.rest.errors.AccountLockedException;
 import com.dshbd.web.rest.vm.LoginVM;
@@ -50,22 +51,29 @@ public class AuthenticateController {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final AuthenticationService authenticationService;
+    private final AccountLockoutProperties accountLockoutProperties;
 
     public AuthenticateController(
         JwtEncoder jwtEncoder,
         AuthenticationManagerBuilder authenticationManagerBuilder,
-        AuthenticationService authenticationService
+        AuthenticationService authenticationService,
+        AccountLockoutProperties accountLockoutProperties
     ) {
         this.jwtEncoder = jwtEncoder;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.authenticationService = authenticationService;
+        this.accountLockoutProperties = accountLockoutProperties;
     }
 
     @PostMapping("/authenticate")
     public ResponseEntity<JWTToken> authorize(@Valid @RequestBody LoginVM loginVM) {
         // Check if account is locked
         if (authenticationService.isAccountLocked(loginVM.getUsername())) {
-            throw new AccountLockedException("Account is locked due to too many failed login attempts");
+            int lockDurationMinutes = accountLockoutProperties.getLockDurationMinutes();
+            throw new AccountLockedException(
+                "Account is locked due to too many failed login attempts. Please try again later.",
+                lockDurationMinutes
+            );
         }
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(

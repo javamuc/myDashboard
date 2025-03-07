@@ -4,6 +4,7 @@ import com.dshbd.config.SecurityConfiguration;
 import com.dshbd.config.SecurityJwtConfiguration;
 import com.dshbd.config.WebConfigurer;
 import com.dshbd.management.SecurityMetersService;
+import com.dshbd.service.AccountLockoutProperties;
 import com.dshbd.web.rest.AuthenticateController;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -28,6 +29,7 @@ import tech.jhipster.config.JHipsterProperties;
         AuthenticateController.class,
         JwtAuthenticationTestUtils.class,
         TestAuthenticationService.class,
+        AccountLockoutProperties.class,
     }
 )
 public @interface AuthenticationIntegrationTest {

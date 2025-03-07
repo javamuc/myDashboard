@@ -3,14 +3,10 @@ package com.dshbd.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.dshbd.config.ApplicationProperties;
-import com.dshbd.config.ApplicationProperties.Security;
-import com.dshbd.config.ApplicationProperties.Security.AccountLockout;
 import com.dshbd.domain.User;
 import com.dshbd.repository.UserRepository;
 import java.time.Instant;
@@ -144,6 +140,14 @@ class AuthenticationServiceTest {
 
         // Assert
         assertThat(isLocked).isFalse();
+
+        // Verify that the lock was cleared and failed attempts reset
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(userCaptor.capture());
+
+        User savedUser = userCaptor.getValue();
+        assertThat(savedUser.getFailedAttempts()).isEqualTo(0);
+        assertThat(savedUser.getAccountLockedUntil()).isNull();
     }
 
     @Test

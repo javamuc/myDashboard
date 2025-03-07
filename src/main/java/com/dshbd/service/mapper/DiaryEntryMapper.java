@@ -8,5 +8,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = { DiaryTagMapper.class })
 public interface DiaryEntryMapper {
     DiaryEntryDTO toDto(DiaryEntry diaryEntry);
+
+    @Mapping(target = "userId", ignore = true)
     DiaryEntry toEntity(DiaryEntryDTO diaryEntryDTO);
 }

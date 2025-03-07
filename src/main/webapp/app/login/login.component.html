@@ -7,6 +7,12 @@
           <strong>Failed to sign in!</strong> Please check your credentials and try again.
         </div>
       }
+      @if (accountLocked()) {
+        <div class="alert alert-danger" data-cy="accountLockedError">
+          <strong>Account locked!</strong> Your account has been temporarily locked due to too many failed login attempts.
+          <a class="alert-link" routerLink="/account/account-locked">View lockout details</a>
+        </div>
+      }
       <form class="form" (ngSubmit)="login()" [formGroup]="loginForm">
         <div class="mb-3">
           <label class="username-label" for="username" jhiTranslate="global.form.username.label">Username</label>

@@ -1,0 +1,51 @@
+<div class="account-locked-container">
+  <div class="locked-card">
+    <div class="coffee-mug">
+      <i class="fas fa-mug-hot fa-4x"></i>
+    </div>
+
+    <h2 class="locked-title">Account Locked</h2>
+
+    <div class="locked-message">
+      <p>Grab a coffee, go outside, touch some grass. Your account is locked.</p>
+    </div>
+
+    <div class="pomodoro-container">
+      <div class="timer-container">
+        <div class="timer-label">Break Timer</div>
+        <div class="timer-display">{{ formattedTime }}</div>
+        <div class="timer-progress">
+          <div class="progress">
+            <div
+              class="progress-bar bg-info"
+              role="progressbar"
+              [style.width]="(remainingTime / totalLockTime) * 100 + '%'"
+              aria-valuenow="remainingTime"
+              aria-valuemin="0"
+              aria-valuemax="totalLockTime"
+            ></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="work-timer">
+        <div class="timer-label">Work Timer</div>
+        <div class="timer-display">
+          <i class="fas fa-infinity"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="locked-footer">
+      <p>
+        Your account will be unlocked in <strong>{{ formattedTime }}</strong>
+      </p>
+      <p class="text-muted small">This is a security measure to protect your account.</p>
+
+      <!-- For development purposes only - remove in production -->
+      <button *jhiHasAnyAuthority="'ROLE_ADMIN'" class="btn btn-sm btn-outline-secondary mt-3" (click)="skipWait()">
+        Skip Wait (Admin Only)
+      </button>
+    </div>
+  </div>
+</div>
