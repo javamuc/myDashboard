@@ -1,5 +1,6 @@
 package com.dshbd.web.rest;
 
+import com.dshbd.domain.vm.NoteSummary;
 import com.dshbd.service.NoteService;
 import com.dshbd.service.dto.NoteDTO;
 import jakarta.validation.Valid;
@@ -24,6 +25,13 @@ public class NoteResource {
 
     public NoteResource(NoteService noteService) {
         this.noteService = noteService;
+    }
+
+    @GetMapping("/notes/summary")
+    public ResponseEntity<List<NoteSummary>> getAllNoteSummaries() {
+        log.debug("REST request to get all Notes for current user");
+        List<NoteSummary> notes = noteService.findAllSummariesByCurrentUser();
+        return ResponseEntity.ok(notes);
     }
 
     @GetMapping("/notes")

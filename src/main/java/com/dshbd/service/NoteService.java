@@ -1,7 +1,9 @@
 package com.dshbd.service;
 
 import com.dshbd.domain.Note;
+import com.dshbd.domain.vm.NoteSummary;
 import com.dshbd.repository.NoteRepository;
+import com.dshbd.repository.NoteSummaryRepository;
 import com.dshbd.repository.UserRepository;
 import com.dshbd.service.dto.NoteDTO;
 import com.dshbd.service.mapper.NoteMapper;
@@ -19,11 +21,19 @@ public class NoteService extends BaseService {
     private final Logger log = LoggerFactory.getLogger(NoteService.class);
 
     private final NoteRepository noteRepository;
+    private final NoteSummaryRepository noteSummaryRepository;
     private final NoteMapper noteMapper;
 
-    public NoteService(NoteRepository noteRepository, UserRepository userRepository, NoteMapper noteMapper, UserService userService) {
+    public NoteService(
+        NoteRepository noteRepository,
+        NoteSummaryRepository noteSummaryRepository,
+        UserRepository userRepository,
+        NoteMapper noteMapper,
+        UserService userService
+    ) {
         super(userService);
         this.noteRepository = noteRepository;
+        this.noteSummaryRepository = noteSummaryRepository;
         this.noteMapper = noteMapper;
     }
 
@@ -83,5 +93,10 @@ public class NoteService extends BaseService {
         } else {
             throw new IllegalStateException("Note not found or not owned by current user");
         }
+    }
+
+    public List<NoteSummary> findAllSummariesByCurrentUser() {
+        // call a repository method that returns a list of NoteSummary
+        return noteSummaryRepository.findByUserIdOrderByLastModifiedDateDesc(getUserId());
     }
 }

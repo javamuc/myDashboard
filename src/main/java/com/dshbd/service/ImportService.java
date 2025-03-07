@@ -16,7 +16,7 @@ import com.dshbd.repository.HabitDayScheduleRepository;
 import com.dshbd.repository.HabitRepository;
 import com.dshbd.repository.HabitSpecificTimeRepository;
 import com.dshbd.repository.IdeaRepository;
-import com.dshbd.repository.NoteRepository;
+import com.dshbd.repository.NoteSummaryRepository;
 import com.dshbd.repository.TaskRepository;
 import com.dshbd.service.dto.ImportDataDTO;
 import jakarta.transaction.Transactional;
@@ -38,7 +38,7 @@ public class ImportService extends BaseService {
     private final Logger log = LoggerFactory.getLogger(ImportService.class);
 
     private final IdeaRepository ideaRepository;
-    private final NoteRepository noteRepository;
+    private final NoteSummaryRepository noteRepository;
     private final BoardRepository boardRepository;
     private final TaskRepository taskRepository;
     private final HabitRepository habitRepository;
@@ -49,7 +49,7 @@ public class ImportService extends BaseService {
 
     public ImportService(
         IdeaRepository ideaRepository,
-        NoteRepository noteRepository,
+        NoteSummaryRepository noteRepository,
         BoardRepository boardRepository,
         TaskRepository taskRepository,
         HabitRepository habitRepository,

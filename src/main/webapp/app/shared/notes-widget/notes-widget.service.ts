@@ -13,7 +13,7 @@ export class NotesWidgetService {
     private http: HttpClient,
     private applicationConfigService: ApplicationConfigService,
   ) {
-    this.resourceUrl = this.applicationConfigService.getEndpointFor('api/notes');
+    this.resourceUrl = this.applicationConfigService.getEndpointFor('api/notes/summary');
   }
 
   /**
