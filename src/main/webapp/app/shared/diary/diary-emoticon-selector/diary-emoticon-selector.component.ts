@@ -43,8 +43,6 @@ export class DiaryEmoticonSelectorComponent implements AfterViewInit {
   }
 
   focus(): void {
-    if (this.selectorContainer) {
-      this.selectorContainer.nativeElement.focus();
-    }
+    this.selectorContainer.nativeElement.focus();
   }
 }

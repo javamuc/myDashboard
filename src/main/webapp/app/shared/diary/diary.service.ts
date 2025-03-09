@@ -64,7 +64,7 @@ export class DiaryService {
     }
     return this.http.get<PaginatedResponse<DiaryEntry>>(this.resourceUrl, { params }).pipe(
       map((response: PaginatedResponse<DiaryEntry>) => {
-        if (response?.content) {
+        if (response.content) {
           return response.content.map(entry => this.convertFromServer(entry));
         }
         return [];

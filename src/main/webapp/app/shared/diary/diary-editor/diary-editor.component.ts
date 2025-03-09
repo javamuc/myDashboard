@@ -22,14 +22,13 @@ import { DiaryService } from '../diary.service';
 import { DiaryEmoticon, DiaryEntry, DiaryTag, NewDiaryEntry } from '../diary.model';
 import { DiaryEmoticonSelectorComponent } from '../diary-emoticon-selector/diary-emoticon-selector.component';
 import { DiaryTagSelectorComponent } from '../diary-tag-selector/diary-tag-selector.component';
-import { DiaryEntryComponent } from '../diary-entry/diary-entry.component';
 
 @Component({
   selector: 'jhi-diary-editor',
   templateUrl: './diary-editor.component.html',
   styleUrls: ['./diary-editor.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, FontAwesomeModule, DiaryEmoticonSelectorComponent, DiaryTagSelectorComponent, DiaryEntryComponent],
+  imports: [CommonModule, FormsModule, FontAwesomeModule, DiaryEmoticonSelectorComponent, DiaryTagSelectorComponent],
 })
 export class DiaryEditorComponent implements AfterViewInit {
   @ViewChild('entryInput') entryInput!: ElementRef<HTMLTextAreaElement>;
@@ -112,7 +111,7 @@ export class DiaryEditorComponent implements AfterViewInit {
     }
 
     const isTextInput = event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement;
-    const isTextArea = event.target === this.entryInput?.nativeElement;
+    const isTextArea = event.target === this.entryInput.nativeElement;
 
     // Skip all keyboard shortcuts if we're in the text area (except for specific ones we want to handle)
     if (isTextArea) {
@@ -161,7 +160,7 @@ export class DiaryEditorComponent implements AfterViewInit {
     // Handle Escape or Left Arrow key to go back or close
     if (event.key === 'Escape' || event.key === 'ArrowLeft') {
       // Don't handle left arrow in text inputs unless at the beginning of the text
-      if (event.key === 'ArrowLeft' && isTextInput && !(isTextArea && this.entryInput.nativeElement.selectionStart === 0)) {
+      if (event.key === 'ArrowLeft' && isTextInput && !(this.entryInput.nativeElement.selectionStart === 0)) {
         return;
       }
 

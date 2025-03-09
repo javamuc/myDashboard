@@ -58,7 +58,6 @@ export class IdeaCardComponent {
 
   openNote(event: Event): void {
     event.stopPropagation();
-    //open the notes component in the home component
     this.homeService.setActiveComponent('notes');
   }
 }

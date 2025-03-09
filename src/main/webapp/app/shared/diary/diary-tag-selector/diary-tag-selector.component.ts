@@ -144,9 +144,7 @@ export class DiaryTagSelectorComponent implements OnInit, AfterViewInit {
     // Focus the input after it appears
     setTimeout(() => {
       const input = document.querySelector('.new-tag-input') as HTMLInputElement;
-      if (input) {
-        input.focus();
-      }
+      input.focus();
     });
   }
 

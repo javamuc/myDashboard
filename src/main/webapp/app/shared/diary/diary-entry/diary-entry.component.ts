@@ -8,7 +8,7 @@ import { DiaryEntry } from '../diary.model';
   templateUrl: './diary-entry.component.html',
   styleUrls: ['./diary-entry.component.scss'],
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule, DatePipe],
+  imports: [CommonModule, FontAwesomeModule],
 })
 export class DiaryEntryComponent {
   @Input() entry!: DiaryEntry;
