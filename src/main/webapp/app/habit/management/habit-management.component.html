@@ -45,8 +45,21 @@
     </div>
   </div>
 
-  <!-- Habit Schedule -->
+  <!-- Habit Actions -->
   <div class="col-md-8" *ngIf="selectedHabit()">
+    <div class="card">
+      <div class="card-header">
+        <h5>
+          <fa-icon icon="calendar-alt"></fa-icon>
+          <span>Habit Actions</span>
+        </h5>
+      </div>
+      <div class="card-body">
+        <!-- <jhi-habit-action [habit]="selectedHabit()!" (habitChange)="updateHabit($event)"></jhi-habit-action> -->
+      </div>
+    </div>
+
+    <!-- Habit Schedule -->
     <div class="card">
       <div class="card-header">
         <h5>
